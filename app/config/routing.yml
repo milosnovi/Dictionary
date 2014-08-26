@@ -1,0 +1,5 @@
+dictionary:
+    resource: "@DictionaryBundle/Controller/"
+    type:     annotation
+    prefix:   /
+

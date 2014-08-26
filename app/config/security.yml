@@ -10,7 +10,7 @@ security:
         in_memory:
             memory:
                 users:
-                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
+                    milos:  { password: milos, roles: [ 'ROLE_USER' ] }
                     admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
 
     firewalls:
@@ -23,13 +23,13 @@ security:
             security: false
 
         secured_area:
-            pattern:    ^/demo/secured/
+            pattern:    ^/
             form_login:
                 check_path: _security_check
                 login_path: _demo_login
             logout:
                 path:   _demo_logout
-                target: _demo
+                target: _demo_login
             #anonymous: ~
             #http_basic:
             #    realm: "Secured Demo Area"
