@@ -27,8 +27,8 @@ class DefaultController extends Controller
 		/** @var $historyRepository HistoryRepository */
 		$historyRepository = $em->getRepository('DictionaryBundle:History');
 
-		$resultSet = [];
-		$resultHits = [];
+		$resultSet = array();
+		$resultHits = array();
 
 		$histories = $historyRepository->getLatestSearched($user);
 
