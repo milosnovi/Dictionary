@@ -40,7 +40,7 @@ class DefaultController extends Controller
 
 		$historyByHits = $historyRepository->getSearchedByHits($user);
 
-		$englishIds = [];
+		$englishIds = array();
 		foreach($historyByHits as $hit) {
 			$englishIds[] = $hit->getWord()->getId();
 			$resultHits[$hit->getWord()->getName()] = array(
