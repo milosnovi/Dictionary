@@ -1,38 +1,38 @@
-{% extends "TwigBundle::layout.html.twig" %}
+<!DOCTYPE >
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
 
-{% block head %}
-    <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
-    <link rel="stylesheet" href="{{ asset('bundles/acmedemo/css/demo.css') }}" />
-{% endblock %}
+    {% stylesheets
+            'bundles/twitter/css/bootstrap.css'
+            '@DictionaryBundle/Resources/public/css/*'
+        filter='?uglifycss'
+        output='css/min.css' %}
+        <link rel="stylesheet" type="text/css" href="{{ asset_url }}" />
+    {% endstylesheets %}
+</head>
 
-{% block title 'Demo Bundle' %}
+<body>
 
-{% block body %}
-    {% for flashMessage in app.session.flashbag.get('notice') %}
-        <div class="flash-message">
-            <em>Notice</em>: {{ flashMessage }}
-        </div>
-    {% endfor %}
+    {% block navigation %}{% endblock navigation %}
 
-    {% block content_header %}
-        <ul id="menu">
-            {% block content_header_more %}
-                <li><a href="#">Demo Home</a></li>
-            {% endblock %}
-        </ul>
-
-        <div style="clear: both"></div>
-    {% endblock %}
-
-    <div class="block">
-        <li>logged in as <strong>{{ app.user ? app.user.username : 'Anonymous' }}</strong> - <a href="{{ path('_demo_logout') }}">Logout</a></li>
-        {% block content %}{% endblock %}
+    <div class='container'>
+        {% block content  %}
+        {% endblock  %}
     </div>
 
-    {% if code is defined %}
-        <h2>Code behind this page</h2>
-        <div class="block">
-            <div class="symfony-content">{{ code|raw }}</div>
-        </div>
-    {% endif %}
-{% endblock %}
+    {% javascripts
+            '@jquery_and_ui'
+            '@bootstrap_js'
+            '@DictionaryBundle/Resources/public/js/*'
+        filter='?uglifyjs2'
+        output='js/min.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    {% block additionaljs %}
+    {% endblock %}
+</body>
+</html>

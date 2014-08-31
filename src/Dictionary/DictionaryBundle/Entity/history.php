@@ -8,9 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
  * history
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\historyRepository")
+ * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\HistoryRepository")
  */
-class history
+class History
 {
     /**
      * @var integer
@@ -22,16 +22,40 @@ class history
     private $id;
 
     /**
-     * @var integer
+     * @var Word
      *
-     * @ORM\Column(name="eng_id", type="integer")
+	 * @ORM\ManyToOne(targetEntity="Word")
+	 * @ORM\JoinColumn(name="word_id", referencedColumnName="id")
+	 *
      */
-    private $engId;
+    private $word;
 
     /**
-     * @var string
+     * @var Word
      *
-     * @ORM\Column(name="created", type="string", length=255)
+	 * @ORM\ManyToOne(targetEntity="User")
+	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $user;
+
+	/**
+	 * @var \DateTime
+	 *
+	 * @ORM\Column(name="last_search", type="datetime")
+	 */
+	private $lastSearch;
+
+	/**
+	 * @var integer
+	 *
+	 * @ORM\Column(name="hits", type="integer")
+	 */
+	private $hits;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created", type="datetime")
      */
     private $created;
 
@@ -54,26 +78,48 @@ class history
     }
 
     /**
-     * Set engId
+     * Set word
      *
-     * @param integer $engId
+     * @param Word $word
      * @return history
      */
-    public function setEngId($engId)
+    public function setWord($word)
     {
-        $this->engId = $engId;
+        $this->word = $word;
 
         return $this;
     }
 
     /**
-     * Get engId
+     * Get word
      *
-     * @return integer 
+     * @return Word
      */
-    public function getEngId()
+    public function getWord()
     {
-        return $this->engId;
+        return $this->word;
+    }
+    /**
+     * Set word
+     *
+     * @param User $user
+     * @return history
+     */
+    public function setUser(User $user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return Word
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 
     /**
@@ -120,5 +166,51 @@ class history
     public function getUpdated()
     {
         return $this->updated;
+    }
+
+    /**
+     * Set lastSearch
+     *
+     * @param \DateTime $lastSearch
+     * @return History
+     */
+    public function setLastSearch($lastSearch)
+    {
+        $this->lastSearch = $lastSearch;
+
+        return $this;
+    }
+
+    /**
+     * Get lastSearch
+     *
+     * @return \DateTime 
+     */
+    public function getLastSearch()
+    {
+        return $this->lastSearch;
+    }
+
+    /**
+     * Set hits
+     *
+     * @param integer $hits
+     * @return History
+     */
+    public function setHits($hits)
+    {
+        $this->hits = $hits;
+
+        return $this;
+    }
+
+    /**
+     * Get hits
+     *
+     * @return integer 
+     */
+    public function getHits()
+    {
+        return $this->hits;
     }
 }

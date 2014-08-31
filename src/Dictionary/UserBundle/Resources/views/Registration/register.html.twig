@@ -1,0 +1,16 @@
+{% extends 'DictionaryBundle::layout.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block title%}Registration{% endblock title%}
+
+{% block content %}
+
+    <form class="form-signin registration-input-width" action="{{ path('fos_user_registration_register') }}" {{ form_enctype(form) }} method="POST" class="fos_user_registration_register">
+        <h2 class="form-signin-heading text-center">Registration</h2>
+        {{ form_widget(form) }}
+        <div>
+            <input class="btn btn-primary btn-block btn-large marginTop20" type="submit" value="{{ 'registration.submit'|trans }}" />
+        </div>
+    </form>
+{% endblock content %}

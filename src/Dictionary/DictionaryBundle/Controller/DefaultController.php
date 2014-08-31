@@ -2,11 +2,15 @@
 
 namespace Dictionary\DictionaryBundle\Controller;
 
-use Dictionary\DictionaryBundle\Entity\Serbian;
+use Dictionary\DictionaryBundle\Entity\History;
+use Dictionary\DictionaryBundle\Entity\HistoryRepository;
+use Dictionary\DictionaryBundle\Entity\Word;
+use Dictionary\DictionaryBundle\Model\TranslateManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
@@ -14,81 +18,75 @@ class DefaultController extends Controller
      * @Route("/", name="_home")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        return array('name' => 'milos');
+		$em = $this->getDoctrine()->getManager();
+
+		$user = $this->getUser();
+
+		/** @var $historyRepository HistoryRepository */
+		$historyRepository = $em->getRepository('DictionaryBundle:History');
+
+		$resultSet = [];
+		$resultHits = [];
+
+		$histories = $historyRepository->getLatestSearched($user);
+
+		$englishIds = [];
+		foreach($histories as $history) {
+			$englishIds[] = $history->getWord()->getId();
+			$resultSet[$history->getWord()->getName()] = array();
+		}
+
+		$historyByHits = $historyRepository->getSearchedByHits($user);
+
+		$englishIds = [];
+		foreach($historyByHits as $hit) {
+			$englishIds[] = $hit->getWord()->getId();
+			$resultHits[$hit->getWord()->getName()] = array(
+				'hits' => $hit->getHits(),
+				'translation' => array()
+			);
+		}
+
+		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
+		$results = $eng2srbRepository->getEnglishTranslations($englishIds);
+
+		/** @var $history History*/
+		foreach($results as $result) {
+			$resultSet[$result->getEng()->getName()][] = $result->getSrb()->getName();
+			$resultHits[$result->getEng()->getName()]['translation'][] = $result->getSrb()->getName();
+		}
+
+        return array(
+			'histories' 	=> $resultSet,
+			'historyHits' 	=> $resultHits
+		);
     }
 
 	/**
-	 * @Route("/{word}", name="_demo")
-	 * @Template()
+	 * @Route("/translate", name="_translate")
+	 * @Template("DictionaryBundle:Default:index.html.twig")
 	 */
-	public function matchAction($word)
+	public function matchAction(Request $request)
 	{
-		$curl = curl_init();
-		curl_setopt_array($curl, array(
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => 'http://www.metak.com/recnik/search',
-			CURLOPT_USERAGENT => 'Codular Sample cURL Request',
-			CURLOPT_POST => 1,
-			CURLOPT_POSTFIELDS => array(
-				'word' => $word
-			)
-		));
-		$resp = curl_exec($curl);
-		$html = '<!DOCTYPE html>
-            <html>
-                <body>
-                    ' . $resp . '
-                </body>
-            </html>';
-		$crawler = new Crawler($html);
-
-		$eng2Srb = $crawler->filter('#eng2srp li')->each(function (Crawler $node, $i) {
-			$sentence = $node->text();
-			$explodeTranslate = explode('-', $sentence);
-			return trim($explodeTranslate[1]);
-		});
-
-		$em = $this->getDoctrine()->getManager();
-		/** @var $englishRepository EnglishRepository */
-		$englishRepository = $em->getRepository('DictionaryBundle:English');
-		if(!($english = $englishRepository->findOneByWord($word))) {
-			$english = new English();
-			$english->setWord($word);
-			$em->persist($english);
-			$em->flush();
+		$word = strtolower($request->get('q'));
+		if (empty($word)) {
+			return $this->redirect($this->generateUrl('_home'));
 		}
 
-		/** @var $englishRepository EnglishRepository */
-		$serbianRepository = $em->getRepository('DictionaryBundle:Serbian');
-		$serbians = $serbianRepository->findAll(array('word' => $eng2Srb));
-		$matchedWords = array();
-		foreach($serbians as $index => $serbian) {
-			$matchedWords[$serbian->getWord()] = $serbian;
-		}
-		foreach($eng2Srb as $serbianWord) {
-			if (!isset($matchedWords[$serbianWord])) {
-				/** @var $serbian Serbian */
-				$serbian = new Serbian();
-				$serbian->setName($serbianWord);
-				$em->persist($serbian);
-				$em->flush();
-			} else {
-				$serbian = $matchedWords[$serbianWord];
-			}
+		$user = $this->getUser();
+		/** @var  $translationManager TranslateManager */
+		$translationManager = $this->get('dictionary.translateManager');
+		$success = $translationManager->translate($word, $user);
 
-			
-			$eng2SrbItem = new eng2srb();
-			$eng2SrbItem->setEnId($english);
-			$eng2SrbItem->setSrbId($serbian);
-			$em->persist($eng2SrbItem);
-//            \Doctrine\Common\Util\Debug::dump($eng2SrbItem);
-//            exit;
+		if (!$success) {
+			$this->get('session')->getFlashBag()->add(
+				'notice',
+				'No results'
+			);
 		}
 
-		$em->flush();
-		var_dump($eng2Srb);exit;
-		return array();
+		return $this->redirect($this->generateUrl('_home'));
 	}
 }

@@ -1,0 +1,30 @@
+{% extends 'DictionaryBundle::layout.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block title%}title{% endblock title%}
+
+{% block content %}
+
+    <form class="form-signin paddingBottom50" role="form" action="{{ path("fos_user_security_check") }}" method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+        <h2 class="form-signin-heading">Login</h2>
+
+        {% if error %}
+            <p class="text-error">{{ error|trans }}</p>
+        {% endif %}
+
+        <input class="form-control" type="text" id="username" placeholder="Email" name="_username" value="{{ last_username }}" required="required">
+
+        <input class="form-control" type="password" id="password" name="_password" required="required" placeholder="Password">
+
+        <label class="checkbox">
+            <input type="checkbox" id="remember_me" name="_remember_me" value="on">{{ 'security.login.remember_me'|trans }}
+        </label>
+        <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" class="btn btn-lg btn-primary btn-block" />
+
+        <a class="registerLink" href="{{ path('fos_user_registration_register') }}">Register</a>
+    </form>
+
+
+{% endblock content %}

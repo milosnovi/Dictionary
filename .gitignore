@@ -1,0 +1,11 @@
+/web/bundles/
+/web/css/
+/web/js/
+/web/uploads/
+/app/cache/*
+/app/config/parameters.yml
+/app/logs/*
+/build/
+/vendor/
+/composer.phar
+.vagrant/

@@ -1,5 +1,35 @@
 {% extends 'DictionaryBundle::layout.html.twig' %}
 
 {% block content %}
-Hello {{ name }}!
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+        <div class="flash-message">
+            <em>Notice</em>: {{ flashMessage }}
+        </div>
+    {% endfor %}
+
+    <form method="post" action="{{ path('_translate') }}" >
+        <div class="form-row">
+            <input name="q" id="search-id" type="search" placeholder="Translate" />
+
+            <button type="submit" class="sf-button">
+                <span class="border-l">
+                    <span class="border-r">
+                        <span class="btn-bg">OK</span>
+                    </span>
+                </span>
+            </button>
+        </div>
+    </form>
+
+    {% for key, history in histories %}
+        {{ key }}: {{ history| join(', ') | slice(0, 110) }}<br/>
+    {% endfor %}
+
+    <br>
+    <br>
+    <h1>MOST OFTEN</h1>
+    {% for key, hit in historyHits %}
+        {{ key }}: {{ hit.translation| join(', ') | slice(0, 110) }}<br/>
+    {% endfor %}
+
 {% endblock %}

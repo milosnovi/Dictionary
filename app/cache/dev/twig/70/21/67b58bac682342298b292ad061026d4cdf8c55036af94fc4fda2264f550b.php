@@ -7,129 +7,132 @@ class __TwigTemplate_702167b58bac682342298b292ad061026d4cdf8c55036af94fc4fda2264
     {
         parent::__construct($env);
 
-        $this->parent = $this->env->loadTemplate("TwigBundle::layout.html.twig");
+        $this->parent = false;
 
         $this->blocks = array(
-            'head' => array($this, 'block_head'),
             'title' => array($this, 'block_title'),
-            'body' => array($this, 'block_body'),
-            'content_header' => array($this, 'block_content_header'),
-            'content_header_more' => array($this, 'block_content_header_more'),
+            'navigation' => array($this, 'block_navigation'),
             'content' => array($this, 'block_content'),
+            'additionaljs' => array($this, 'block_additionaljs'),
         );
-    }
-
-    protected function doGetParent(array $context)
-    {
-        return "TwigBundle::layout.html.twig";
     }
 
     protected function doDisplay(array $context, array $blocks = array())
     {
-        $this->parent->display($context, array_merge($this->blocks, $blocks));
-    }
-
-    // line 3
-    public function block_head($context, array $blocks = array())
-    {
-        // line 4
-        echo "    <link rel=\"icon\" sizes=\"16x16\" href=\"";
+        // line 1
+        echo "<!DOCTYPE >
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\" />
+    <title>";
+        // line 5
+        $this->displayBlock('title', $context, $blocks);
+        echo "</title>
+    <link rel=\"icon\" type=\"image/x-icon\" href=\"";
+        // line 6
         echo twig_escape_filter($this->env, $this->env->getExtension('assets')->getAssetUrl("favicon.ico"), "html", null, true);
         echo "\" />
-    <link rel=\"stylesheet\" href=\"";
-        // line 5
-        echo twig_escape_filter($this->env, $this->env->getExtension('assets')->getAssetUrl("bundles/acmedemo/css/demo.css"), "html", null, true);
-        echo "\" />
-";
-    }
 
-    // line 8
-    public function block_title($context, array $blocks = array())
-    {
-        echo "Demo Bundle";
-    }
-
-    // line 10
-    public function block_body($context, array $blocks = array())
-    {
-        // line 11
-        echo "    ";
-        $context['_parent'] = (array) $context;
-        $context['_seq'] = twig_ensure_traversable($this->getAttribute($this->getAttribute($this->getAttribute((isset($context["app"]) ? $context["app"] : $this->getContext($context, "app")), "session"), "flashbag"), "get", array(0 => "notice"), "method"));
-        foreach ($context['_seq'] as $context["_key"] => $context["flashMessage"]) {
-            // line 12
-            echo "        <div class=\"flash-message\">
-            <em>Notice</em>: ";
+    ";
+        // line 8
+        if (isset($context['assetic']['debug']) && $context['assetic']['debug']) {
+            // asset "e4e7197_0"
+            $context["asset_url"] = isset($context['assetic']['use_controller']) && $context['assetic']['use_controller'] ? $this->env->getExtension('routing')->getPath("_assetic_e4e7197_0") : $this->env->getExtension('assets')->getAssetUrl("_controller/css/min_bootstrap_1.css");
             // line 13
-            echo twig_escape_filter($this->env, (isset($context["flashMessage"]) ? $context["flashMessage"] : $this->getContext($context, "flashMessage")), "html", null, true);
-            echo "
-        </div>
+            echo "        <link rel=\"stylesheet\" type=\"text/css\" href=\"";
+            echo twig_escape_filter($this->env, (isset($context["asset_url"]) ? $context["asset_url"] : $this->getContext($context, "asset_url")), "html", null, true);
+            echo "\" />
+    ";
+            // asset "e4e7197_1"
+            $context["asset_url"] = isset($context['assetic']['use_controller']) && $context['assetic']['use_controller'] ? $this->env->getExtension('routing')->getPath("_assetic_e4e7197_1") : $this->env->getExtension('assets')->getAssetUrl("_controller/css/min_part_2_main_1.css");
+            echo "        <link rel=\"stylesheet\" type=\"text/css\" href=\"";
+            echo twig_escape_filter($this->env, (isset($context["asset_url"]) ? $context["asset_url"] : $this->getContext($context, "asset_url")), "html", null, true);
+            echo "\" />
+    ";
+        } else {
+            // asset "e4e7197"
+            $context["asset_url"] = isset($context['assetic']['use_controller']) && $context['assetic']['use_controller'] ? $this->env->getExtension('routing')->getPath("_assetic_e4e7197") : $this->env->getExtension('assets')->getAssetUrl("_controller/css/min.css");
+            echo "        <link rel=\"stylesheet\" type=\"text/css\" href=\"";
+            echo twig_escape_filter($this->env, (isset($context["asset_url"]) ? $context["asset_url"] : $this->getContext($context, "asset_url")), "html", null, true);
+            echo "\" />
     ";
         }
-        $_parent = $context['_parent'];
-        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['flashMessage'], $context['_parent'], $context['loop']);
-        $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 16
-        echo "
+        unset($context["asset_url"]);
+        // line 15
+        echo "</head>
+
+<body>
+
     ";
-        // line 17
-        $this->displayBlock('content_header', $context, $blocks);
-        // line 26
+        // line 19
+        $this->displayBlock('navigation', $context, $blocks);
+        // line 20
         echo "
-    <div class=\"block\">
-        <li>logged in as <strong>";
-        // line 28
-        echo twig_escape_filter($this->env, (($this->getAttribute((isset($context["app"]) ? $context["app"] : $this->getContext($context, "app")), "user")) ? ($this->getAttribute($this->getAttribute((isset($context["app"]) ? $context["app"] : $this->getContext($context, "app")), "user"), "username")) : ("Anonymous")), "html", null, true);
-        echo "</strong> - <a href=\"";
-        echo $this->env->getExtension('routing')->getPath("_demo_logout");
-        echo "\">Logout</a></li>
+    <div class='container'>
         ";
-        // line 29
+        // line 22
         $this->displayBlock('content', $context, $blocks);
-        // line 30
+        // line 24
         echo "    </div>
 
     ";
-        // line 32
-        if (array_key_exists("code", $context)) {
-            // line 33
-            echo "        <h2>Code behind this page</h2>
-        <div class=\"block\">
-            <div class=\"symfony-content\">";
-            // line 35
-            echo (isset($context["code"]) ? $context["code"] : $this->getContext($context, "code"));
-            echo "</div>
-        </div>
+        // line 26
+        if (isset($context['assetic']['debug']) && $context['assetic']['debug']) {
+            // asset "04f3781_0"
+            $context["asset_url"] = isset($context['assetic']['use_controller']) && $context['assetic']['use_controller'] ? $this->env->getExtension('routing')->getPath("_assetic_04f3781_0") : $this->env->getExtension('assets')->getAssetUrl("_controller/js/min_part_1.js");
+            // line 32
+            echo "        <script type=\"text/javascript\" src=\"";
+            echo twig_escape_filter($this->env, (isset($context["asset_url"]) ? $context["asset_url"] : $this->getContext($context, "asset_url")), "html", null, true);
+            echo "\"></script>
+    ";
+            // asset "04f3781_1"
+            $context["asset_url"] = isset($context['assetic']['use_controller']) && $context['assetic']['use_controller'] ? $this->env->getExtension('routing')->getPath("_assetic_04f3781_1") : $this->env->getExtension('assets')->getAssetUrl("_controller/js/min_part_2.js");
+            echo "        <script type=\"text/javascript\" src=\"";
+            echo twig_escape_filter($this->env, (isset($context["asset_url"]) ? $context["asset_url"] : $this->getContext($context, "asset_url")), "html", null, true);
+            echo "\"></script>
+    ";
+        } else {
+            // asset "04f3781"
+            $context["asset_url"] = isset($context['assetic']['use_controller']) && $context['assetic']['use_controller'] ? $this->env->getExtension('routing')->getPath("_assetic_04f3781") : $this->env->getExtension('assets')->getAssetUrl("_controller/js/min.js");
+            echo "        <script type=\"text/javascript\" src=\"";
+            echo twig_escape_filter($this->env, (isset($context["asset_url"]) ? $context["asset_url"] : $this->getContext($context, "asset_url")), "html", null, true);
+            echo "\"></script>
     ";
         }
+        unset($context["asset_url"]);
+        // line 34
+        echo "
+    ";
+        // line 35
+        $this->displayBlock('additionaljs', $context, $blocks);
+        // line 37
+        echo "</body>
+</html>";
     }
 
-    // line 17
-    public function block_content_header($context, array $blocks = array())
+    // line 5
+    public function block_title($context, array $blocks = array())
     {
-        // line 18
-        echo "        <ul id=\"menu\">
-            ";
-        // line 19
-        $this->displayBlock('content_header_more', $context, $blocks);
-        // line 22
-        echo "        </ul>
-
-        <div style=\"clear: both\"></div>
-    ";
+        echo "Welcome!";
     }
 
     // line 19
-    public function block_content_header_more($context, array $blocks = array())
+    public function block_navigation($context, array $blocks = array())
     {
-        // line 20
-        echo "                <li><a href=\"#\">Demo Home</a></li>
-            ";
     }
 
-    // line 29
+    // line 22
     public function block_content($context, array $blocks = array())
     {
+        // line 23
+        echo "        ";
+    }
+
+    // line 35
+    public function block_additionaljs($context, array $blocks = array())
+    {
+        // line 36
+        echo "    ";
     }
 
     public function getTemplateName()
@@ -144,6 +147,6 @@ class __TwigTemplate_702167b58bac682342298b292ad061026d4cdf8c55036af94fc4fda2264
 
     public function getDebugInfo()
     {
-        return array (  131 => 29,  126 => 20,  123 => 19,  116 => 22,  114 => 19,  111 => 18,  108 => 17,  100 => 35,  96 => 33,  94 => 32,  90 => 30,  88 => 29,  82 => 28,  78 => 26,  76 => 17,  73 => 16,  64 => 13,  61 => 12,  56 => 11,  53 => 10,  47 => 8,  41 => 5,  36 => 4,  33 => 3,  31 => 4,  28 => 3,);
+        return array (  135 => 36,  132 => 35,  128 => 23,  125 => 22,  120 => 19,  114 => 5,  109 => 37,  107 => 35,  104 => 34,  84 => 32,  76 => 24,  74 => 22,  68 => 19,  42 => 13,  33 => 6,  23 => 1,  80 => 26,  75 => 24,  70 => 20,  62 => 15,  59 => 16,  53 => 14,  51 => 13,  45 => 10,  41 => 9,  38 => 8,  35 => 7,  29 => 5,);
     }
 }
