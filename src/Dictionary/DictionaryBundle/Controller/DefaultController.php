@@ -32,7 +32,7 @@ class DefaultController extends Controller
 
 		$histories = $historyRepository->getLatestSearched($user);
 
-		$englishIds = [];
+		$englishIds = array();
 		foreach($histories as $history) {
 			$englishIds[] = $history->getWord()->getId();
 			$resultSet[$history->getWord()->getName()] = array();

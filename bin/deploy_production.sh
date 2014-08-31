@@ -9,7 +9,7 @@ fi
 USER="$1"
 
 git pull origin master
-git checkout $BRANCH
+git checkout master
 
 app/console cache:clear --env prod
 app/console assetic:dump --env prod
@@ -45,4 +45,4 @@ rm -Rf /tmp/js
 rm -Rf /tmp/css
 
 service php5-fpm restart
-sudo service nginx restart
+service nginx restart
