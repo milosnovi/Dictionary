@@ -86,10 +86,10 @@ class TranslateManager
 			$historyRepository = $this->em->getRepository('DictionaryBundle:History');
 			/** @var  $historyLog History*/
 			$historyLog = $historyRepository->findOneBy(
-				[
+				array(
 					'word' => $english,
 					'user' => $user
-				]
+				)
 			);
 
 			if ($historyLog) {

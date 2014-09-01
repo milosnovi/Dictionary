@@ -1,5 +1,9 @@
 {% extends 'DictionaryBundle::layout.html.twig' %}
 
+{% block navigation %}
+    {{ include('DictionaryBundle::navigation.html.twig',{ 'user': app.user } ) }}
+{% endblock navigation %}
+
 {% block content %}
     {% for flashMessage in app.session.flashbag.get('notice') %}
         <div class="flash-message">
