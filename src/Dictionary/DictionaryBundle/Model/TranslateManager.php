@@ -5,6 +5,7 @@ namespace Dictionary\DictionaryBundle\Model;
 
 use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Entity\historyRepository;
+use Dictionary\DictionaryBundle\Entity\Synonyms;
 use Dictionary\DictionaryBundle\Entity\WordRepository;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DomCrawler\Crawler;
@@ -25,7 +26,65 @@ class TranslateManager
 
 	}
 
-	public function translate($word, $user) {
+	public function translate($word, $user = null) {
+		/** @var $wordRepository WordRepository */
+		$wordRepository = $this->em->getRepository('DictionaryBundle:Word');
+		$english = $wordRepository->findOneBy(array(
+			'name' => $word,
+			'type' => Word::WORD_ENGLISH
+		));
+
+		/** @var $eng2srbRepository Eng2srbRepository */
+		$eng2srbRepository = $this->em->getRepository('DictionaryBundle:Eng2srb');
+		$results = $eng2srbRepository->createQueryBuilder('eng2srb')
+			->select('eng2srb.id as eng2srb_id, eng2srb.relevance, english.id as eng_id, english.name, serbian.name as translation')
+			->innerJoin('eng2srb.eng', 'english')
+			->innerJoin('eng2srb.srb', 'serbian')
+			->where('english = :english')
+			->andWhere('english.type = :englishType')
+			->andWhere('serbian.type = :serbianType')
+			->setParameters(array(
+				'english' 		=> $english,
+				'englishType'	=> Word::WORD_ENGLISH,
+				'serbianType'	=> Word::WORD_SERBIAN,
+			))
+			->orderBy('eng2srb.relevance', 'DESC')
+			->getQuery()
+			->getResult();
+
+		if($results) {
+			/** @var $historyRepository HistoryRepository */
+			$historyRepository = $this->em->getRepository('DictionaryBundle:History');
+			/** @var  $historyLog History */
+			$historyLog = $historyRepository->findOneBy(
+				array(
+					'word' => $english,
+					'user' => $user
+				)
+			);
+
+			if ($historyLog) {
+				$historyLog->setLastSearch(new \DateTime());
+				$hits = (int)$historyLog->getHits() + 1;
+				$historyLog->setHits($hits);
+				$this->em->flush();
+			} else {
+				/** @var $history History */
+				$historyLog = new History();
+				$historyLog->setWord($english);
+				$historyLog->setUser($user);
+				$historyLog->setHits(1);
+				$historyLog->setLastSearch(new \DateTime());
+				$historyLog->setCreated(new \DateTime());
+				$historyLog->setUpdated(new \DateTime());
+			}
+			$this->em->persist($historyLog);
+			$this->em->flush();
+		}
+		return $results;
+	}
+
+	public function translateFromService($word, $user = null) {
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 			CURLOPT_RETURNTRANSFER => 1,
@@ -52,6 +111,16 @@ class TranslateManager
 			return trim($explodeTranslate[1]);
 		});
 
+		$englishSynonyms = $crawler->filter('#eng2srp p')->each(function (Crawler $node, $i) {
+			$sentence = $node->text();
+			$synonyms = trim($sentence, "Sinonimi");
+			$synonyms = explode(',', $synonyms);
+			foreach($synonyms as &$synonym) {
+				$synonym = trim($synonym);
+			}
+			return $synonyms;
+		});
+
 		$englishTranslationResults = $crawler->filter('#srp2eng li')->each(function (Crawler $node, $i) {
 			$sentence = $node->text();
 			$explodeTranslate = explode('-', $sentence);
@@ -67,13 +136,13 @@ class TranslateManager
 			$wordRepository = $this->em->getRepository('DictionaryBundle:Word');
 			$english = $wordRepository->findOneBy(array(
 				'name' => $word,
-				'type' => Word::WORD_TYPE_ENGLISH
+				'type' => Word::WORD_ENGLISH
 			));
 			if(!$english) {
 				/** @var  $english Word */
 				$english = new Word();
 				$english->setName($word);
-				$english->settype(Word::WORD_TYPE_ENGLISH);
+				$english->settype(Word::WORD_ENGLISH);
 				$english->setCreated(new \DateTime());
 				$english->setUpdated(new \DateTime());
 				$this->em->persist($english);
@@ -82,33 +151,35 @@ class TranslateManager
 
 			$this->translateEnglish2Serbian($english, $serbianTranslationResults);
 
-			/** @var $historyRepository HistoryRepository */
-			$historyRepository = $this->em->getRepository('DictionaryBundle:History');
-			/** @var  $historyLog History*/
-			$historyLog = $historyRepository->findOneBy(
-				array(
-					'word' => $english,
-					'user' => $user
-				)
-			);
+			if ($user) {
+				/** @var $historyRepository HistoryRepository */
+				$historyRepository = $this->em->getRepository('DictionaryBundle:History');
+				/** @var  $historyLog History */
+				$historyLog = $historyRepository->findOneBy(
+					array(
+						'word' => $english,
+						'user' => $user
+					)
+				);
 
-			if ($historyLog) {
-				$historyLog->setLastSearch(new \DateTime());
-				$hits = (int)$historyLog->getHits() + 1;
-				$historyLog->setHits($hits);
+				if ($historyLog) {
+					$historyLog->setLastSearch(new \DateTime());
+					$hits = (int)$historyLog->getHits() + 1;
+					$historyLog->setHits($hits);
+					$this->em->flush();
+				} else {
+					/** @var $history History */
+					$historyLog = new History();
+					$historyLog->setWord($english);
+					$historyLog->setUser($user);
+					$historyLog->setHits(1);
+					$historyLog->setLastSearch(new \DateTime());
+					$historyLog->setCreated(new \DateTime());
+					$historyLog->setUpdated(new \DateTime());
+				}
+				$this->em->persist($historyLog);
 				$this->em->flush();
-			} else {
-				/** @var $history History */
-				$historyLog = new History();
-				$historyLog->setWord($english);
-				$historyLog->setUser($user);
-				$historyLog->setHits(1);
-				$historyLog->setLastSearch(new \DateTime());
-				$historyLog->setCreated(new \DateTime());
-				$historyLog->setUpdated(new \DateTime());
 			}
-			$this->em->persist($historyLog);
-			$this->em->flush();
 
 		}
 
@@ -117,13 +188,13 @@ class TranslateManager
 			$wordRepository = $this->em->getRepository('DictionaryBundle:Word');
 			$serbian = $wordRepository->findOneBy(array(
 				'name' => $word,
-				'type' => Word::WORD_TYPE_SERBIAN
+				'type' => Word::WORD_SERBIAN
 			));
 			if(!$serbian) {
 				/** @var  $english Word */
 				$serbian = new Word();
 				$serbian->setName($word);
-				$serbian->settype(Word::WORD_TYPE_SERBIAN);
+				$serbian->settype(Word::WORD_SERBIAN);
 				$serbian->setCreated(new \DateTime());
 				$serbian->setUpdated(new \DateTime());
 				$this->em->persist($serbian);
@@ -132,16 +203,41 @@ class TranslateManager
 			$this->translateSerbian2English($serbian, $englishTranslationResults);
 		}
 
+		if($englishSynonyms) {
+			$this->updateSynonyms($englishSynonyms[0], $english);
+		}
+
 		return true;
 	}
 
+	public function updateSynonyms($englishSynonyms, $english) {
+		foreach($englishSynonyms as $word) {
+			/** @var  $synonym Word */
+			$synonym = new Word();
+			$synonym->setName($word);
+			$synonym->settype(Word::WORD_ENGLISH);
+			$synonym->setCreated(new \DateTime());
+			$synonym->setUpdated(new \DateTime());
+			$this->em->persist($synonym);
+
+			/** @var  $synonym Synonyms*/
+			$synonymEntity = new Synonyms();
+			$synonymEntity->setWord($english);
+			$synonymEntity->setSynonym($synonym);
+			$synonymEntity->setCreated(new \DateTime());
+			$synonymEntity->setUpdated(new \DateTime());
+			$this->em->persist($synonymEntity);
+
+			$this->em->flush();
+		}
+	}
 
 	public function translateEnglish2Serbian($english, $serbianTranslationResults) {
 		/** @var $wordRepository WordRepository */
 		$wordRepository = $this->em->getRepository('DictionaryBundle:Word');
 		$serbians = $wordRepository->findBy(array(
 			'name' => $serbianTranslationResults,
-			'type' => Word::WORD_TYPE_SERBIAN
+			'type' => Word::WORD_SERBIAN
 		));
 		$matchedWords = array();
 		/**
@@ -167,8 +263,8 @@ class TranslateManager
 					->setParameters(array(
 						'english' 		=> $english,
 						'serbian' 		=> $matchedWords[$serbianWord],
-						'englishType'	=> Word::WORD_TYPE_ENGLISH,
-						'serbianType'	=> Word::WORD_TYPE_SERBIAN,
+						'englishType'	=> Word::WORD_ENGLISH,
+						'serbianType'	=> Word::WORD_SERBIAN,
 					))
 					->getQuery()
 					->getResult();
@@ -187,7 +283,7 @@ class TranslateManager
 				/** @var $serbianEntity Word */
 				$serbianEntity = new Word();
 				$serbianEntity->setName($serbianWord);
-				$serbianEntity->settype(Word::WORD_TYPE_SERBIAN);
+				$serbianEntity->settype(Word::WORD_SERBIAN);
 				$serbianEntity->setCreated(new \DateTime());
 				$serbianEntity->setUpdated(new \DateTime());
 				$this->em->persist($serbianEntity);
@@ -210,7 +306,7 @@ class TranslateManager
 		$wordRepository = $this->em->getRepository('DictionaryBundle:Word');
 		$englishWords = $wordRepository->findBy(array(
 			'name' => $englishTranslationResults,
-			'type' => Word::WORD_TYPE_ENGLISH
+			'type' => Word::WORD_ENGLISH
 		));
 		$matchedWords = array();
 		/**
@@ -236,8 +332,8 @@ class TranslateManager
 					->setParameters(array(
 						'english' 		=> $matchedWords[$englishWords],
 						'serbian' 		=> $serbian,
-						'englishType'	=> Word::WORD_TYPE_ENGLISH,
-						'serbianType'	=> Word::WORD_TYPE_SERBIAN,
+						'englishType'	=> Word::WORD_ENGLISH,
+						'serbianType'	=> Word::WORD_SERBIAN,
 					))
 					->getQuery()
 					->getResult();
@@ -256,7 +352,7 @@ class TranslateManager
 				/** @var $englishEntity Word */
 				$englishEntity = new Word();
 				$englishEntity->setName($englishWords);
-				$englishEntity->settype(Word::WORD_TYPE_ENGLISH);
+				$englishEntity->settype(Word::WORD_ENGLISH);
 				$englishEntity->setCreated(new \DateTime());
 				$englishEntity->setUpdated(new \DateTime());
 				$this->em->persist($englishEntity);

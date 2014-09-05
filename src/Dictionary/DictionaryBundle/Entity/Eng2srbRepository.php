@@ -23,8 +23,8 @@ class Eng2srbRepository extends EntityRepository
 			->andWhere('serbian.type = :serbianType')
 			->setParameters(array(
 				'ids' 			=> $englishIds,
-				'englishType'	=> Word::WORD_TYPE_ENGLISH,
-				'serbianType'	=> Word::WORD_TYPE_SERBIAN,
+				'englishType'	=> Word::WORD_ENGLISH,
+				'serbianType'	=> Word::WORD_SERBIAN,
 			))
 			->getQuery()
 			->getResult();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Bundle\DoctrineBundle\Entity;
+namespace Dictionary\DictionaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Piles
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="Doctrine\Bundle\DoctrineBundle\Entity\PilesRepository")
+ * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\PilesRepository")
  */
 class Piles
 {
@@ -27,6 +27,20 @@ class Piles
      * @ORM\Column(name="type", type="integer")
      */
     private $type;
+
+    /**
+     * @var Word
+	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="piles")
+	 * @ORM\JoinColumn(name="word_id", referencedColumnName="id")
+     */
+    private $word;
+
+    /**
+     * @var User
+	 * @ORM\ManyToOne(targetEntity="User")
+	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $user;
 
     /**
      * @var \DateTime
@@ -120,5 +134,51 @@ class Piles
     public function getUpdated()
     {
         return $this->updated;
+    }
+
+    /**
+     * Set word
+     *
+     * @param Word $word
+     * @return Piles
+     */
+    public function setWord(Word $word = null)
+    {
+        $this->word = $word;
+
+        return $this;
+    }
+
+    /**
+     * Get word
+     *
+     * @return Word
+     */
+    public function getWord()
+    {
+        return $this->word;
+    }
+
+    /**
+     * Set user
+     *
+     * @param User $user
+     * @return Piles
+     */
+    public function setUser(User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

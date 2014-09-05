@@ -38,6 +38,12 @@ class Eng2srb
     private $srb;
 
     /**
+     * @var integer
+	 * @ORM\Column(name="relevance", type="integer")
+     */
+    private $relevance = '1';
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created", type="datetime")
@@ -152,5 +158,28 @@ class Eng2srb
     public function getUpdated()
     {
         return $this->updated;
+    }
+
+    /**
+     * Set relevance
+     *
+     * @param integer $relevance
+     * @return Eng2srb
+     */
+    public function setRelevance($relevance)
+    {
+        $this->relevance = $relevance;
+
+        return $this;
+    }
+
+    /**
+     * Get relevance
+     *
+     * @return integer 
+     */
+    public function getRelevance()
+    {
+        return $this->relevance;
     }
 }

@@ -76,9 +76,13 @@ class DefaultController extends Controller
 		}
 
 		$user = $this->getUser();
+
 		/** @var  $translationManager TranslateManager */
 		$translationManager = $this->get('dictionary.translateManager');
 		$success = $translationManager->translate($word, $user);
+		if(!$success) {
+			$success = $translationManager->translateFromService($word, $user);
+		}
 
 		if (!$success) {
 			$this->get('session')->getFlashBag()->add(

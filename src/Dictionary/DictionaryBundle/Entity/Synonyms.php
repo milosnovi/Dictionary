@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Bundle\DoctrineBundle\Entity;
+namespace Dictionary\DictionaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Synonyms
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="Doctrine\Bundle\DoctrineBundle\Entity\SynonymsRepository")
+ * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\SynonymsRepository")
  */
 class Synonyms
 {
@@ -20,6 +20,22 @@ class Synonyms
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * @var Word
+     *
+	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="synonyms")
+	 * @ORM\JoinColumn(name="word_id", referencedColumnName="id")
+	 */
+    private $word;
+
+    /**
+     * @var Word
+     *
+	 * @ORM\ManyToOne(targetEntity="Word")
+	 * @ORM\JoinColumn(name="synonym_id", referencedColumnName="id")
+	 */
+    private $synonym;
 
     /**
      * @var \DateTime
@@ -90,5 +106,51 @@ class Synonyms
     public function getUpdated()
     {
         return $this->updated;
+    }
+
+    /**
+     * Set word
+     *
+     * @param Word $word
+     * @return Synonyms
+     */
+    public function setWord(Word $word = null)
+    {
+        $this->word = $word;
+
+        return $this;
+    }
+
+    /**
+     * Get word
+     *
+     * @return Word
+     */
+    public function getWord()
+    {
+        return $this->word;
+    }
+
+    /**
+     * Set synonym
+     *
+     * @param \Dictionary\DictionaryBundle\Entity\Word $synonym
+     * @return Synonyms
+     */
+    public function setSynonym(\Dictionary\DictionaryBundle\Entity\Word $synonym = null)
+    {
+        $this->synonym = $synonym;
+
+        return $this;
+    }
+
+    /**
+     * Get synonym
+     *
+     * @return \Dictionary\DictionaryBundle\Entity\Word 
+     */
+    public function getSynonym()
+    {
+        return $this->synonym;
     }
 }

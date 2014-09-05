@@ -15,9 +15,13 @@ use Doctrine\ORM\Mapping\Index;
 class Word
 {
 
-	const WORD_TYPE_ENGLISH = 1;
+	const WORD_ENGLISH 		= 1;
+	const WORD_SERBIAN 		= 2;
 
-	const WORD_TYPE_SERBIAN = 2;
+	const WORD_TYPE_NOUN 	= 1;
+	const WORD_TYPE_ADJ 	= 2;
+	const WORD_TYPE_ADV 	= 4;
+	const WORD_TYPE_VERB 	= 8;
 
     /**
      * @var integer
@@ -36,11 +40,18 @@ class Word
     private $name;
 
     /**
-     * @var string
+     * @var integer
      *
      * @ORM\Column(name="type", type="integer")
      */
     private $type;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="word_type", type="integer", nullable=true)
+     */
+    private $wordType;
 
     /**
      * @var \DateTime
@@ -56,6 +67,12 @@ class Word
      */
     private $updated;
 
+	/**
+	 * @ORM\OneToMany(targetEntity="Piles", mappedBy="word")
+	 *
+	 * @var ArrayCollection $engTranslate
+	 */
+	private $piles;
 
 	/**
 	 * @ORM\OneToMany(targetEntity="Eng2srb", mappedBy="eng")
@@ -260,4 +277,93 @@ class Word
 	{
 		return $this->engTranslate;
 	}
+
+    /**
+     * Set wordType
+     *
+     * @param integer $wordType
+     * @return Word
+     */
+    public function setWordType($wordType)
+    {
+        $this->wordType = $wordType;
+
+        return $this;
+    }
+
+    /**
+     * Get wordType
+     *
+     * @return integer 
+     */
+    public function getWordType()
+    {
+        return $this->wordType;
+    }
+
+    /**
+     * Add srbTranslate
+     *
+     * @param \Dictionary\DictionaryBundle\Entity\Eng2srb $srbTranslate
+     * @return Word
+     */
+    public function addSrbTranslate(\Dictionary\DictionaryBundle\Entity\Eng2srb $srbTranslate)
+    {
+        $this->srbTranslate[] = $srbTranslate;
+
+        return $this;
+    }
+
+    /**
+     * Remove srbTranslate
+     *
+     * @param \Dictionary\DictionaryBundle\Entity\Eng2srb $srbTranslate
+     */
+    public function removeSrbTranslate(\Dictionary\DictionaryBundle\Entity\Eng2srb $srbTranslate)
+    {
+        $this->srbTranslate->removeElement($srbTranslate);
+    }
+
+    /**
+     * Get srbTranslate
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getSrbTranslate()
+    {
+        return $this->srbTranslate;
+    }
+
+    /**
+     * Add piles
+     *
+     * @param \Dictionary\DictionaryBundle\Entity\Piles $piles
+     * @return Word
+     */
+    public function addPile(\Dictionary\DictionaryBundle\Entity\Piles $piles)
+    {
+        $this->piles[] = $piles;
+
+        return $this;
+    }
+
+    /**
+     * Remove piles
+     *
+     * @param \Dictionary\DictionaryBundle\Entity\Piles $piles
+     */
+    public function removePile(\Dictionary\DictionaryBundle\Entity\Piles $piles)
+    {
+        $this->piles->removeElement($piles);
+    }
+
+    /**
+     * Get piles
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPiles()
+    {
+        return $this->piles;
+    }
 }

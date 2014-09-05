@@ -26,6 +26,11 @@ security:
                 provider: fos_userbundle
                 csrf_provider: form.csrf_provider
                 default_target_path: /
+            remember_me:
+                key:      "secret_key"
+                lifetime: 31536000
+                path:     /
+                domain:   ~
             logout:
                 path:   fos_user_security_logout
                 target: fos_user_security_login
