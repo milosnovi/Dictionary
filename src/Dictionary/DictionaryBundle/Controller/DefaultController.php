@@ -37,10 +37,8 @@ class DefaultController extends Controller
 			$englishIds[] = $history->getWord()->getId();
 			$resultSet[$history->getWord()->getName()] = array();
 		}
-
 		$historyByHits = $historyRepository->getSearchedByHits($user);
 
-		$englishIds = array();
 		foreach($historyByHits as $hit) {
 			$englishIds[] = $hit->getWord()->getId();
 			$resultHits[$hit->getWord()->getName()] = array(
@@ -48,7 +46,6 @@ class DefaultController extends Controller
 				'translation' => array()
 			);
 		}
-
 		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
 		$results = $eng2srbRepository->getEnglishTranslations($englishIds);
 
@@ -57,7 +54,6 @@ class DefaultController extends Controller
 			$resultSet[$result->getEng()->getName()][] = $result->getSrb()->getName();
 			$resultHits[$result->getEng()->getName()]['translation'][] = $result->getSrb()->getName();
 		}
-
         return array(
 			'histories' 	=> $resultSet,
 			'historyHits' 	=> $resultHits
