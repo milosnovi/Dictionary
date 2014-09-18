@@ -30,7 +30,9 @@ git fetch
 git pull origin master
 git reset --hard origin/master
 
+
 sudo su
+tar -zxvf vendor.tar.gz
 service php5-fpm stop
 cp /tmp/js/* web/js/
 cp /tmp/css/* web/css/
