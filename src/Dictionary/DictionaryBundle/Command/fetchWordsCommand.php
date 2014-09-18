@@ -48,24 +48,38 @@ class fetchWordsCommand extends ContainerAwareCommand
 
 		$limit = $offset + 150;
 		$j = 0;
+		$wordsFromMetak = 0;
+		$wordsFromDb = 0;
 		for($i = $offset; $i < $limit; $i ++) {
 			$j++;
 			$chars = array(',', '.', ':', ' ', ';', '(', ')', '"');
 			$word = str_replace($chars, '', $words[$i]);
 			$word = trim($word);
 			$word = preg_replace('/[\s]+/', ' ', $word);
-			if (!preg_match('/[0-9]+/', $word) && strlen($word) > 2) {
-				var_dump($word);
+			if (!preg_match('/[0-9]+/', $word) && strlen($word) < 3){
+				$output->writeln("<error>word is not valid:[ $word]</error>");
+				continue;
 			}
+			$output->writeln("<comment>[WORD]:" . $words[$i] . "</comment>");
+
 			$success = $translationManager->translate($word);
 			if(!$success) {
-				$success = $translationManager->translateFromService($words[$i]);
-				$output->writeln("[word from metak]:" . $words[$i]);
+				$wordsFromMetak++;
+				$success = $translationManager->translateFromService(strtolower($words[$i]));
+				if($success) {
+					$output->writeln("<info>METAK</info>");
+				} else {
+					$output->writeln("METAK do not know for this word");
+				}
 			} else {
-				$output->writeln("[word from db]:" . $words[$i]);
+				$wordsFromDb++;
+				$output->writeln("DB");
 			}
-			$output->writeln(round( $j/ 150 * 100 ) . "% percent are processed");
+			if($i % 10 == 0) {
+				$output->writeln("<info>===================" . round($j / 150 * 100) . "% percent are processed=================</info>");
+			}
 		}
-
+		$output->writeln("[words from metak]:" . $wordsFromMetak);
+		$output->writeln("[words from DATABASE]:" . $wordsFromDb);
 	}
 }

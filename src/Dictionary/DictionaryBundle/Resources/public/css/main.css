@@ -100,3 +100,11 @@ a.registerLink:hover{
 .width190px{
     width: 190px;
 }
+
+.word_history{
+    padding-bottom: 5px;
+}
+
+span.history_key {
+    font-weight: bold;
+}

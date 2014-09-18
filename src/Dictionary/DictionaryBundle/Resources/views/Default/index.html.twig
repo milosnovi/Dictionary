@@ -11,29 +11,48 @@
         </div>
     {% endfor %}
 
-    <form method="post" action="{{ path('_translate') }}" >
-        <div class="form-row">
-            <input name="q" id="search-id" type="search" placeholder="Translate" />
+    <div class="row">
+        <div class="col-md-3">
+            <form style="padding: 5px;" method="post" action="{{ path('_translate') }}" >
+                <div class="form-row">
+                    <input style="width: 240px;height: 58px;font-size: 33px;"name="q" id="search-id" type="search" placeholder={% if latestWord %}{{ latestWord }}{% else %}"Translate"{% endif %} />
 
-            <button type="submit" class="sf-button">
-                <span class="border-l">
-                    <span class="border-r">
-                        <span class="btn-bg">OK</span>
-                    </span>
-                </span>
-            </button>
+                    <button type="submit" class="sf-button">
+                        <span class="border-l">
+                            <span class="border-r">
+                                <span class="btn-bg">OK</span>
+                            </span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+
+            <div id="latestResult" style="font-size: 20px">
+                <ul>
+                {% for translations in latestSearch %}
+                    <li>{{ translations }}</lis>
+                {% endfor %}
+                </ul>
+            </div>
         </div>
-    </form>
 
-    {% for key, history in histories %}
-        {{ key }}: {{ history| join(', ') | slice(0, 110) }}<br/>
-    {% endfor %}
+        <div class="col-md-4">
+            <h1>HISTORY</h1>
+            {% for key, history in histories %}
+                <div class="word_history">
+                    <span class="history_key">{{ key }}</span>: {{ history| join(', ') }}<br/>
+                </div>
+            {% endfor %}
+        </div>
 
-    <br>
-    <br>
-    <h1>MOST OFTEN</h1>
-    {% for key, hit in historyHits %}
-        {{ key }}: {{ hit.translation| join(', ') | slice(0, 110) }}<br/>
-    {% endfor %}
+        <div class="col-md-4">
+            <h1>MOST OFTEN</h1>
+            {% for key, hit in historyHits %}
+                <div class="word_history">
+                    <span class="history_key">{{ key }}</span>: {{ hit.translation| join(', ')}}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
 {% endblock %}
