@@ -22,6 +22,7 @@ class fetchWordsCommand extends ContainerAwareCommand
 		$this
 			->setName('fetch:word')
 			->addArgument('url', InputArgument::REQUIRED, '')
+			->addArgument('offset', InputArgument::REQUIRED, '')
 		;
 	}
 
@@ -34,6 +35,7 @@ class fetchWordsCommand extends ContainerAwareCommand
 	{
 
 		$url = $input->getArgument('url');
+		$offset = $input->getArgument('offset');
 		$html = file_get_contents($url);
 
 		$crawler = new Crawler($html);
@@ -43,11 +45,11 @@ class fetchWordsCommand extends ContainerAwareCommand
 		$words = explode(' ', $content);
 
 		$translationManager = $this->getContainer()->get('dictionary.translateManager');
-		var_dump(count($words));
-		for($i = 0; $i < count($words); $i ++) {
-			if ($i == 4) {
-				exit;
-			}
+
+		$limit = $offset + 150;
+		$j = 0;
+		for($i = $offset; $i < $limit; $i ++) {
+			$j++;
 			$chars = array(',', '.', ':', ' ', ';', '(', ')', '"');
 			$word = str_replace($chars, '', $words[$i]);
 			$word = trim($word);
@@ -58,7 +60,11 @@ class fetchWordsCommand extends ContainerAwareCommand
 			$success = $translationManager->translate($word);
 			if(!$success) {
 				$success = $translationManager->translateFromService($words[$i]);
+				$output->writeln("[word from metak]:" . $words[$i]);
+			} else {
+				$output->writeln("[word from db]:" . $words[$i]);
 			}
+			$output->writeln(round( $j/ 150 * 100 ) . "% percent are processed");
 		}
 
 	}
