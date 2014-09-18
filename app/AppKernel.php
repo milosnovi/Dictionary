@@ -16,11 +16,23 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new Dictionary\DictionaryBundle\DictionaryBundle(),
 			new FOS\UserBundle\FOSUserBundle(),
-            new Dictionary\UserBundle\UserBundle(),
 			new Braincrafted\Bundle\BootstrapBundle\BraincraftedBootstrapBundle(),
+
+
+			new Sonata\CoreBundle\SonataCoreBundle(),
+			new Sonata\BlockBundle\SonataBlockBundle(),
+//			new Sonata\jQueryBundle\SonatajQueryBundle(),
+			new Knp\Bundle\MenuBundle\KnpMenuBundle(),
+			new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
+
+			// Then add SonataAdminBundle
+			new Sonata\AdminBundle\SonataAdminBundle(),
+
 			new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+			new Dictionary\DictionaryBundle\DictionaryBundle(),
+			new Dictionary\AdminBundle\DictionaryAdminBundle(),
+			new Dictionary\UserBundle\UserBundle(),
 		);
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

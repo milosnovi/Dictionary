@@ -52,7 +52,7 @@ class TranslateManager
 			->getQuery()
 			->getResult();
 
-		if($results) {
+		if($results && $user) {
 			/** @var $historyRepository HistoryRepository */
 			$historyRepository = $this->em->getRepository('DictionaryBundle:History');
 			/** @var  $historyLog History */

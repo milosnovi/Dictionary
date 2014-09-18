@@ -45,15 +45,20 @@ class fetchWordsCommand extends ContainerAwareCommand
 		$translationManager = $this->getContainer()->get('dictionary.translateManager');
 		var_dump(count($words));
 		for($i = 0; $i < count($words); $i ++) {
-			if ($i == 2000) {
+			if ($i == 4) {
 				exit;
 			}
-			$chars = array(',', '.', ':', ' ', ';');
+			$chars = array(',', '.', ':', ' ', ';', '(', ')', '"');
 			$word = str_replace($chars, '', $words[$i]);
 			$word = trim($word);
 			$word = preg_replace('/[\s]+/', ' ', $word);
-			var_dump($word);
-//			$success = $translationManager->translate($words[$i]);
+			if (!preg_match('/[0-9]+/', $word) && strlen($word) > 2) {
+				var_dump($word);
+			}
+			$success = $translationManager->translate($word);
+			if(!$success) {
+				$success = $translationManager->translateFromService($words[$i]);
+			}
 		}
 
 	}
