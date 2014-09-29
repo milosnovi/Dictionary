@@ -19,12 +19,14 @@ class Eng2srbRepository extends EntityRepository
 			->innerJoin('eng2srb.eng', 'english')
 			->innerJoin('eng2srb.srb', 'serbian')
 			->where('english.id IN (:ids)')
+			->andwhere('eng2srb.direction  = :direction')
 			->andWhere('english.type = :englishType')
 			->andWhere('serbian.type = :serbianType')
 			->setParameters(array(
 				'ids' 			=> $englishIds,
 				'englishType'	=> Word::WORD_ENGLISH,
 				'serbianType'	=> Word::WORD_SERBIAN,
+				'direction'		=> Eng2srb::ENG_2_SRB
 			))
 			->getQuery()
 			->getResult();

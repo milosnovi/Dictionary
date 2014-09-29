@@ -13,7 +13,7 @@
 
     <div class="row">
         <div class="col-md-3">
-            <form style="padding: 5px;" method="post" action="{{ path('_translate') }}" >
+            <form style="padding: 5px;" method="post" action="{{ path('_translate1') }}" >
                 <div class="form-row">
                     <input style="width: 240px;height: 58px;font-size: 33px;"name="q" id="search-id" type="search" placeholder={% if latestWord %}{{ latestWord }}{% else %}"Translate"{% endif %} />
 
@@ -29,8 +29,13 @@
 
             <div id="latestResult" style="font-size: 20px">
                 <ul>
-                {% for translations in latestSearch %}
-                    <li>{{ translations }}</lis>
+                {% for key, translations in latestSearch.translations %}
+                    <span class="history_key">{{ key }}</span><br/>
+                    {% for word in translations %}
+                        <ul>
+                            <li>{{ word }}</li>
+                        </ul>
+                    {%  endfor %}
                 {% endfor %}
                 </ul>
             </div>
@@ -40,7 +45,13 @@
             <h1>HISTORY</h1>
             {% for key, history in histories %}
                 <div class="word_history">
-                    <span class="history_key">{{ key }}</span>: {{ history| join(', ') }}<br/>
+                    <span class="history_key">{{ key }}</span><br/>
+                    {% for type, historyEntry in history.translations %}
+                        <div class="wordByType">
+                            <span class="wordType">{{ type }}:</span>
+                            {{ historyEntry | join(', ')}}
+                        </div>
+                    {%  endfor %}
                 </div>
             {% endfor %}
         </div>
@@ -49,7 +60,13 @@
             <h1>MOST OFTEN</h1>
             {% for key, hit in historyHits %}
                 <div class="word_history">
-                    <span class="history_key">{{ key }}</span>: {{ hit.translation| join(', ')}}
+                    <span class="history_key">{{ key }}</span><br/>
+                    {% for type, hitEntry in hit.translations %}
+                        <div class="wordByType">
+                            <span class="wordType">{{ type }}:</span>
+                            {{ hitEntry | join(', ')}}
+                        </div>
+                    {%  endfor %}
                 </div>
             {% endfor %}
         </div>

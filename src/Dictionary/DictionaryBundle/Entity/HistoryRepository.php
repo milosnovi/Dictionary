@@ -34,7 +34,7 @@ class HistoryRepository extends EntityRepository
 			->where('h.user = :user')
 			->andWhere('h.hits >= :number')
 			->setParameter('user', $user)
-			->setParameter('number', 2)
+			->setParameter('number', 1)
 			->addOrderBy('h.hits', 'DESC')
 			->addOrderBy('h.updated', 'DESC')
 			->setMaxResults(20)

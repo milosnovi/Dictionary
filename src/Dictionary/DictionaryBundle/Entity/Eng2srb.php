@@ -12,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Eng2srb
 {
+
+    const ENG_2_SRB = 1;
+
+    const SRB_2_ENG = 2;
+
     /**
      * @var integer
      *
@@ -42,6 +47,12 @@ class Eng2srb
 	 * @ORM\Column(name="relevance", type="integer")
      */
     private $relevance = '1';
+
+    /**
+     * @var integer
+	 * @ORM\Column(name="direction", type="integer")
+     */
+    private $direction;
 
     /**
      * @var \DateTime
@@ -181,5 +192,28 @@ class Eng2srb
     public function getRelevance()
     {
         return $this->relevance;
+    }
+
+    /**
+     * Set direction
+     *
+     * @param integer $direction
+     * @return Eng2srb
+     */
+    public function setDirection($direction)
+    {
+        $this->direction = $direction;
+
+        return $this;
+    }
+
+    /**
+     * Get direction
+     *
+     * @return integer 
+     */
+    public function getDirection()
+    {
+        return $this->direction;
     }
 }

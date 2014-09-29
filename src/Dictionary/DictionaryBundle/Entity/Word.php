@@ -366,4 +366,21 @@ class Word
     {
         return $this->piles;
     }
+
+    public static function wordType2String($wordType) {
+        switch ($wordType) {
+            case self::WORD_TYPE_NOUN:
+                return 'noun';
+                break;
+            case self::WORD_TYPE_ADJ:
+                return 'adjective';
+                break;
+            case self::WORD_TYPE_ADV:
+                return 'adverb';
+                break;
+            case self::WORD_TYPE_VERB:
+                return 'verb';
+                break;
+        }
+    }
 }
