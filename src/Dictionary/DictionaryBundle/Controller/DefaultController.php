@@ -27,6 +27,8 @@ class DefaultController extends Controller
 
 		$user = $this->getUser();
 
+		$word = strtolower($request->get('word'));
+
 		/** @var $historyRepository HistoryRepository */
 		$historyRepository = $em->getRepository('DictionaryBundle:History');
 
@@ -56,11 +58,14 @@ class DefaultController extends Controller
 
 		/** @var $history History*/
 		foreach($results as $result) {
-
 			/** @var  $serbianTransations Word */
 			$serbianTransations = $result->getSrb();
 
 			$index = Word::wordType2String($serbianTransations->getWordType());
+			if ($result->getEng()->getName() == $word) {
+				$latestSearch[] = $result->getSrb()->getName();
+			}
+
 			if(!isset($historyResult[$result->getEng()->getName()]['translations'][$index])) {
 				$historyResult[$result->getEng()->getName()]['translations'][$index] = array();
 				$resultHits[$result->getEng()->getName()]['translations'][$index] = array();
@@ -68,12 +73,43 @@ class DefaultController extends Controller
 			$historyResult[$result->getEng()->getName()]['translations'][$index][] = $result->getSrb()->getName();
 			$resultHits[$result->getEng()->getName()]['translations'][$index][] = $result->getSrb()->getName();
 		}
-		$word = strtolower($request->get('word'));
+
+		$latestSearchSynonyms = array();
+		if(!empty($latestSearch)) {
+			/** @var $eng2srbRepository Eng2srbRepository */
+			$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
+			$translationSinonyms = $eng2srbRepository->createQueryBuilder('eng2srb')
+				->select('eng2srb.id as eng2srb_id, serbian.wordType, eng2srb.relevance, english.id as eng_id, english.name, serbian.name as translation')
+				->innerJoin('eng2srb.eng', 'english')
+				->innerJoin('eng2srb.srb', 'serbian')
+				->where('serbian.name IN (:serbianWords)')
+				->andWhere('eng2srb.direction = :direction')
+				->andWhere('english.type = :englishType')
+				->andWhere('serbian.type = :serbianType')
+				->setParameters(array(
+					'serbianWords' => $latestSearch,
+					'englishType' => Word::WORD_ENGLISH,
+					'serbianType' => Word::WORD_SERBIAN,
+					'direction' => Eng2srb::SRB_2_ENG
+				))
+				->orderBy('serbian.name, eng2srb.relevance', 'ASC')
+				->getQuery()
+				->getResult();
+
+			$latestSearchSynonyms = array();
+			foreach ($translationSinonyms as $synonyms) {
+				$latestSearchSynonyms[$synonyms['translation']][] = $synonyms['name'];
+			}
+		}
+
+		$latestSearch = isset($historyResult[$word]) ? $historyResult[$word] : false;
+
         return array(
-			'latestSearch'	=> isset($historyResult[$word]) ? $historyResult[$word] : false,
-			'latestWord'	=> $word,
-			'histories' 	=> $historyResult,
-			'historyHits' 	=> $resultHits
+			'latestSearch'			=> $latestSearch,
+			'latestSearchSynonyms'	=> $latestSearchSynonyms,
+			'latestWord'			=> $word,
+			'histories' 			=> $historyResult,
+			'historyHits' 			=> $resultHits
 		);
     }
 
@@ -144,7 +180,7 @@ class DefaultController extends Controller
 		));
 		$resp = curl_exec($curl);
 		$output = json_decode($resp);
-		if ($output->dict) {
+		if (!empty($output->dict)) {
 			$dictionary = $output->dict;
 			foreach ($dictionary as $dict) {
 				if ('noun' == $dict->pos) {

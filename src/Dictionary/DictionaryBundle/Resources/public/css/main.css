@@ -114,3 +114,9 @@ span.wordType {
 .wordByType {
     margin-left: 20px;
 }
+span.synonym {
+    font-size: 14px;
+}
+.synonym_placeholder {
+    margin-left: 19px;
+}
