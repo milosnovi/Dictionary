@@ -7,11 +7,7 @@ use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Entity\History;
 use Dictionary\DictionaryBundle\Entity\HistoryRepository;
 use Dictionary\DictionaryBundle\Entity\Word;
-use Dictionary\DictionaryBundle\Model\Eng2SrbManager;
-use Dictionary\DictionaryBundle\Model\GoogleTranslateProvider;
-use Dictionary\DictionaryBundle\Model\HistoryManager;
 use Dictionary\DictionaryBundle\Model\TranslateManager;
-use Dictionary\DictionaryBundle\Model\WordManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -38,7 +34,7 @@ class DefaultController extends Controller
 
 		$word = strtolower($request->get('word'));
 		if ($word) {
-			$translationManager->translate($word, $user);
+			$translationManager->translateFromGoogle($word, $user);
 		}
 
 		/** @var $historyRepository HistoryRepository */

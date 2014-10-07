@@ -61,12 +61,14 @@ class TranslateManager
 			->innerJoin('eng2srb.eng', 'english')
 			->innerJoin('eng2srb.srb', 'serbian')
 			->where('english = :english')
+			->andwhere('eng2srb.direction = :direction')
 			->andWhere('english.type = :englishType')
 			->andWhere('serbian.type = :serbianType')
 			->setParameters(array(
 				'english' 		=> $english,
 				'englishType'	=> Word::WORD_ENGLISH,
 				'serbianType'	=> Word::WORD_SERBIAN,
+				'direction'		=> Eng2srb::ENG_2_SRB
 			))
 			->orderBy('serbian.wordType, eng2srb.relevance', 'ASC')
 			->getQuery()
