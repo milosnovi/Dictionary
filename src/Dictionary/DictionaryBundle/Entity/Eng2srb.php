@@ -30,8 +30,8 @@ class Eng2srb
     /**
      * @var English
      *
-	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="engTranslate")
-	 * @ORM\JoinColumn(name="eng_id", referencedColumnName="id")
+	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="engTranslate" )
+	 * @ORM\JoinColumn(name="eng_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $eng;
 
@@ -39,7 +39,7 @@ class Eng2srb
      * @var Serbian
      *
 	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="srbTranslate")
-	 * @ORM\JoinColumn(name="srb_id", referencedColumnName="id")
+	 * @ORM\JoinColumn(name="srb_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $srb;
 

@@ -6,16 +6,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class PilesController extends Controller
+class HistoryController extends Controller
 {
 	/**
 	 * @param Request $request
 	 * @return array
 	 *
-	 * @Route("/pile", name="move_2_piles")
+	 * @Route("/history/clear", name="clear_history")
 	 * @Template()
 	 */
-    public function move2pilesAction(Request $request)
+    public function clearHistoryAction(Request $request)
     {
 
     }

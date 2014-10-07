@@ -4,6 +4,7 @@ namespace Dictionary\DictionaryBundle\Model;
 
 
 use Dictionary\DictionaryBundle\Entity\History;
+use Dictionary\DictionaryBundle\Entity\Word;
 
 class HistoryManager
 {
@@ -18,11 +19,18 @@ class HistoryManager
     }
 
     public function updateHistoryLog($user, $word) {
+        $wordEntity = $this->em->getRepository('DictionaryBundle:Word')->findOneBy(
+            array(
+                'name' => $word,
+                'type' => Word::WORD_ENGLISH
+            )
+        );;
+
         $historyRepository = $this->em->getRepository('DictionaryBundle:History');
         /** @var  $historyLog History */
         $historyLog = $historyRepository->findOneBy(
             array(
-                'word' => $word,
+                'word' => $wordEntity,
                 'user' => $user
             )
         );
@@ -33,7 +41,7 @@ class HistoryManager
         } else {
             /** @var $history History */
             $historyLog = new History();
-            $historyLog->setWord($word);
+            $historyLog->setWord($wordEntity);
             $historyLog->setUser($user);
             $historyLog->setHits(1);
         }

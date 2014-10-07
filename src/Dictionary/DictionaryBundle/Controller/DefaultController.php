@@ -4,14 +4,14 @@ namespace Dictionary\DictionaryBundle\Controller;
 
 use Dictionary\DictionaryBundle\Entity\Eng2srb;
 use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
-use Dictionary\DictionaryBundle\Entity\History;
 use Dictionary\DictionaryBundle\Entity\HistoryRepository;
+use Dictionary\DictionaryBundle\Entity\User;
 use Dictionary\DictionaryBundle\Entity\Word;
 use Dictionary\DictionaryBundle\Model\TranslateManager;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
@@ -25,8 +25,10 @@ class DefaultController extends Controller
 	 */
     public function indexAction(Request $request)
     {
+		/** @var  $em EntityManager*/
 		$em = $this->getDoctrine()->getManager();
 
+		/** @var $user User */
 		$user = $this->getUser();
 
 		/** @var  $translationManager TranslateManager */
@@ -34,7 +36,13 @@ class DefaultController extends Controller
 
 		$word = strtolower($request->get('word'));
 		if ($word) {
-			$translationManager->translateFromGoogle($word, $user);
+			$success = $translationManager->translate($word);
+			if(!$success) {
+				$success = $translationManager->translateFromGoogle($word);
+			}
+			if ($success) {
+				$this->get('dictionary.historyManager')->updateHistoryLog($user, $word);
+			}
 		}
 
 		/** @var $historyRepository HistoryRepository */
@@ -67,22 +75,27 @@ class DefaultController extends Controller
 		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
 		$results = $eng2srbRepository->getEnglishTranslations($englishIds);
 
-		/** @var $history History*/
+		/** @var $result Eng2srb*/
 		foreach($results as $result) {
 			/** @var  $serbianTransations Word */
+			/** @var  $englishTransations Word */
 			$serbianTransations = $result->getSrb();
+			$englishTransations = $result->getEng();
+
+			$serbianTranslationName = $serbianTransations->getName();
+			$englishTranslationName = $englishTransations->getName();
 
 			$index = Word::wordType2String($serbianTransations->getWordType());
-			if ($result->getEng()->getName() == $word) {
-				$latestSearch[] = $result->getSrb()->getName();
+			if ($englishTranslationName == $word) {
+				$latestSearch[] = $serbianTranslationName;
 			}
 
-			if(!isset($historyResult[$result->getEng()->getName()]['translations'][$index])) {
-				$historyResult[$result->getEng()->getName()]['translations'][$index] = array();
-				$resultHits[$result->getEng()->getName()]['translations'][$index] = array();
+			if(!isset($historyResult[$englishTranslationName]['translations'][$index])) {
+				$historyResult[$englishTranslationName]['translations'][$index] = array();
+				$resultHits[$englishTranslationName]['translations'][$index] = array();
 			}
-			$historyResult[$result->getEng()->getName()]['translations'][$index][] = $result->getSrb()->getName();
-			$resultHits[$result->getEng()->getName()]['translations'][$index][] = $result->getSrb()->getName();
+			$historyResult[$englishTranslationName]['translations'][$index][] = $serbianTranslationName;
+			$resultHits[$englishTranslationName]['translations'][$index][] = $serbianTranslationName;
 		}
 
 		$latestSearchSynonyms = array();
@@ -147,10 +160,11 @@ class DefaultController extends Controller
 		}
 
 		if (!$success) {
-			$this->get('session')->getFlashBag()->add(
-				'notice',
-				'No results'
-			);
+			$this->get('session')->getFlashBag()->add('notice', 'No results');
+		} else {
+			if ($user) {
+				$this->get('dictionary.historyManager')->updateHistoryLog($user, $word);
+			}
 		}
 
 		return $this->redirect($this->generateUrl('_home'));

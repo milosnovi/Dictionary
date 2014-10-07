@@ -31,14 +31,14 @@ class Piles
     /**
      * @var Word
 	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="piles")
-	 * @ORM\JoinColumn(name="word_id", referencedColumnName="id")
+	 * @ORM\JoinColumn(name="word_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $word;
 
     /**
      * @var User
 	 * @ORM\ManyToOne(targetEntity="User")
-	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $user;
 

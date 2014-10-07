@@ -58,7 +58,11 @@
             <h1>HISTORY</h1>
             {% for key, history in histories %}
                 <div class="word_history">
-                    <span class="history_key">{{ key }}</span><br/>
+                    <span class="history_key">{{ key }}</span>
+                        {#<a href="#">know</a>#}
+                        {#<a href="#">almost sure</a>#}
+                        {#<a href="#">don't know</a>#}
+                    <br/>
                     {% for type, historyEntry in history.translations %}
                         <div class="wordByType">
                             <span class="wordType">{{ type }}:</span>

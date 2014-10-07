@@ -46,7 +46,7 @@ class TranslateManager
 
 	}
 
-	public function translate($word, $user = null) {
+	public function translate($word) {
 		/** @var $wordRepository WordRepository */
 		$wordRepository = $this->em->getRepository('DictionaryBundle:Word');
 		$english = $wordRepository->findOneBy(array(
@@ -75,39 +75,10 @@ class TranslateManager
 			->getResult()
 		;
 
-		if($results && $user) {
-			/** @var $historyRepository HistoryRepository */
-			$historyRepository = $this->em->getRepository('DictionaryBundle:History');
-			/** @var  $historyLog History */
-			$historyLog = $historyRepository->findOneBy(
-				array(
-					'word' => $english,
-					'user' => $user
-				)
-			);
-
-			if ($historyLog) {
-				$historyLog->setLastSearch(new \DateTime());
-				$hits = (int)$historyLog->getHits() + 1;
-				$historyLog->setHits($hits);
-				$this->em->flush();
-			} else {
-				/** @var $history History */
-				$historyLog = new History();
-				$historyLog->setWord($english);
-				$historyLog->setUser($user);
-				$historyLog->setHits(1);
-				$historyLog->setLastSearch(new \DateTime());
-				$historyLog->setCreated(new \DateTime());
-				$historyLog->setUpdated(new \DateTime());
-			}
-			$this->em->persist($historyLog);
-			$this->em->flush();
-		}
 		return $results;
 	}
 
-	public function translateFromGoogle($word, $user = null) {
+	public function translateFromGoogle($word) {
 
 		$dictionary = $this->googleTranslator->translate($word);
 		if (!$dictionary) {
@@ -131,10 +102,6 @@ class TranslateManager
 				}
 			}
 		}
-		if ($user) {
-			$this->historyManager->updateHistoryLog($user, $english);
-		}
-
 		return true;
 	}
 }
