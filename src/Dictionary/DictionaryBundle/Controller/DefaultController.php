@@ -7,6 +7,7 @@ use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Entity\History;
 use Dictionary\DictionaryBundle\Entity\HistoryRepository;
 use Dictionary\DictionaryBundle\Entity\Word;
+use Dictionary\DictionaryBundle\Model\Eng2SrbManager;
 use Dictionary\DictionaryBundle\Model\GoogleTranslateProvider;
 use Dictionary\DictionaryBundle\Model\HistoryManager;
 use Dictionary\DictionaryBundle\Model\TranslateManager;
@@ -35,43 +36,9 @@ class DefaultController extends Controller
 		/** @var  $translationManager TranslateManager */
 		$translationManager = $this->get('dictionary.translateManager');
 
-		/** @var  $wordManager WordManager */
-		$wordManager = $this->get('dictionary.wordManager');
-
-
 		$word = strtolower($request->get('word'));
 		if ($word) {
-			/** @var  $googleTranslator GoogleTranslateProvider*/
-			$googleTranslator = $this->get('translator.google');
-			$dictionary = $googleTranslator->translate($word);
-
-			if (!$dictionary) {
-				$this->get('session')->getFlashBag()->add('notice', 'No results found!');
-				return $this->redirect($this->generateUrl('_home'));
-			}
-
-			$english = $wordManager->findEnglishWord($word);
-
-			foreach ($dictionary as $dict) {
-				$type = Word::getWordTypeBy($dict->pos);
-
-				$t = \Transliterator::create('Serbian-Latin/BGN');
-				foreach ($dict->terms as $relevance => $term) {
-					$serbianTranslation = $t->transliterate($term);
-					$serbian = $wordManager->findSerbianWord($serbianTranslation, $type);
-					$translationManager->findTranslation($english, $serbian, Eng2srb::ENG_2_SRB, $relevance);
-
-					$englishTranslations = $dict->entry[$relevance];
-					foreach ($englishTranslations->reverse_translation as $revertTraRelevance => $englishTran) {
-						$englishReversTrans = $wordManager->findEnglishWord($englishTran);
-						$translationManager->findTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG, $revertTraRelevance);
-					}
-				}
-			}
-
-			/** @var $historyManager HistoryManager*/
-			$historyManager = $this->get('dictionary.historyManager');
-			$historyManager->updateHistoryLog($user, $english);
+			$translationManager->translate($word, $user);
 		}
 
 		/** @var $historyRepository HistoryRepository */
@@ -152,7 +119,6 @@ class DefaultController extends Controller
 			}
 		}
 		$latestSearch = isset($historyResult[$word]) ? $historyResult[$word] : false;
-
         return array(
 			'latestSearch'			=> $latestSearch,
 			'latestSearchSynonyms'	=> $latestSearchSynonyms,
@@ -161,37 +127,6 @@ class DefaultController extends Controller
 			'historyHits' 			=> $resultHits
 		);
     }
-
-	/**
-	 * @deprecated
-	 * @Route("/translate_depricated", name="_translate_depricated")
-	 * @Template("DictionaryBundle:Default:index.html.twig")
-	 */
-	public function testAction(Request $request)
-	{
-		$word = strtolower($request->get('q'));
-		if (empty($word)) {
-			return $this->redirect($this->generateUrl('_home'));
-		}
-
-		$user = $this->getUser();
-
-		/** @var  $translationManager TranslateManager */
-		$translationManager = $this->get('dictionary.translateManager');
-		$success = $translationManager->translate($word, $user);
-		if(!$success) {
-			$success = $translationManager->translateFromService($word, $user);
-		}
-
-		if (!$success) {
-			$this->get('session')->getFlashBag()->add(
-				'notice',
-				'No results'
-			);
-		}
-
-		return $this->redirect($this->generateUrl('_home', array('word' => $word)));
-	}
 
 	/**
 	 * @param $request Request
@@ -203,50 +138,27 @@ class DefaultController extends Controller
 		/** @var  $translationManager TranslateManager */
 		$translationManager = $this->get('dictionary.translateManager');
 
-		/** @var  $wordManager WordManager */
-		$wordManager = $this->get('dictionary.wordManager');
-
-		$user = $this->getUser();
-		/** @var $historyRepository HistoryRepository */
-
 		$word = strtolower($request->get('q'));
 		if (empty($word)) {
 			return $this->redirect($this->generateUrl('_home'));
 		}
 
-		/** @var  $googleTranslator GoogleTranslateProvider*/
-		$googleTranslator = $this->get('translator.google');
-		$dictionary = $googleTranslator->translate($word);
+		$user = $this->getUser();
 
-		if (!$dictionary) {
-			$this->get('session')->getFlashBag()->add('notice', 'No results found!');
-			return $this->redirect($this->generateUrl('_home'));
+		$success = $translationManager->translate($word, $user);
+		if(!$success) {
+			$success = $translationManager->translateFromGoogle($word, $user);
 		}
 
-		$english = $wordManager->findEnglishWord($word);
-
-		foreach ($dictionary as $dict) {
-			$type = Word::getWordTypeBy($dict->pos);
-
-			$t = \Transliterator::create('Serbian-Latin/BGN');
-			foreach ($dict->terms as $relevance => $term) {
-				$serbianTranslation = $t->transliterate($term);
-				$serbian = $wordManager->findSerbianWord($serbianTranslation, $type);
-				$translationManager->findTranslation($english, $serbian, Eng2srb::ENG_2_SRB, $relevance);
-
-				$englishTranslations = $dict->entry[$relevance];
-				foreach ($englishTranslations->reverse_translation as $revertTraRelevance => $englishTran) {
-					$englishReversTrans = $wordManager->findEnglishWord($englishTran);
-					$translationManager->findTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG, $revertTraRelevance);
-				}
-			}
+		if (!$success) {
+			$this->get('session')->getFlashBag()->add(
+				'notice',
+				'No results'
+			);
 		}
-
-		/** @var $historyManager HistoryManager*/
-		$historyManager = $this->get('dictionary.historyManager');
-		$historyManager->updateHistoryLog($user, $english);
 
 		return $this->redirect($this->generateUrl('_home'));
+
 	}
 
 

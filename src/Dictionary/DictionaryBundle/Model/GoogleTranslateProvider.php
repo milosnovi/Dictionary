@@ -8,6 +8,7 @@ class GoogleTranslateProvider
 
     public function translate($word)
     {
+        $word = urlencode($word);
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => 1,
@@ -16,7 +17,6 @@ class GoogleTranslateProvider
         ));
         $resp = curl_exec($curl);
         $output = json_decode($resp);
-
         return !empty($output->dict) ? $output->dict : false;
     }
 }

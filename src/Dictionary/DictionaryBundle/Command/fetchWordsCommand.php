@@ -65,11 +65,11 @@ class fetchWordsCommand extends ContainerAwareCommand
 			$success = $translationManager->translate($word);
 			if(!$success) {
 				$wordsFromMetak++;
-				$success = $translationManager->translateFromService(strtolower($words[$i]));
+				$success = $translationManager->translateFromGoogle(strtolower($words[$i]));
 				if($success) {
-					$output->writeln("<info>METAK</info>");
+					$output->writeln("<info>GOOGLE</info>");
 				} else {
-					$output->writeln("METAK do not know for this word");
+					$output->writeln("GOOGLE do not know for this word");
 				}
 			} else {
 				$wordsFromDb++;
@@ -79,7 +79,7 @@ class fetchWordsCommand extends ContainerAwareCommand
 				$output->writeln("<info>===================" . round($j / 150 * 100) . "% percent are processed=================</info>");
 			}
 		}
-		$output->writeln("[words from metak]:" . $wordsFromMetak);
+		$output->writeln("[words from GOOGLE]:" . $wordsFromMetak);
 		$output->writeln("[words from DATABASE]:" . $wordsFromDb);
 	}
 }
