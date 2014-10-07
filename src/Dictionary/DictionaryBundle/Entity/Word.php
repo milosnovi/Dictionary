@@ -228,7 +228,7 @@ class Word
      *
      * @return Word
      *
-     * @ORM\preUpdate
+     * @ORM\PreUpdate
      * @ORM\PrePersist
      */
     public function setUpdated()

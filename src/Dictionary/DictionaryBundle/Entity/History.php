@@ -150,7 +150,7 @@ class History
      *
      * @return history
      *
-     * @ORM\preUpdate
+     * @ORM\PreUpdate
      * @ORM\PrePersist
      */
     public function setUpdated()
@@ -175,7 +175,7 @@ class History
      *
      * @return History
      *
-     * @ORM\preUpdate
+     * @ORM\PreUpdate
      * @ORM\PrePersist
      */
     public function setLastSearch()

@@ -152,7 +152,7 @@ class Eng2srb
     /**
      * Set updated
      *
-     * @ORM\preUpdate
+     * @ORM\PreUpdate
      * @ORM\PrePersist
      */
     public function setUpdated()
