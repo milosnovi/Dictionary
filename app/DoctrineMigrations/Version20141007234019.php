@@ -15,7 +15,7 @@ class Version20141007234019 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
         
-        $this->addSql('DROP TABLE synonyms');
+        $this->addSql('DROP TABLE Synonyms');
         $this->addSql('ALTER TABLE Eng2srb DROP FOREIGN KEY FK_2093BDF4B7494EC9');
         $this->addSql('ALTER TABLE Eng2srb DROP FOREIGN KEY FK_2093BDF4F00825FE');
         $this->addSql('ALTER TABLE Eng2srb CHANGE direction direction INT NOT NULL');
@@ -36,7 +36,7 @@ class Version20141007234019 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
         
-        $this->addSql('CREATE TABLE synonyms (id INT AUTO_INCREMENT NOT NULL, synonym_id INT DEFAULT NULL, word_id INT DEFAULT NULL, created DATETIME NOT NULL, updated DATETIME NOT NULL, INDEX IDX_7761D681E357438D (word_id), INDEX IDX_7761D6818C1B728E (synonym_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE Synonyms (id INT AUTO_INCREMENT NOT NULL, synonym_id INT DEFAULT NULL, word_id INT DEFAULT NULL, created DATETIME NOT NULL, updated DATETIME NOT NULL, INDEX IDX_7761D681E357438D (word_id), INDEX IDX_7761D6818C1B728E (synonym_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
         $this->addSql('ALTER TABLE synonyms ADD CONSTRAINT FK_7761D6818C1B728E FOREIGN KEY (synonym_id) REFERENCES word (id)');
         $this->addSql('ALTER TABLE synonyms ADD CONSTRAINT FK_7761D681E357438D FOREIGN KEY (word_id) REFERENCES word (id)');
         $this->addSql('ALTER TABLE Eng2srb DROP FOREIGN KEY FK_2093BDF4F00825FE');
