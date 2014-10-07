@@ -57,7 +57,7 @@ class TranslateManager
 		/** @var $eng2srbRepository Eng2srbRepository */
 		$eng2srbRepository = $this->em->getRepository('DictionaryBundle:Eng2srb');
 		$results = $eng2srbRepository->createQueryBuilder('eng2srb')
-			->select('eng2srb.id as eng2srb_id, serbian.wordType, eng2srb.relevance, english.id as eng_id, english.name, serbian.name as translation')
+			->select('eng2srb.id as eng2srb_id, eng2srb.updated, serbian.wordType, eng2srb.relevance, english.id as eng_id, english.name, serbian.name as translation')
 			->innerJoin('eng2srb.eng', 'english')
 			->innerJoin('eng2srb.srb', 'serbian')
 			->where('english = :english')

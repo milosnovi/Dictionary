@@ -36,7 +36,8 @@ class DefaultController extends Controller
 
 		$word = strtolower($request->get('word'));
 		if ($word) {
-			$success = $translationManager->translate($word);
+			$translations = $translationManager->translate($word);
+			$success = 1 < count($translations);
 			if(!$success) {
 				$success = $translationManager->translateFromGoogle($word);
 			}
@@ -148,10 +149,12 @@ class DefaultController extends Controller
 		$translationManager = $this->get('dictionary.translateManager');
 
 		$word = strtolower($request->get('q'));
+
 		if (empty($word)) {
 			return $this->redirect($this->generateUrl('_home'));
 		}
 
+		/** @var $user User */
 		$user = $this->getUser();
 
 		$success = $translationManager->translate($word, $user);
