@@ -7,8 +7,10 @@ use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Entity\History;
 use Dictionary\DictionaryBundle\Entity\HistoryRepository;
 use Dictionary\DictionaryBundle\Entity\Word;
-use Dictionary\DictionaryBundle\Entity\WordRepository;
+use Dictionary\DictionaryBundle\Model\GoogleTranslateProvider;
+use Dictionary\DictionaryBundle\Model\HistoryManager;
 use Dictionary\DictionaryBundle\Model\TranslateManager;
+use Dictionary\DictionaryBundle\Model\WordManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -17,17 +19,60 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
-    /**
-     * @Route("/", name="_home")
-     * @Template()
-     */
+	/**
+	 * @param Request $request
+	 * @return array
+	 *
+	 * @Route("/", name="_home")
+	 * @Template()
+	 */
     public function indexAction(Request $request)
     {
 		$em = $this->getDoctrine()->getManager();
 
 		$user = $this->getUser();
 
+		/** @var  $translationManager TranslateManager */
+		$translationManager = $this->get('dictionary.translateManager');
+
+		/** @var  $wordManager WordManager */
+		$wordManager = $this->get('dictionary.wordManager');
+
+
 		$word = strtolower($request->get('word'));
+		if ($word) {
+			/** @var  $googleTranslator GoogleTranslateProvider*/
+			$googleTranslator = $this->get('translator.google');
+			$dictionary = $googleTranslator->translate($word);
+
+			if (!$dictionary) {
+				$this->get('session')->getFlashBag()->add('notice', 'No results found!');
+				return $this->redirect($this->generateUrl('_home'));
+			}
+
+			$english = $wordManager->findEnglishWord($word);
+
+			foreach ($dictionary as $dict) {
+				$type = Word::getWordTypeBy($dict->pos);
+
+				$t = \Transliterator::create('Serbian-Latin/BGN');
+				foreach ($dict->terms as $relevance => $term) {
+					$serbianTranslation = $t->transliterate($term);
+					$serbian = $wordManager->findSerbianWord($serbianTranslation, $type);
+					$translationManager->findTranslation($english, $serbian, Eng2srb::ENG_2_SRB, $relevance);
+
+					$englishTranslations = $dict->entry[$relevance];
+					foreach ($englishTranslations->reverse_translation as $revertTraRelevance => $englishTran) {
+						$englishReversTrans = $wordManager->findEnglishWord($englishTran);
+						$translationManager->findTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG, $revertTraRelevance);
+					}
+				}
+			}
+
+			/** @var $historyManager HistoryManager*/
+			$historyManager = $this->get('dictionary.historyManager');
+			$historyManager->updateHistoryLog($user, $english);
+		}
 
 		/** @var $historyRepository HistoryRepository */
 		$historyRepository = $em->getRepository('DictionaryBundle:History');
@@ -37,9 +82,12 @@ class DefaultController extends Controller
 
 		$histories = $historyRepository->getLatestSearched($user);
 		$englishIds = array();
-		foreach($histories as $history) {
+		foreach($histories as $index => $history) {
 			$englishIds[] = $history->getWord()->getId();
 			$historyResult[$history->getWord()->getName()] = array();
+			if ($index == 0) {
+				$word = $history->getWord()->getName();
+			}
 		}
 		$historyByHits = $historyRepository->getSearchedByHits($user);
 
@@ -79,7 +127,7 @@ class DefaultController extends Controller
 			/** @var $eng2srbRepository Eng2srbRepository */
 			$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
 			$translationSinonyms = $eng2srbRepository->createQueryBuilder('eng2srb')
-				->select('eng2srb.id as eng2srb_id, serbian.wordType, eng2srb.relevance, english.id as eng_id, english.name, serbian.name as translation')
+				->select('eng2srb, english, serbian')
 				->innerJoin('eng2srb.eng', 'english')
 				->innerJoin('eng2srb.srb', 'serbian')
 				->where('serbian.name IN (:serbianWords)')
@@ -97,11 +145,12 @@ class DefaultController extends Controller
 				->getResult();
 
 			$latestSearchSynonyms = array();
+			/** @var $synonyms Eng2srb*/
 			foreach ($translationSinonyms as $synonyms) {
-				$latestSearchSynonyms[$synonyms['translation']][] = $synonyms['name'];
+				$serbianWord = $synonyms->getSrb()->getName();
+				$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
 			}
 		}
-
 		$latestSearch = isset($historyResult[$word]) ? $historyResult[$word] : false;
 
         return array(
@@ -114,10 +163,11 @@ class DefaultController extends Controller
     }
 
 	/**
-	 * @Route("/translate", name="_translate")
+	 * @deprecated
+	 * @Route("/translate_depricated", name="_translate_depricated")
 	 * @Template("DictionaryBundle:Default:index.html.twig")
 	 */
-	public function matchAction(Request $request)
+	public function testAction(Request $request)
 	{
 		$word = strtolower($request->get('q'));
 		if (empty($word)) {
@@ -144,205 +194,60 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 *  @Route("/test", name="_translate1")
+	 * @param $request Request
+	 * @return \Symfony\Component\HttpFoundation\RedirectResponse
+	 *
+	 * @Route("/translate", name="_translate")
 	 */
-	public function testAction(Request $request) {
+	public function matchAction(Request $request) {
+		/** @var  $translationManager TranslateManager */
+		$translationManager = $this->get('dictionary.translateManager');
+
+		/** @var  $wordManager WordManager */
+		$wordManager = $this->get('dictionary.wordManager');
+
+		$user = $this->getUser();
+		/** @var $historyRepository HistoryRepository */
 
 		$word = strtolower($request->get('q'));
 		if (empty($word)) {
 			return $this->redirect($this->generateUrl('_home'));
 		}
 
-		/** @var $wordRepository WordRepository */
-		$wordRepository = $this->getDoctrine()->getRepository('DictionaryBundle:Word');
-		$english = $wordRepository->findOneBy(array(
-			'name' => $word,
-			'type' => Word::WORD_ENGLISH
-		));
+		/** @var  $googleTranslator GoogleTranslateProvider*/
+		$googleTranslator = $this->get('translator.google');
+		$dictionary = $googleTranslator->translate($word);
 
-		$em = $this->getDoctrine()->getManager();
-		if(!$english) {
-			/** @var  $english Word */
-			$english = new Word();
-			$english->setName($word);
-			$english->settype(Word::WORD_ENGLISH);
-			$english->setCreated(new \DateTime());
-			$english->setUpdated(new \DateTime());
-			$em->persist($english);
-			$em->flush();
+		if (!$dictionary) {
+			$this->get('session')->getFlashBag()->add('notice', 'No results found!');
+			return $this->redirect($this->generateUrl('_home'));
 		}
 
-		$curl = curl_init();
-		curl_setopt_array($curl, array(
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => 'http://translate.google.com/translate_a/t?client=p&sl=auto&tl=sr&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&oc=1&otf=1&ssel=0&tsel=0&q=' . $word,
-			CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-		));
-		$resp = curl_exec($curl);
-		$output = json_decode($resp);
-		if (!empty($output->dict)) {
-			$dictionary = $output->dict;
-			foreach ($dictionary as $dict) {
-				if ('noun' == $dict->pos) {
-					$type = Word::WORD_TYPE_NOUN;
-				} else if ('verb' == $dict->pos) {
-					$type = Word::WORD_TYPE_VERB;
-				} else if ('adverb' == $dict->pos) {
-					$type = Word::WORD_TYPE_ADV;
-				} else if ('adjective' == $dict->pos) {
-					$type = Word::WORD_TYPE_ADJ;
-				} else {
-					continue;
-				}
+		$english = $wordManager->findEnglishWord($word);
 
-				$t = \Transliterator::create('Serbian-Latin/BGN');
-				foreach ($dict->terms as $relevance => $term) {
-					$serbianTranslation = $t->transliterate($term);
-					/** @var $serbian Word */
-					$serbian = $wordRepository->findOneBy(array(
-						'name' => $serbianTranslation,
-						'type' => Word::WORD_SERBIAN
-					));
-					if (!$serbian) {
-						/** @var  $english Word */
-						$serbian = new Word();
-						$serbian->setName($serbianTranslation);
-						$serbian->settype(Word::WORD_SERBIAN);
-						$serbian->setWordType($type);
-						$serbian->setCreated(new \DateTime());
-						$serbian->setUpdated(new \DateTime());
-					} else {
-						$serbian->setWordType($type);
-					}
-					$em->persist($serbian);
-					$em->flush();
+		foreach ($dictionary as $dict) {
+			$type = Word::getWordTypeBy($dict->pos);
 
-					/** @var $eng2srbRepository Eng2srbRepository */
-					$eng2srbRepository = $this->getDoctrine()->getRepository('DictionaryBundle:Eng2srb');
-					$eng2SrbItem = $eng2srbRepository->createQueryBuilder('eng2srb')
-						->select('eng2srb')
-						->innerJoin('eng2srb.eng', 'english')
-						->innerJoin('eng2srb.srb', 'serbian')
-						->where('english = :english')
-						->andWhere('eng2srb.direction = :direction')
-						->andWhere('serbian = :serbian')
-						->andWhere('english.type = :englishType')
-						->andWhere('serbian.type = :serbianType')
-						->setParameters(array(
-							'english' => $english,
-							'serbian' => $serbian,
-							'englishType' => Word::WORD_ENGLISH,
-							'serbianType' => Word::WORD_SERBIAN,
-							'direction' => Eng2srb::ENG_2_SRB
-						))
-						->getQuery()
-						->getOneOrNullResult();
+			$t = \Transliterator::create('Serbian-Latin/BGN');
+			foreach ($dict->terms as $relevance => $term) {
+				$serbianTranslation = $t->transliterate($term);
+				$serbian = $wordManager->findSerbianWord($serbianTranslation, $type);
+				$translationManager->findTranslation($english, $serbian, Eng2srb::ENG_2_SRB, $relevance);
 
-					if (empty($eng2SrbItem)) {
-						/** @var  $eng2SrbItem Eng2srb */
-						$eng2SrbItem = new Eng2srb();
-						$eng2SrbItem->setEng($english);
-						$eng2SrbItem->setSrb($serbian);
-						$eng2SrbItem->setRelevance($relevance + 1);
-						$eng2SrbItem->setDirection(Eng2srb::ENG_2_SRB);
-						$eng2SrbItem->setCreated(new \DateTime());
-						$eng2SrbItem->setUpdated(new \DateTime());
-						$em->persist($eng2SrbItem);
-						$em->flush();
-					} else {
-						$eng2SrbItem->setRelevance($relevance + 1);
-						$eng2SrbItem->setDirection(Eng2srb::ENG_2_SRB);
-						$em->persist($eng2SrbItem);
-						$em->flush();
-					}
-
-					$englishTranslations = $dict->entry[$relevance];
-					foreach ($englishTranslations->reverse_translation as $revertTraRelevance => $englishTran) {
-						$englishReversTrans = $wordRepository->findOneBy(array(
-							'name' => $englishTran,
-							'type' => Word::WORD_ENGLISH
-						));
-
-						if (!$englishReversTrans) {
-							/** @var  $english Word */
-							$englishReversTrans = new Word();
-							$englishReversTrans->setName($englishTran);
-							$englishReversTrans->settype(Word::WORD_ENGLISH);
-							$englishReversTrans->setCreated(new \DateTime());
-							$englishReversTrans->setUpdated(new \DateTime());
-							$em->persist($englishReversTrans);
-							$em->flush();
-						}
-
-						$eng2SrbItem = $eng2srbRepository->createQueryBuilder('eng2srb')
-							->select('eng2srb')
-							->innerJoin('eng2srb.eng', 'english')
-							->innerJoin('eng2srb.srb', 'serbian')
-							->where('english = :english')
-							->andWhere('eng2srb.direction = :direction')
-							->andWhere('serbian = :serbian')
-							->andWhere('english.type = :englishType')
-							->andWhere('serbian.type = :serbianType')
-							->setParameters(array(
-								'english' => $englishReversTrans,
-								'serbian' => $serbian,
-								'englishType' => Word::WORD_ENGLISH,
-								'serbianType' => Word::WORD_SERBIAN,
-								'direction' => Eng2srb::SRB_2_ENG,
-							))
-							->getQuery()
-							->getOneOrNullResult();
-
-						if (empty($eng2SrbItem)) {
-							/** @var  $eng2SrbItem Eng2srb */
-							$eng2SrbItem = new Eng2srb();
-							$eng2SrbItem->setEng($englishReversTrans);
-							$eng2SrbItem->setSrb($serbian);
-							$eng2SrbItem->setRelevance($revertTraRelevance + 1);
-							$eng2SrbItem->setDirection(Eng2srb::SRB_2_ENG);
-							$eng2SrbItem->setCreated(new \DateTime());
-							$eng2SrbItem->setUpdated(new \DateTime());
-							$em->persist($eng2SrbItem);
-							$em->flush();
-						} else {
-							$eng2SrbItem->setRelevance($revertTraRelevance + 1);
-							$eng2SrbItem->setDirection(Eng2srb::SRB_2_ENG);
-							$em->persist($eng2SrbItem);
-							$em->flush();
-						}
-					}
+				$englishTranslations = $dict->entry[$relevance];
+				foreach ($englishTranslations->reverse_translation as $revertTraRelevance => $englishTran) {
+					$englishReversTrans = $wordManager->findEnglishWord($englishTran);
+					$translationManager->findTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG, $revertTraRelevance);
 				}
 			}
-			$user = $this->getUser();
-			/** @var $historyRepository HistoryRepository */
-			$historyRepository = $em->getRepository('DictionaryBundle:History');
-			/** @var  $historyLog History */
-			$historyLog = $historyRepository->findOneBy(
-				array(
-					'word' => $english,
-					'user' => $user
-				)
-			);
-
-			if ($historyLog) {
-				$historyLog->setLastSearch(new \DateTime());
-				$hits = (int)$historyLog->getHits() + 1;
-				$historyLog->setHits($hits);
-				$em->flush();
-			} else {
-				/** @var $history History */
-				$historyLog = new History();
-				$historyLog->setWord($english);
-				$historyLog->setUser($user);
-				$historyLog->setHits(1);
-				$historyLog->setLastSearch(new \DateTime());
-				$historyLog->setCreated(new \DateTime());
-				$historyLog->setUpdated(new \DateTime());
-			}
-			$em->persist($historyLog);
-			$em->flush();
 		}
 
-		return $this->redirect($this->generateUrl('_home', array('word' => $word)));
+		/** @var $historyManager HistoryManager*/
+		$historyManager = $this->get('dictionary.historyManager');
+		$historyManager->updateHistoryLog($user, $english);
+
+		return $this->redirect($this->generateUrl('_home'));
 	}
+
+
 }

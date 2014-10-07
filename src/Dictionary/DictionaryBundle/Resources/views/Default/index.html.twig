@@ -13,7 +13,7 @@
 
     <div class="row">
         <div class="col-md-4">
-            <form style="padding: 5px;" method="post" action="{{ path('_translate1') }}" >
+            <form style="padding: 5px;" method="post" action="{{ path('_translate') }}" >
                 <div class="form-row">
                     <input style="width: 240px;height: 58px;font-size: 33px;"name="q" id="search-id" type="search" placeholder={% if latestWord %}{{ latestWord }}{% else %}"Translate"{% endif %} />
 
@@ -36,11 +36,11 @@
                                 <ul>
                                     <li>{{ word }}
                                         {% if latestSearchSynonyms is not empty and latestSearchSynonyms[word] is not empty %}
-                                            {%  set synonyms =  latestSearchSynonyms[word] %}
+                                            {%  set synonyms =  latestSearchSynonyms[word]['translation'] %}
                                             {% if synonyms is not empty %}
-                                                <div style="synonym_placeholder" >
+                                                <div class="synonym_placeholder" >
                                                     {% for synonym in synonyms %}
-                                                        <span class="synonym">{{ synonym }}</span>
+                                                        <span class="synonym"><a href="{{ path('_home', {'word': synonym}) }}">{{ synonym }}</a></span>
                                                     {% endfor %}
                                                 </div>
                                             {% endif %}

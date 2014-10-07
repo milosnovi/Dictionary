@@ -6,11 +6,22 @@
 
     <parameters>
         <parameter key="dictionary.example.class">Dictionary\DictionaryBundle\Model\TranslateManager</parameter>
+        <parameter key="translator.google.provider.class">Dictionary\DictionaryBundle\Model\GoogleTranslateProvider</parameter>
     </parameters>
 
     <services>
         <service id="dictionary.translateManager" class="%dictionary.example.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="dictionary.historyManager" class="Dictionary\DictionaryBundle\Model\HistoryManager">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="dictionary.wordManager" class="Dictionary\DictionaryBundle\Model\WordManager">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="translator.google" class="%translator.google.provider.class%">
         </service>
     </services>
 

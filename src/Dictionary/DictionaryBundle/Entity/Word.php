@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Index;
  *
  * @ORM\Table(name="word",indexes={@index(name="search_index_word", columns={"name"})})
  * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\WordRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Word
 {
@@ -202,12 +203,12 @@ class Word
     /**
      * Set created
      *
-     * @param \DateTime $created
      * @return Word
+     * @ORM\PrePersist
      */
-    public function setCreated($created)
+    public function setCreated()
     {
-        $this->created = $created;
+        $this->created = new \DateTime();
 
         return $this;
     }
@@ -225,12 +226,14 @@ class Word
     /**
      * Set updated
      *
-     * @param \DateTime $updated
      * @return Word
+     *
+     * @ORM\preUpdate
+     * @ORM\PrePersist
      */
-    public function setUpdated($updated)
+    public function setUpdated()
     {
-        $this->updated = $updated;
+        $this->updated = new \DateTime();
 
         return $this;
     }
@@ -245,7 +248,7 @@ class Word
         return $this->updated;
     }
 
-	/**
+    /**
 	 * Add $engTranslate
 	 *
 	 * @param Eng2srb $engTranslate
@@ -258,7 +261,7 @@ class Word
 		return $this;
 	}
 
-	/**
+    /**
 	 * Remove $engTranslate
 	 *
 	 * @param Eng2srb $engTranslate
@@ -382,5 +385,19 @@ class Word
                 return 'verb';
                 break;
         }
+    }
+
+    public static function getWordTypeBy($value) {
+        $wordType = null;
+        if ('noun' == $value) {
+            $wordType = Word::WORD_TYPE_NOUN;
+        } else if ('verb' == $value) {
+            $wordType = Word::WORD_TYPE_VERB;
+        } else if ('adverb' == $value) {
+            $wordType = Word::WORD_TYPE_ADV;
+        } else if ('adjective' == $value) {
+            $wordType = Word::WORD_TYPE_ADJ;
+        }
+        return $wordType;
     }
 }

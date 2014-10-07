@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\Eng2srbRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Eng2srb
 {
@@ -128,12 +129,12 @@ class Eng2srb
     /**
      * Set created
      *
-     * @param \DateTime $created
      * @return eng2srb
+     * @ORM\PrePersist
      */
-    public function setCreated($created)
+    public function setCreated()
     {
-        $this->created = $created;
+        $this->created = new \DateTime();
 
         return $this;
     }
@@ -151,12 +152,12 @@ class Eng2srb
     /**
      * Set updated
      *
-     * @param \DateTime $updated
-     * @return eng2srb
+     * @ORM\preUpdate
+     * @ORM\PrePersist
      */
-    public function setUpdated($updated)
+    public function setUpdated()
     {
-        $this->updated = $updated;
+        $this->updated = new \DateTime();
 
         return $this;
     }

@@ -33,4 +33,33 @@ class Eng2srbRepository extends EntityRepository
 
 		return $results;
 	}
+
+	/**
+	 * @param $english Word
+	 * @param $serbian Word
+	 * @param $direction integer
+	 * @return mixed
+	 * @throws \Doctrine\ORM\NonUniqueResultException
+	 */
+	public function getTranslation($english, $serbian, $direction) {
+		return $this->createQueryBuilder('eng2srb')
+			->select('eng2srb')
+			->innerJoin('eng2srb.eng', 'english')
+			->innerJoin('eng2srb.srb', 'serbian')
+			->where('english = :english')
+			->andWhere('eng2srb.direction = :direction')
+			->andWhere('serbian = :serbian')
+			->andWhere('english.type = :englishType')
+			->andWhere('serbian.type = :serbianType')
+			->setParameters(array(
+				'english' => $english,
+				'serbian' => $serbian,
+				'englishType' => Word::WORD_ENGLISH,
+				'serbianType' => Word::WORD_SERBIAN,
+				'direction' => $direction
+			))
+			->getQuery()
+			->getOneOrNullResult()
+		;
+	}
 }

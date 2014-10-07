@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\HistoryRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class History
 {
@@ -125,12 +126,11 @@ class History
     /**
      * Set created
      *
-     * @param string $created
-     * @return history
+     * @ORM\PrePersist
      */
-    public function setCreated($created)
+    public function setCreated()
     {
-        $this->created = $created;
+        $this->created = new \DateTime();
 
         return $this;
     }
@@ -148,12 +148,14 @@ class History
     /**
      * Set updated
      *
-     * @param \DateTime $updated
      * @return history
+     *
+     * @ORM\preUpdate
+     * @ORM\PrePersist
      */
-    public function setUpdated($updated)
+    public function setUpdated()
     {
-        $this->updated = $updated;
+        $this->updated = new \DateTime();
 
         return $this;
     }
@@ -171,12 +173,14 @@ class History
     /**
      * Set lastSearch
      *
-     * @param \DateTime $lastSearch
      * @return History
+     *
+     * @ORM\preUpdate
+     * @ORM\PrePersist
      */
-    public function setLastSearch($lastSearch)
+    public function setLastSearch()
     {
-        $this->lastSearch = $lastSearch;
+        $this->lastSearch = new \DateTime();
 
         return $this;
     }
