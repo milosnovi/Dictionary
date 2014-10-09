@@ -28,9 +28,9 @@ class Eng2srbRepository extends EntityRepository
 				'serbianType'	=> Word::WORD_SERBIAN,
 				'direction'		=> Eng2srb::ENG_2_SRB
 			))
+			->orderBy('english.id, serbian.wordType, eng2srb.relevance', 'ASC')
 			->getQuery()
 			->getResult();
-
 		return $results;
 	}
 

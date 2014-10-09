@@ -104,6 +104,14 @@ a.registerLink:hover{
 .word_history{
     padding-bottom: 5px;
 }
+.word_history_white{
+    background-color: rgb(249, 249, 249);
+    padding: 15px 10px;
+}
+
+.word_history_grey{
+    padding: 15px 10px;
+}
 
 span.history_key {
     font-weight: bold;

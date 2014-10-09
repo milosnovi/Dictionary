@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Bundle\DoctrineBundle\Entity;
+namespace Dictionary\DictionaryBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -12,4 +12,20 @@ use Doctrine\ORM\EntityRepository;
  */
 class PilesRepository extends EntityRepository
 {
+
+    public function findPiles($user)
+    {
+        $piles = $this->createQueryBuilder('piles')
+            ->select('piles, word')
+            ->innerJoin('piles.word', 'word')
+            ->where('piles.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('piles.type, piles.updated', 'DESC')
+            ->setMaxResults(20)
+            ->getQuery()
+            ->getResult()
+        ;
+
+        return $piles;
+    }
 }

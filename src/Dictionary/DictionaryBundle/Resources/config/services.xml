@@ -29,6 +29,10 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
+        <service id="dictionary.pilesManager" class="Dictionary\DictionaryBundle\Model\PilesbManager">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
         <service id="dictionary.translator.metak" class="Dictionary\DictionaryBundle\Model\MetakTranslateProvider">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>

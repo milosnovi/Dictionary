@@ -39,7 +39,8 @@ class HistoryRepository extends EntityRepository
 			->addOrderBy('h.updated', 'DESC')
 			->setMaxResults(20)
 			->getQuery()
-			->getResult();
+			->getResult()
+		;
 
 		return $historyByHits;
 	}

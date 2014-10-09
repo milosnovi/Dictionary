@@ -9,9 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\PilesRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Piles
 {
+
+    const TYPE_KNOW         = 1;
+    const TYPE_NOT_SURE     = 2;
+    const TYPE_DO_NOT_KNOW  = 4;
     /**
      * @var integer
      *
@@ -93,12 +98,12 @@ class Piles
     /**
      * Set created
      *
-     * @param \DateTime $created
-     * @return Piles
+     * @return Word
+     * @ORM\PrePersist
      */
-    public function setCreated($created)
+    public function setCreated()
     {
-        $this->created = $created;
+        $this->created = new \DateTime();
 
         return $this;
     }
@@ -106,7 +111,7 @@ class Piles
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -116,12 +121,14 @@ class Piles
     /**
      * Set updated
      *
-     * @param \DateTime $updated
-     * @return Piles
+     * @return Word
+     *
+     * @ORM\PreUpdate
+     * @ORM\PrePersist
      */
-    public function setUpdated($updated)
+    public function setUpdated()
     {
-        $this->updated = $updated;
+        $this->updated = new \DateTime();
 
         return $this;
     }
@@ -129,7 +136,7 @@ class Piles
     /**
      * Get updated
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdated()
     {

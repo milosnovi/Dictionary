@@ -50,7 +50,6 @@ class DefaultController extends Controller
 		$historyRepository = $em->getRepository('DictionaryBundle:History');
 
 		$historyResult = array();
-		$resultHits = array();
 
 		$histories = $historyRepository->getLatestSearched($user);
 		$englishIds = array();
@@ -60,16 +59,6 @@ class DefaultController extends Controller
 			if ($index == 0) {
 				$word = $history->getWord()->getName();
 			}
-		}
-		$historyByHits = $historyRepository->getSearchedByHits($user);
-
-		foreach($historyByHits as $hit) {
-			if (!in_array($hit->getWord()->getId(), $englishIds)) {
-				$englishIds[] = $hit->getWord()->getId();
-			}
-			$resultHits[$hit->getWord()->getName()] = array(
-				'hits' => $hit->getHits()
-			);
 		}
 
 		/** @var  $eng2srbRepository Eng2srbRepository*/
@@ -92,11 +81,10 @@ class DefaultController extends Controller
 			}
 
 			if(!isset($historyResult[$englishTranslationName]['translations'][$index])) {
+				$historyResult[$englishTranslationName]['id'] = $englishTransations->getId();
 				$historyResult[$englishTranslationName]['translations'][$index] = array();
-				$resultHits[$englishTranslationName]['translations'][$index] = array();
 			}
 			$historyResult[$englishTranslationName]['translations'][$index][] = $serbianTranslationName;
-			$resultHits[$englishTranslationName]['translations'][$index][] = $serbianTranslationName;
 		}
 
 		$latestSearchSynonyms = array();
@@ -128,13 +116,13 @@ class DefaultController extends Controller
 				$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
 			}
 		}
+
 		$latestSearch = isset($historyResult[$word]) ? $historyResult[$word] : false;
         return array(
 			'latestSearch'			=> $latestSearch,
 			'latestSearchSynonyms'	=> $latestSearchSynonyms,
 			'latestWord'			=> $word,
 			'histories' 			=> $historyResult,
-			'historyHits' 			=> $resultHits
 		);
     }
 

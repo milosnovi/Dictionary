@@ -14,12 +14,12 @@
                 <li><a href="{{ path('fos_user_security_logout') }}" class="navbar-link"> Logout</a></li>
                 {#<li><a href="{{ path('fos_user_profile_edit') }}" class="navbar-link"> Edit Profile</a>#}
                 <li><span style="margin: 14px 0px; display: block;">Logged in as {{user.username}}</span></li>
-                {#<li><a href='#'>Send Request</a></li>#}
-                {#{% if is_granted('ROLE_ADMIN') %}#}
-                    {#<li>#}
-                        {#<a href='{{ path('show_admin_panel') }}'> Admin</a>#}
-                    {#</li>#}
-                {#{% endif %}#}
+                <li><a href="{{ path('most_offen') }}">Most Offen</a></li>
+                <li><a href="{{ path('dictionary_piles') }}">Piles</a></li>
+
+                {% if is_granted('ROLE_ADMIN') %}
+                    {#<li><a href='{{ path('show_admin_panel') }}'> Admin</a></li>#}
+                {% endif %}
             </ul>
         </div>
     </div>

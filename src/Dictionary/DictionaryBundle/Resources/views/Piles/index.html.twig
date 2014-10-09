@@ -1,0 +1,53 @@
+{% extends 'DictionaryBundle::layout.html.twig' %}
+
+{% block navigation %}
+    {{ include('DictionaryBundle::navigation.html.twig',{ 'user': app.user } ) }}
+{% endblock navigation %}
+
+{% block content %}
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+        <div class="flash-message">
+            <em>Notice</em>: {{ flashMessage }}
+        </div>
+    {% endfor %}
+
+    <div class="row">
+            {% for key, pileType in resultToReturn %}
+                <div class="col-md-4">
+                        {% if key == 1 %}
+                            <div class="panel panel-success">
+                            <div class="panel-heading">KNOW</div>
+                        {% elseif key == 2 %}
+                            <div class="panel panel-warning">
+                            <div class="panel-heading">NOT SURE</div>
+                        {% elseif key == 4  %}
+                            <div class="panel panel-danger">
+                            <div class="panel-heading">DONT KNOW</div>
+                        {% endif %}
+                        <div class="panel-body">
+                            {% for pile  in pileType %}
+                                {% if loop.index % 2 %}
+                                    {% set class = 'word_history_white' %}
+                                {% else %}
+                                    {% set class = 'word_history_grey' %}
+                                {% endif %}
+                                <div class="{{ class }}">
+                                    <span class="history_key">{{ pile.translation.name }}</span>
+                                    <br/>
+                                    {% for type, translation in pile.translation.translations %}
+                                        <div class="wordByType">
+                                            <span class="wordType">{{ type }}:</span>
+                                            {{ translation | join(', ')}}
+                                        </div>
+                                    {%  endfor %}
+                                </div>
+                            {%  endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+{% endblock %}
