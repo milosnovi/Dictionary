@@ -115,9 +115,11 @@ a.registerLink:hover{
 
 span.history_key {
     font-weight: bold;
+    text-transform: uppercase;
 }
 span.wordType {
     font-style: italic;
+    font-weight: bold;
 }
 .wordByType {
     margin-left: 20px;

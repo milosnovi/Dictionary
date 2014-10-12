@@ -28,4 +28,20 @@ class PilesRepository extends EntityRepository
 
         return $piles;
     }
+
+    public function findUserPile($word, $user)
+    {
+        $pile = $this->createQueryBuilder('piles')
+            ->select('piles, word')
+            ->innerJoin('piles.word', 'word')
+            ->where('piles.user = :user')
+            ->andwhere('piles.word = :word')
+            ->setParameter('user', $user)
+            ->setParameter('word', $word)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+
+        return $pile;
+    }
 }

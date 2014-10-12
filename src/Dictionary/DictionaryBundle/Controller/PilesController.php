@@ -75,8 +75,6 @@ class PilesController extends Controller
                 'translation' => $historyResult[$pile->getWord()->getId()]
             );
         }
-//        \Doctrine\Common\Util\Debug::dump($resultToReturn, 4);
-
         return array(
             'resultToReturn' => $resultToReturn
         );
@@ -97,19 +95,22 @@ class PilesController extends Controller
             throw new AccessDeniedException();
         }
 
-        $pile = new Piles();
-        $pile->setUser($user);
+        /** @var  $pilesRepository PilesRepository */
+        $pilesRepository = $this->getDoctrine()->getRepository('DictionaryBundle:Piles');
+        $pile = $pilesRepository->findUserPile($word, $user);
+
+        if(empty($pile)) {
+            $pile = new Piles();
+            $pile->setUser($user);
+            $pile->setWord($word);
+        }
         $pile->setType($pileId);
-        $pile->setWord($word);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($pile);
         $em->flush();
 
-        \Doctrine\Common\Util\Debug::dump($word, 2);
-        \Doctrine\Common\Util\Debug::dump($pile, 2);
-        exit;
-
+        return $this->redirect($this->generateUrl('dictionary_piles'));
     }
 
 }
