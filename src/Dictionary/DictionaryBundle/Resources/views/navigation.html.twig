@@ -11,10 +11,10 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{{ path('fos_user_security_logout') }}" class="navbar-link"> Logout</a></li>
                 <li><a href="{{ path('most_offen') }}">Most Offen</a></li>
                 <li><a href="{{ path('dictionary_piles') }}">Piles</a></li>
                 <li><span style="margin: 14px 0px; display: block; color: rgb(255, 255, 255);">Logged in as {{user.username}}</span></li>
+                <li><a href="{{ path('fos_user_security_logout') }}" class="navbar-link"> Logout</a></li>
 
                 {% if is_granted('ROLE_ADMIN') %}
                     {#<li><a href='{{ path('show_admin_panel') }}'> Admin</a></li>#}

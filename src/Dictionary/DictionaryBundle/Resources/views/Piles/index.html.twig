@@ -32,6 +32,7 @@
                                     {% set class = 'word_history_grey' %}
                                 {% endif %}
                                 <div class="{{ class }}">
+                                    <span class="glyphicon glyphicon-trash"></span>
                                     <span class="history_key">{{ pile.translation.name }}</span>
                                     <br/>
                                     {% for type, translation in pile.translation.translations %}

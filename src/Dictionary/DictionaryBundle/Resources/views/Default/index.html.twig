@@ -12,12 +12,12 @@
     {% endfor %}
 
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-5 col-xs-12">
 
             <form style="padding: 5px;" method="post" action="{{ path('_translate') }}" class="form-horizontal" role="form">
                 <div class="form-group">
                     <div class="col-sm-10">
-                        <input style=";height: 58px;font-size: 33px;" name="q" class="form-control" id="inputEmail3" placeholder={% if latestWord %}{{ latestWord }}{% else %}"Translate"{% endif %} >
+                        <input style=";height: 58px;font-size: 33px;" name="q" class="form-control" placeholder={% if latestWord %}{{ latestWord }}{% else %}"Translate"{% endif %} >
                     </div>
                 </div>
             </form>
@@ -29,18 +29,20 @@
                             <tbody>
                             {% for key, translations in latestSearch.translations %}
                                 <tr>
-                                    <td colspan="3"><b>{{ key }}</b></td>
+                                    <td colspan="3"><b><span>{{ key }}</span></b></td>
                                 </tr>
                                 {% for word in translations %}
                                     <tr>
                                         <td>&nbsp;</td>
-                                        <td>{{ word }}</td>
+                                        <td><span>{{ word }}</span></td>
                                         {% if latestSearchSynonyms is not empty and latestSearchSynonyms[word] is not empty %}
                                             {%  set synonyms =  latestSearchSynonyms[word]['translation'] %}
                                             {% if synonyms is not empty %}
                                                 <td>
                                                     {% for synonym in synonyms %}
-                                                        <span class="synonym"><a href="{{ path('_home', {'word': synonym}) }}">{{ synonym }}</a></span>
+                                                        <span class="synonym">
+                                                            <a href="{{ path('_home', {'word': synonym}) }}">{{ synonym }}</a>
+                                                        </span>
                                                     {% endfor %}
                                                 </td>
                                             {% endif %}
@@ -55,7 +57,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 col-xs-12">
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h4>HISTORY</h4>

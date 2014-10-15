@@ -16,13 +16,15 @@ use Doctrine\ORM\Mapping\Index;
 class Word
 {
 
-	const WORD_ENGLISH 		= 1;
-	const WORD_SERBIAN 		= 2;
+	const WORD_ENGLISH 		    = 1;
+	const WORD_SERBIAN 		    = 2;
 
-	const WORD_TYPE_NOUN 	= 1;
-	const WORD_TYPE_ADJ 	= 2;
-	const WORD_TYPE_ADV 	= 4;
-	const WORD_TYPE_VERB 	= 8;
+	const WORD_TYPE_NOUN 	    = 1;
+	const WORD_TYPE_ADJ 	    = 2;
+	const WORD_TYPE_ADV 	    = 4;
+	const WORD_TYPE_VERB 	    = 8;
+	const WORD_TYPE_PREPOSITION = 16;
+	const WORD_TYPE_CONJUNCTION = 32;
 
     /**
      * @var integer
@@ -384,20 +386,38 @@ class Word
             case self::WORD_TYPE_VERB:
                 return 'verb';
                 break;
+            case self::WORD_TYPE_PREPOSITION:
+                return 'preposition';
+                break;
+            case self::WORD_TYPE_CONJUNCTION:
+                return 'conjunction';
+                break;
         }
     }
 
     public static function getWordTypeBy($value) {
-        $wordType = null;
-        if ('noun' == $value) {
-            $wordType = Word::WORD_TYPE_NOUN;
-        } else if ('verb' == $value) {
-            $wordType = Word::WORD_TYPE_VERB;
-        } else if ('adverb' == $value) {
-            $wordType = Word::WORD_TYPE_ADV;
-        } else if ('adjective' == $value) {
-            $wordType = Word::WORD_TYPE_ADJ;
+        switch ($value) {
+            case 'noun':
+                return Word::WORD_TYPE_NOUN;
+                break;
+            case 'verb':
+                return self::WORD_TYPE_ADJ;
+                break;
+            case 'adverb':
+                return self::WORD_TYPE_ADV;
+                break;
+            case 'adjective':
+                return self::WORD_TYPE_VERB;
+                break;
+            case 'preposition':
+                return self::WORD_TYPE_PREPOSITION;
+                break;
+            case 'conjunction':
+                return self::WORD_TYPE_CONJUNCTION;
+                break;
+            default:
+                return null;
+                break;
         }
-        return $wordType;
     }
 }
