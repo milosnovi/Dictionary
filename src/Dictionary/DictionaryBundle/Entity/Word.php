@@ -25,6 +25,8 @@ class Word
 	const WORD_TYPE_VERB 	    = 8;
 	const WORD_TYPE_PREPOSITION = 16;
 	const WORD_TYPE_CONJUNCTION = 32;
+	const WORD_TYPE_PRONOUN     = 64;
+	const WORD_TYPE_ARTICLE     = 128;
 
     /**
      * @var integer
@@ -392,6 +394,12 @@ class Word
             case self::WORD_TYPE_CONJUNCTION:
                 return 'conjunction';
                 break;
+            case self::WORD_TYPE_PRONOUN:
+                return 'pronoun';
+                break;
+            case self::WORD_TYPE_ARTICLE:
+                return 'article';
+                break;
         }
     }
 
@@ -414,6 +422,12 @@ class Word
                 break;
             case 'conjunction':
                 return self::WORD_TYPE_CONJUNCTION;
+                break;
+            case 'pronoun':
+                return self::WORD_TYPE_PRONOUN;
+                break;
+            case 'article':
+                return self::WORD_TYPE_ARTICLE;
                 break;
             default:
                 return null;
