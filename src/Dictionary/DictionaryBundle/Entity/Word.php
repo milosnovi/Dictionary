@@ -27,6 +27,7 @@ class Word
 	const WORD_TYPE_CONJUNCTION = 32;
 	const WORD_TYPE_PRONOUN     = 64;
 	const WORD_TYPE_ARTICLE     = 128;
+	const WORD_TYPE_PARTICLE    = 256;
 
     /**
      * @var integer
@@ -400,6 +401,9 @@ class Word
             case self::WORD_TYPE_ARTICLE:
                 return 'article';
                 break;
+            case self::WORD_TYPE_PARTICLE:
+                return 'particle';
+                break;
         }
     }
 
@@ -428,6 +432,9 @@ class Word
                 break;
             case 'article':
                 return self::WORD_TYPE_ARTICLE;
+                break;
+            case 'particle':
+                return self::WORD_TYPE_PARTICLE;
                 break;
             default:
                 return null;
