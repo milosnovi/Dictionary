@@ -64,7 +64,6 @@ class DefaultController extends Controller
 		/** @var  $eng2srbRepository Eng2srbRepository*/
 		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
 		$results = $eng2srbRepository->getEnglishTranslations($englishIds);
-
 		/** @var $result Eng2srb*/
 		foreach($results as $result) {
 			/** @var  $serbianTransations Word */
@@ -75,7 +74,7 @@ class DefaultController extends Controller
 			$serbianTranslationName = $serbianTransations->getName();
 			$englishTranslationName = $englishTransations->getName();
 
-			$index = Word::wordType2String($serbianTransations->getWordType());
+			$index = Eng2srb::wordType2String($result->getWordType());
 			if ($englishTranslationName == $word) {
 				$latestSearch[] = $serbianTranslationName;
 			}

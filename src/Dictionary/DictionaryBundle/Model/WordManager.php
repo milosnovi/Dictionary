@@ -21,11 +21,11 @@ class WordManager
         return $this->findWord($word, Word::WORD_ENGLISH);
     }
 
-    public function findSerbianWord($word, $type) {
-        return $this->findWord($word, Word::WORD_SERBIAN, $type);
+    public function findSerbianWord($word) {
+        return $this->findWord($word, Word::WORD_SERBIAN);
     }
 
-    public function findWord($word, $type, $wordType = NULL) {
+    public function findWord($word, $type) {
         /** @var $word Word */
         $wordEntity = $this->em->getRepository('DictionaryBundle:Word')->findOneBy(array(
             'name' => $word,
@@ -37,14 +37,9 @@ class WordManager
             $wordEntity = new Word();
             $wordEntity->setName($word);
             $wordEntity->settype($type);
+            $this->em->persist($wordEntity);
+            $this->em->flush();
         }
-
-        if($wordType) {
-            $wordEntity->setWordType($wordType);
-        }
-
-        $this->em->persist($wordEntity);
-        $this->em->flush();
 
         return $wordEntity;
     }

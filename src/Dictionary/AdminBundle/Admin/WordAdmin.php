@@ -16,7 +16,6 @@ class WordAdmin extends Admin
 		$formMapper
 			->add('name', 'text', array('label' => 'Post Title'))
 			->add('type', 'entity', array('class' => 'Dictionary\DictionaryBundle\Entity\User'))
-			->add('wordType') //if no type is specified, SonataAdminBundle tries to guess it
 		;
 	}
 
@@ -35,7 +34,6 @@ class WordAdmin extends Admin
 		$listMapper
 			->addIdentifier('name')
 			->add('type')
-			->add('word_type')
 		;
 	}
 }

@@ -19,16 +19,6 @@ class Word
 	const WORD_ENGLISH 		    = 1;
 	const WORD_SERBIAN 		    = 2;
 
-	const WORD_TYPE_NOUN 	    = 1;
-	const WORD_TYPE_ADJ 	    = 2;
-	const WORD_TYPE_ADV 	    = 4;
-	const WORD_TYPE_VERB 	    = 8;
-	const WORD_TYPE_PREPOSITION = 16;
-	const WORD_TYPE_CONJUNCTION = 32;
-	const WORD_TYPE_PRONOUN     = 64;
-	const WORD_TYPE_ARTICLE     = 128;
-	const WORD_TYPE_PARTICLE    = 256;
-
     /**
      * @var integer
      *
@@ -51,13 +41,6 @@ class Word
      * @ORM\Column(name="type", type="integer")
      */
     private $type;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="word_type", type="integer", nullable=true)
-     */
-    private $wordType;
 
     /**
      * @var \DateTime
@@ -287,29 +270,6 @@ class Word
 	}
 
     /**
-     * Set wordType
-     *
-     * @param integer $wordType
-     * @return Word
-     */
-    public function setWordType($wordType)
-    {
-        $this->wordType = $wordType;
-
-        return $this;
-    }
-
-    /**
-     * Get wordType
-     *
-     * @return integer 
-     */
-    public function getWordType()
-    {
-        return $this->wordType;
-    }
-
-    /**
      * Add srbTranslate
      *
      * @param \Dictionary\DictionaryBundle\Entity\Eng2srb $srbTranslate
@@ -375,70 +335,4 @@ class Word
         return $this->piles;
     }
 
-    public static function wordType2String($wordType) {
-        switch ($wordType) {
-            case self::WORD_TYPE_NOUN:
-                return 'noun';
-                break;
-            case self::WORD_TYPE_ADJ:
-                return 'adjective';
-                break;
-            case self::WORD_TYPE_ADV:
-                return 'adverb';
-                break;
-            case self::WORD_TYPE_VERB:
-                return 'verb';
-                break;
-            case self::WORD_TYPE_PREPOSITION:
-                return 'preposition';
-                break;
-            case self::WORD_TYPE_CONJUNCTION:
-                return 'conjunction';
-                break;
-            case self::WORD_TYPE_PRONOUN:
-                return 'pronoun';
-                break;
-            case self::WORD_TYPE_ARTICLE:
-                return 'article';
-                break;
-            case self::WORD_TYPE_PARTICLE:
-                return 'particle';
-                break;
-        }
-    }
-
-    public static function getWordTypeBy($value) {
-        switch ($value) {
-            case 'noun':
-                return Word::WORD_TYPE_NOUN;
-                break;
-            case 'verb':
-                return self::WORD_TYPE_ADJ;
-                break;
-            case 'adverb':
-                return self::WORD_TYPE_ADV;
-                break;
-            case 'adjective':
-                return self::WORD_TYPE_VERB;
-                break;
-            case 'preposition':
-                return self::WORD_TYPE_PREPOSITION;
-                break;
-            case 'conjunction':
-                return self::WORD_TYPE_CONJUNCTION;
-                break;
-            case 'pronoun':
-                return self::WORD_TYPE_PRONOUN;
-                break;
-            case 'article':
-                return self::WORD_TYPE_ARTICLE;
-                break;
-            case 'particle':
-                return self::WORD_TYPE_PARTICLE;
-                break;
-            default:
-                return null;
-                break;
-        }
-    }
 }

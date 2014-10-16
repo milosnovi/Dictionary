@@ -2,6 +2,7 @@
 
 namespace Dictionary\DictionaryBundle\Controller;
 
+use Dictionary\DictionaryBundle\Entity\Eng2srb;
 use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Entity\Piles;
 use Dictionary\DictionaryBundle\Entity\PilesRepository;
@@ -54,7 +55,7 @@ class PilesController extends Controller
 
             $serbianTranslationName = $serbianTransations->getName();
 
-            $index = Word::wordType2String($serbianTransations->getWordType());
+            $index = Eng2srb::wordType2String($result->getWordType());
 
             if(!isset($historyResult[$englishTransations->getId()]['translations'][$index])) {
                 $historyResult[$englishTransations->getId()]['id'] = $englishTransations->getId();

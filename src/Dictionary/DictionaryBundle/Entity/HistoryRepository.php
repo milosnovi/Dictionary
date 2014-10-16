@@ -20,7 +20,7 @@ class HistoryRepository extends EntityRepository
 			->where('h.user = :user')
 			->setParameter('user', $user)
 			->orderBy('h.lastSearch', 'DESC')
-			->setMaxResults(10)
+			->setMaxResults(20)
 			->getQuery()
 			->getResult();
 

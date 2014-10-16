@@ -2,6 +2,7 @@
 
 namespace Dictionary\DictionaryBundle\Controller;
 
+use Dictionary\DictionaryBundle\Entity\Eng2srb;
 use Dictionary\DictionaryBundle\Entity\HistoryRepository;
 use Dictionary\DictionaryBundle\Entity\Word;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -63,7 +64,7 @@ class HistoryController extends Controller
 
             $serbianTranslationName = $serbianTransations->getName();
 
-            $index = Word::wordType2String($serbianTransations->getWordType());
+            $index = Eng2srb::wordType2String($result->getWordType());
 
             if(!isset($resultHits[$englishTransations->getId()]['translations'][$index])) {
                 $resultHits[$englishTransations->getId()]['translations'][$index] = array();
