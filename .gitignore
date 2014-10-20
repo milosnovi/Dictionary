@@ -10,3 +10,4 @@
 /composer.phar
 .vagrant/
 .idea/workspace.xml
+.idea/

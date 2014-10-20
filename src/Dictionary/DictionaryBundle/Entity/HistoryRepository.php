@@ -15,8 +15,9 @@ class HistoryRepository extends EntityRepository
 
 	public function getLatestSearched($user) {
 		$histories = $this->createQueryBuilder('h')
-			->select('h, word')
+			->select('h, word, piles.type as pile_type')
 			->innerJoin('h.word', 'word')
+			->leftJoin('DictionaryBundle:Piles', 'piles', 'WITH', 'piles.word = h.word AND piles.user = h.user')
 			->where('h.user = :user')
 			->setParameter('user', $user)
 			->orderBy('h.lastSearch', 'DESC')

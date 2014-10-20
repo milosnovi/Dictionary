@@ -76,17 +76,29 @@ class TranslateManager
 	}
 
 	public function translateFromGoogle($word) {
-
 		$dictionary = $this->googleTranslator->translate($word);
-		if (!$dictionary) {
-			return false;
+
+		$origin = null;
+		if (isset($dictionary->sentences[0])) {
+			$origin = $dictionary->sentences[0]->orig;
+		}
+
+		if (!isset($dictionary->dict)) {
+			return array(
+				'success' => false
+			);
 		}
 
 		$english = $this->wordManager->findEnglishWord($word);
-		foreach ($dictionary as $dict) {
+		foreach ($dictionary->dict as $dict) {
+			if ($dict->base_form != $origin) {
+				return array(
+					'success' => false,
+					'similar' => $dict->base_form
+				);
+			}
+
 			$type = Eng2srb::getWordTypeBy($dict->pos);
-//			var_dump($type);
-//exit;
 			$t = \Transliterator::create('Serbian-Latin/BGN');
 			foreach ($dict->terms as $relevance => $term) {
 				$serbianTranslation = $t->transliterate($term);
@@ -100,6 +112,8 @@ class TranslateManager
 				}
 			}
 		}
-		return true;
+		return array(
+			'success' => true
+		);
 	}
 }

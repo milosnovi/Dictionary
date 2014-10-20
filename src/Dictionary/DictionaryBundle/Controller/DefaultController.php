@@ -54,16 +54,19 @@ class DefaultController extends Controller
 		$histories = $historyRepository->getLatestSearched($user);
 		$englishIds = array();
 		foreach($histories as $index => $history) {
-			$englishIds[] = $history->getWord()->getId();
-			$historyResult[$history->getWord()->getName()] = array();
+			$englishIds[] = $history[0]->getWord()->getId();
+			$historyResult[$history[0]->getWord()->getName()] = array(
+				'piles_type' => $history['pile_type']
+			);
 			if ($index == 0) {
-				$word = $history->getWord()->getName();
+				$word = $history[0]->getWord()->getName();
 			}
 		}
 
 		/** @var  $eng2srbRepository Eng2srbRepository*/
 		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
 		$results = $eng2srbRepository->getEnglishTranslations($englishIds);
+
 		/** @var $result Eng2srb*/
 		foreach($results as $result) {
 			/** @var  $serbianTransations Word */
@@ -90,7 +93,7 @@ class DefaultController extends Controller
 		if(!empty($latestSearch)) {
 			/** @var $eng2srbRepository Eng2srbRepository */
 			$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
-			$translationSinonyms = $eng2srbRepository->createQueryBuilder('eng2srb')
+			$translationSynonyms = $eng2srbRepository->createQueryBuilder('eng2srb')
 				->select('eng2srb, english, serbian')
 				->innerJoin('eng2srb.eng', 'english')
 				->innerJoin('eng2srb.srb', 'serbian')
@@ -110,12 +113,11 @@ class DefaultController extends Controller
 
 			$latestSearchSynonyms = array();
 			/** @var $synonyms Eng2srb*/
-			foreach ($translationSinonyms as $synonyms) {
+			foreach ($translationSynonyms as $synonyms) {
 				$serbianWord = $synonyms->getSrb()->getName();
 				$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
 			}
 		}
-
 		$latestSearch = isset($historyResult[$word]) ? $historyResult[$word] : false;
         return array(
 			'latestSearch'			=> $latestSearch,
@@ -146,11 +148,16 @@ class DefaultController extends Controller
 
 		$success = $translationManager->translate($word, $user);
 		if(!$success) {
-			$success = $translationManager->translateFromGoogle($word, $user);
+			$response = $translationManager->translateFromGoogle($word, $user);
+			$success = $response['success'];
 		}
 
 		if (!$success) {
-			$this->get('session')->getFlashBag()->add('notice', 'No results');
+			if(isset($response['similar'])) {
+				$this->get('session')->getFlashBag()->add('notice', "See translation of <a href=" . $this->generateUrl('_home', array('word' => $response['similar'])). ">" .$response['similar']. "</a>");
+			} else {
+				$this->get('session')->getFlashBag()->add('notice', 'No results');
+			}
 		} else {
 			if ($user) {
 				$this->get('dictionary.historyManager')->updateHistoryLog($user, $word);
@@ -158,7 +165,6 @@ class DefaultController extends Controller
 		}
 
 		return $this->redirect($this->generateUrl('_home'));
-
 	}
 
 

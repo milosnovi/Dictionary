@@ -6,8 +6,8 @@
 
 {% block content %}
     {% for flashMessage in app.session.flashbag.get('notice') %}
-        <div class="flash-message">
-            <em>Notice</em>: {{ flashMessage }}
+        <div class="flash-message" style="padding: 5px">
+            {{ flashMessage|raw }}
         </div>
     {% endfor %}
 
@@ -64,6 +64,7 @@
                 </div>
                 <div class="panel-body">
                     {% for key, history in histories %}
+                        {% set pileType = history.piles_type %}
                         {% if loop.index % 2 %}
                             {% set class = 'word_history_white' %}
                         {% else %}
@@ -71,9 +72,9 @@
                         {% endif %}
                         <div class="{{ class }}">
                             <div style="float: right">
-                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 1 }) }}" class="btn btn-sm btn-success" style="line-height: 1;">KNOW</a>
-                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 2 }) }}" class="btn btn-sm btn-warning" style="line-height: 1;">ALMOST</a>
-                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 4 }) }}" class="btn btn-sm btn-danger" style="line-height: 1;">DON'T KNOW</a>
+                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 1 }) }}" class="btn btn-sm btn-success {% if pileType == 1 %} disabled {% endif %}" style="line-height: 1;">KNOW</a>
+                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 2 }) }}" class="btn btn-sm btn-warning {% if pileType == 2 %} disabled {% endif %}" style="line-height: 1;">ALMOST</a>
+                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 4 }) }}" class="btn btn-sm btn-danger  {% if pileType == 4 %} disabled {% endif %}" style="line-height: 1;">DON'T KNOW</a>
                             </div>
                             <span class="history_key">{{ key }}</span>
                             <br/>
