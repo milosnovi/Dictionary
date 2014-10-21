@@ -30,8 +30,9 @@ class HistoryRepository extends EntityRepository
 
 	public function getSearchedByHits($user) {
 		$historyByHits = $this->createQueryBuilder('h')
-			->select('h, word')
+			->select('h, word, piles.type as pile_type')
 			->innerJoin('h.word', 'word')
+			->leftJoin('DictionaryBundle:Piles', 'piles', 'WITH', 'piles.word = h.word AND piles.user = h.user')
 			->where('h.user = :user')
 			->andWhere('h.hits >= :number')
 			->setParameter('user', $user)

@@ -10,7 +10,9 @@ use Dictionary\DictionaryBundle\Entity\User;
 use Dictionary\DictionaryBundle\Entity\Word;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -65,13 +67,13 @@ class PilesController extends Controller
             $historyResult[$englishTransations->getId()]['translations'][$index][] = $serbianTranslationName;
         }
 
-        $resultToReturn = array();
+        $resultToReturn = array(
+            Piles::TYPE_KNOW => array(),
+            Piles::TYPE_NOT_SURE => array(),
+            Piles::TYPE_DO_NOT_KNOW => array()
+        );
         foreach($piles as $pile) {
-            $pileType = $pile->getType();
-            if(!isset($resultToReturn[$pileType])) {
-                $resultToReturn[$pileType] = array();
-            }
-            $resultToReturn[$pileType][] = array(
+            $resultToReturn[$pile->getType()][] = array(
                 'pile' => $pile,
                 'translation' => $historyResult[$pile->getWord()->getId()]
             );
@@ -111,7 +113,39 @@ class PilesController extends Controller
         $em->persist($pile);
         $em->flush();
 
-        return $this->redirect($this->generateUrl('dictionary_piles'));
+        if ($request->isXMLHttpRequest()) {
+            return new JsonResponse(array(
+               'success' => true
+            ));
+        } else {
+            return $this->redirect($this->generateUrl('dictionary_piles'));
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param Piles $pile
+     * @return array
+     *
+     * @Route("/pile/{id}", name="delete_pile_item")
+     * @Method({"DELETE"})
+     * @Template()
+     */
+    public function removeHistoryItemAction(Request $request, Piles $pile)
+    {
+        /** @var $em EntityManager*/
+        $em = $this->getDoctrine()->getManager();
+
+        $em->remove($pile);
+        $em->flush();
+
+        if ($request->isXMLHttpRequest()) {
+            return new JsonResponse(array(
+                'success' => true
+            ));
+        } else {
+            return $this->redirect($this->generateUrl('dictionary_piles'));
+        }
     }
 
 }

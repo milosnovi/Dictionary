@@ -31,8 +31,11 @@
                                 {% else %}
                                     {% set class = 'word_history_grey' %}
                                 {% endif %}
-                                <div class="{{ class }}">
-                                    <span class="glyphicon glyphicon-trash"></span>
+                                <div id="pile_item_{{ pile.pile.id }}" class="{{ class }}">
+                                    <a class="pile_delete_item" data-id="{{ pile.pile.id }}" href="{{ path('delete_pile_item', {'id': pile.pile.id}) }}">
+                                        <span style="float:right" class="glyphicon glyphicon-trash"></span>
+                                    </a>
+
                                     <span class="history_key">{{ pile.translation.name }}</span>
                                     <br/>
                                     {% for type, translation in pile.translation.translations %}
@@ -42,7 +45,9 @@
                                         </div>
                                     {%  endfor %}
                                 </div>
-                            {%  endfor %}
+                            {% else %}
+                                <div>No piles found</div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -51,4 +56,11 @@
 
     </div>
 
+{% endblock %}
+    {% block additionaljs %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Dictionary.initPilesForms();
+        });
+    </script>
 {% endblock %}

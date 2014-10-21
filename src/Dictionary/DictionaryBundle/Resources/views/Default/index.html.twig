@@ -70,11 +70,12 @@
                         {% else %}
                             {% set class = 'word_history_grey' %}
                         {% endif %}
-                        <div class="{{ class }}">
+                        <div id="history_item_{{ history.history_id }}" class="{{ class }}">
                             <div style="float: right">
-                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 1 }) }}" class="btn btn-sm btn-success {% if pileType == 1 %} disabled {% endif %}" style="line-height: 1;">KNOW</a>
-                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 2 }) }}" class="btn btn-sm btn-warning {% if pileType == 2 %} disabled {% endif %}" style="line-height: 1;">ALMOST</a>
-                                <a href="{{ path('move_2_piles', {'word': history.id, 'pileId': 4 }) }}" class="btn btn-sm btn-danger  {% if pileType == 4 %} disabled {% endif %}" style="line-height: 1;">DON'T KNOW</a>
+                                <a href="{{ path('move_2_piles', {'word': history.word_id, 'pileId': 1 }) }}" class="pile btn btn-sm btn-success {% if pileType == 1 %} disabled {% endif %}" style="line-height: 1;">KNOW</a>
+                                <a href="{{ path('move_2_piles', {'word': history.word_id, 'pileId': 2 }) }}" class="pile btn btn-sm btn-warning {% if pileType == 2 %} disabled {% endif %}" style="line-height: 1;">ALMOST</a>
+                                <a href="{{ path('move_2_piles', {'word': history.word_id, 'pileId': 4 }) }}" class="pile btn btn-sm btn-danger  {% if pileType == 4 %} disabled {% endif %}" style="line-height: 1;">DON'T KNOW</a>
+                                <a class="history_delete_item" data-id="{{ history.history_id }}" href="{{ path('delete_history_item', {'id': history.history_id}) }}"><span class='glyphicon glyphicon-cog'></span></a>
                             </div>
                             <span class="history_key">{{ key }}</span>
                             <br/>

@@ -52,10 +52,14 @@ class DefaultController extends Controller
 		$historyResult = array();
 
 		$histories = $historyRepository->getLatestSearched($user);
+//		\Doctrine\Common\Util\Debug::dump($histories,3);
+//		exit;
 		$englishIds = array();
 		foreach($histories as $index => $history) {
 			$englishIds[] = $history[0]->getWord()->getId();
 			$historyResult[$history[0]->getWord()->getName()] = array(
+				'history_id' => $history[0]->getId(),
+				'word_id' => $history[0]->getWord()->getId(),
 				'piles_type' => $history['pile_type']
 			);
 			if ($index == 0) {
@@ -83,7 +87,6 @@ class DefaultController extends Controller
 			}
 
 			if(!isset($historyResult[$englishTranslationName]['translations'][$index])) {
-				$historyResult[$englishTranslationName]['id'] = $englishTransations->getId();
 				$historyResult[$englishTranslationName]['translations'][$index] = array();
 			}
 			$historyResult[$englishTranslationName]['translations'][$index][] = $serbianTranslationName;
@@ -119,6 +122,7 @@ class DefaultController extends Controller
 			}
 		}
 		$latestSearch = isset($historyResult[$word]) ? $historyResult[$word] : false;
+//		var_dump($historyResult);
         return array(
 			'latestSearch'			=> $latestSearch,
 			'latestSearchSynonyms'	=> $latestSearchSynonyms,

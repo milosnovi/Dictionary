@@ -35,16 +35,18 @@
                 </div>
                 <div class="panel-body">
                     {% for key, hit in historyHits %}
+                        {% set pileType = hit.piles_type %}
                         {% if loop.index % 2 %}
                             {% set class = 'word_history_white' %}
                         {% else %}
                             {% set class = 'word_history_grey' %}
                         {% endif %}
-                        <div class="{{ class }}">
+                        <div id="history_item_{{ hit.history_id }}" class="{{ class }}">
                             <div style="float: right">
-                                <a href="#" class="btn btn-sm btn-success" style="line-height: 1;">KNOW</a>
-                                <a href="#" class="btn btn-sm btn-warning" style="line-height: 1;">ALMOST</a>
-                                <a href="#" class="btn btn-sm btn-danger" style="line-height: 1;">DON'T KNOW</a>
+                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 1 }) }}" class="pile btn btn-sm btn-success {% if pileType == 1 %} disabled {% endif %}" style="line-height: 1;">KNOW</a>
+                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 2 }) }}" class="pile btn btn-sm btn-warning {% if pileType == 2 %} disabled {% endif %}" style="line-height: 1;">ALMOST</a>
+                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 4 }) }}" class="pile btn btn-sm btn-danger  {% if pileType == 4 %} disabled {% endif %}" style="line-height: 1;">DON'T KNOW</a>
+                                <a class="history_delete_item" data-id="{{ hit.history_id }}" href="{{ path('delete_history_item', {'id': hit.history_id}) }}"><span class='glyphicon glyphicon-cog'></span></a>
                             </div>
                             <span class="history_key">{{ hit.name }}</span><br/>
                             {% for type, hitEntry in hit.translations %}
@@ -60,4 +62,12 @@
         </div>
     </div>
 
+{% endblock %}
+{% block additionaljs %}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Dictionary.initPilesForms();
+        });
+    </script>
 {% endblock %}
