@@ -35,14 +35,23 @@ class DefaultController extends Controller
 		$translationManager = $this->get('dictionary.translateManager');
 
 		$word = strtolower($request->get('word'));
+		$errorMessage = false;
+		$success = true;
 		if ($word) {
 			$translations = $translationManager->translate($word);
 			$success = 1 < count($translations);
 			if(!$success) {
-				$success = $translationManager->translateFromGoogle($word);
+				$response = $translationManager->translateFromGoogle($word, $user);
+				$success = $response['success'];
 			}
 			if ($success) {
 				$this->get('dictionary.historyManager')->updateHistoryLog($user, $word);
+			} else {
+				if(isset($response['similar'])) {
+					$errorMessage = "See translation of <a href=" . $this->generateUrl('_home', array('word' => $response['similar'])). ">" .$response['similar']. "</a>";
+				} else {
+					$errorMessage = 'There is no result!';
+				}
 			}
 		}
 
@@ -63,7 +72,7 @@ class DefaultController extends Controller
 				'piles_type' => $history['pile_type']
 			);
 			if ($index == 0) {
-				$word = $history[0]->getWord()->getName();
+				$latestSerachWordName = $history[0]->getWord()->getName();
 			}
 		}
 
@@ -82,7 +91,7 @@ class DefaultController extends Controller
 			$englishTranslationName = $englishTransations->getName();
 
 			$index = Eng2srb::wordType2String($result->getWordType());
-			if ($englishTranslationName == $word) {
+			if ($englishTranslationName == $latestSerachWordName) {
 				$latestSearch[] = $serbianTranslationName;
 			}
 
@@ -93,41 +102,45 @@ class DefaultController extends Controller
 		}
 
 		$latestSearchSynonyms = array();
-		if(!empty($latestSearch)) {
-			/** @var $eng2srbRepository Eng2srbRepository */
-			$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
-			$translationSynonyms = $eng2srbRepository->createQueryBuilder('eng2srb')
-				->select('eng2srb, english, serbian')
-				->innerJoin('eng2srb.eng', 'english')
-				->innerJoin('eng2srb.srb', 'serbian')
-				->where('serbian.name IN (:serbianWords)')
-				->andWhere('eng2srb.direction = :direction')
-				->andWhere('english.type = :englishType')
-				->andWhere('serbian.type = :serbianType')
-				->setParameters(array(
-					'serbianWords' => $latestSearch,
-					'englishType' => Word::WORD_ENGLISH,
-					'serbianType' => Word::WORD_SERBIAN,
-					'direction' => Eng2srb::SRB_2_ENG
-				))
-				->orderBy('serbian.name, eng2srb.relevance', 'ASC')
-				->getQuery()
-				->getResult();
+		if($success) {
+			if (!empty($latestSearch)) {
+				/** @var $eng2srbRepository Eng2srbRepository */
+				$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
+				$translationSynonyms = $eng2srbRepository->createQueryBuilder('eng2srb')
+					->select('eng2srb, english, serbian')
+					->innerJoin('eng2srb.eng', 'english')
+					->innerJoin('eng2srb.srb', 'serbian')
+					->where('serbian.name IN (:serbianWords)')
+					->andWhere('eng2srb.direction = :direction')
+					->andWhere('english.type = :englishType')
+					->andWhere('serbian.type = :serbianType')
+					->setParameters(array(
+						'serbianWords' => $latestSearch,
+						'englishType' => Word::WORD_ENGLISH,
+						'serbianType' => Word::WORD_SERBIAN,
+						'direction' => Eng2srb::SRB_2_ENG
+					))
+					->orderBy('serbian.name, eng2srb.relevance', 'ASC')
+					->getQuery()
+					->getResult();
 
-			$latestSearchSynonyms = array();
-			/** @var $synonyms Eng2srb*/
-			foreach ($translationSynonyms as $synonyms) {
-				$serbianWord = $synonyms->getSrb()->getName();
-				$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
+				$latestSearchSynonyms = array();
+				/** @var $synonyms Eng2srb */
+				foreach ($translationSynonyms as $synonyms) {
+					$serbianWord = $synonyms->getSrb()->getName();
+					$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
+				}
 			}
+			$latestSearch = isset($historyResult[$latestSerachWordName]) ? $historyResult[$latestSerachWordName] : false;
+		} else {
+			$latestSearch = false;
 		}
-		$latestSearch = isset($historyResult[$word]) ? $historyResult[$word] : false;
-//		var_dump($historyResult);
         return array(
 			'latestSearch'			=> $latestSearch,
 			'latestSearchSynonyms'	=> $latestSearchSynonyms,
 			'latestWord'			=> $word,
 			'histories' 			=> $historyResult,
+			'errorMessage'			=> $errorMessage
 		);
     }
 
