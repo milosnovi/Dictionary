@@ -99,16 +99,18 @@ class TranslateManager
 			}
 
 			$type = Eng2srb::getWordTypeBy($dict->pos);
-			$t = \Transliterator::create('Serbian-Latin/BGN');
-			foreach ($dict->terms as $relevance => $term) {
-				$serbianTranslation = $t->transliterate($term);
-				$serbian = $this->wordManager->findSerbianWord($serbianTranslation);
-				$this->eng2srbManager->findTranslation($english, $serbian, Eng2srb::ENG_2_SRB, $relevance, $type);
+			if ($type) {
+				$t = \Transliterator::create('Serbian-Latin/BGN');
+				foreach ($dict->terms as $relevance => $term) {
+					$serbianTranslation = $t->transliterate($term);
+					$serbian = $this->wordManager->findSerbianWord($serbianTranslation);
+					$this->eng2srbManager->findTranslation($english, $serbian, Eng2srb::ENG_2_SRB, $relevance, $type);
 
-				$englishTranslations = $dict->entry[$relevance];
-				foreach ($englishTranslations->reverse_translation as $revertTraRelevance => $englishTran) {
-					$englishReversTrans = $this->wordManager->findEnglishWord($englishTran);
-					$this->eng2srbManager->findTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG, $revertTraRelevance, $type);
+					$englishTranslations = $dict->entry[$relevance];
+					foreach ($englishTranslations->reverse_translation as $revertTraRelevance => $englishTran) {
+						$englishReversTrans = $this->wordManager->findEnglishWord($englishTran);
+						$this->eng2srbManager->findTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG, $revertTraRelevance, $type);
+					}
 				}
 			}
 		}

@@ -60,13 +60,14 @@ class fetchWordsCommand extends ContainerAwareCommand
 				$output->writeln("<error>word is not valid:[ $word]</error>");
 				continue;
 			}
-			$output->writeln("<comment>[WORD]:" . $words[$i] . "</comment>");
+			$output->writeln("<comment>[WORD]:" . $word . "</comment>");
+			continue;
 
 			$success = $translationManager->translate($word);
 			if(!$success) {
 				$wordsFromMetak++;
-				$success = $translationManager->translateFromGoogle(strtolower($words[$i]));
-				if($success) {
+				$result = $translationManager->translateFromGoogle(strtolower($word));
+				if($result['success']) {
 					$output->writeln("<info>GOOGLE</info>");
 				} else {
 					$output->writeln("GOOGLE do not know for this word");
