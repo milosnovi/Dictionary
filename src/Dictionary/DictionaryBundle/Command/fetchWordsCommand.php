@@ -22,7 +22,8 @@ class fetchWordsCommand extends ContainerAwareCommand
 		$this
 			->setName('fetch:word')
 			->addArgument('url', InputArgument::REQUIRED, '')
-			->addArgument('offset', InputArgument::REQUIRED, '')
+			->addArgument('limit', InputArgument::OPTIONAL, '')
+			->addArgument('offset', InputArgument::OPTIONAL, '')
 		;
 	}
 
@@ -35,7 +36,9 @@ class fetchWordsCommand extends ContainerAwareCommand
 	{
 
 		$url = $input->getArgument('url');
+		$limit = $input->getArgument('limit');
 		$offset = $input->getArgument('offset');
+
 		$html = file_get_contents($url);
 
 		$crawler = new Crawler($html);
@@ -46,22 +49,25 @@ class fetchWordsCommand extends ContainerAwareCommand
 
 		$translationManager = $this->getContainer()->get('dictionary.translateManager');
 
-		$limit = $offset + 150;
+		$limit = ($limit && 'all' != $limit) ? $limit : count($words);
+		$offset = $offset ?: 0;
+
 		$j = 0;
 		$wordsFromMetak = 0;
 		$wordsFromDb = 0;
+
 		for($i = $offset; $i < $limit; $i ++) {
 			$j++;
 			$chars = array(',', '.', ':', ' ', ';', '(', ')', '"');
 			$word = str_replace($chars, '', $words[$i]);
 			$word = trim($word);
 			$word = preg_replace('/[\s]+/', ' ', $word);
-			if (!preg_match('/[0-9]+/', $word) && strlen($word) < 3){
-				$output->writeln("<error>word is not valid:[ $word]</error>");
+			var_dump($word);
+			if (preg_match('/[0-9]+/', $word) || strlen($word) < 3 || strlen($word) > 16){
+				$output->writeln("<error>word is not valid:[$word]</error>");
 				continue;
 			}
 			$output->writeln("<comment>[WORD]:" . $word . "</comment>");
-			continue;
 
 			$success = $translationManager->translate($word);
 			if(!$success) {
@@ -76,8 +82,8 @@ class fetchWordsCommand extends ContainerAwareCommand
 				$wordsFromDb++;
 				$output->writeln("DB");
 			}
-			if($i % 10 == 0) {
-				$output->writeln("<info>===================" . round($j / 150 * 100) . "% percent are processed=================</info>");
+			if($i % 100 == 0) {
+				$output->writeln("<info>===================" . round($j / $limit * 100) . "% percent are processed=================</info>");
 			}
 		}
 		$output->writeln("[words from GOOGLE]:" . $wordsFromMetak);
