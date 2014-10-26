@@ -52,12 +52,13 @@ class fetchWordsCommand extends ContainerAwareCommand
 		$limit = ($limit && 'all' != $limit) ? $limit : count($words);
 		$offset = $offset ?: 0;
 
-		$j = 0;
 		$wordsFromMetak = 0;
 		$wordsFromDb = 0;
 
-		for($i=0; $i < $limit; $i ++) {
-			$j++;
+		$output->writeln("<info>number of words" . $limit . "</info>");
+
+		for($i = 0; $i < $limit; $i ++) {
+			$output->writeln("<info>number index" . $i . "</info>");
 			$chars = array(',', '.', ':', ' ', ';', '(', ')', '"');
 			$word = str_replace($chars, '', $words[$i+$offset]);
 			$word = trim($word);
@@ -65,7 +66,7 @@ class fetchWordsCommand extends ContainerAwareCommand
 			var_dump($word);
 			if (preg_match('/[0-9]+/', $word) || strlen($word) < 3 || strlen($word) > 16){
 				$output->writeln("<error>word is not valid:[$word]</error>");
-				$output->writeln("<info>===================" . round($j / $limit * 100) . "% percent are processed=================</info>");
+				$output->writeln("<info>===================" . round($i / $limit * 100) . "% percent are processed=================</info>");
 				continue;
 			}
 			$output->writeln("<comment>[WORD]:" . $word . "</comment>");
@@ -83,8 +84,9 @@ class fetchWordsCommand extends ContainerAwareCommand
 				$wordsFromDb++;
 				$output->writeln("DB");
 			}
+
 			if($i % 30 == 0) {
-				$output->writeln("<info>===================" . round($j / $limit * 100) . "% percent are processed=================</info>");
+				$output->writeln("<info>===================" . round($i / $limit * 100) . "% percent are processed=================</info>");
 			}
 		}
 		$output->writeln("[words from GOOGLE]:" . $wordsFromMetak);
