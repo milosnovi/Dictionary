@@ -83,7 +83,7 @@ class fetchWordsCommand extends ContainerAwareCommand
 				$wordsFromDb++;
 				$output->writeln("DB");
 			}
-			if($i % 100 == 0) {
+			if($i % 30 == 0) {
 				$output->writeln("<info>===================" . round($j / $limit * 100) . "% percent are processed=================</info>");
 			}
 		}
