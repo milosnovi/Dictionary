@@ -56,15 +56,16 @@ class fetchWordsCommand extends ContainerAwareCommand
 		$wordsFromMetak = 0;
 		$wordsFromDb = 0;
 
-		for($i = $offset; $i < $limit; $i ++) {
+		for($i=0; $i < $limit; $i ++) {
 			$j++;
 			$chars = array(',', '.', ':', ' ', ';', '(', ')', '"');
-			$word = str_replace($chars, '', $words[$i]);
+			$word = str_replace($chars, '', $words[$i+$offset]);
 			$word = trim($word);
 			$word = preg_replace('/[\s]+/', ' ', $word);
 			var_dump($word);
 			if (preg_match('/[0-9]+/', $word) || strlen($word) < 3 || strlen($word) > 16){
 				$output->writeln("<error>word is not valid:[$word]</error>");
+				$output->writeln("<info>===================" . round($j / $limit * 100) . "% percent are processed=================</info>");
 				continue;
 			}
 			$output->writeln("<comment>[WORD]:" . $word . "</comment>");
