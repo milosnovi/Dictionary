@@ -63,7 +63,6 @@ class fetchWordsCommand extends ContainerAwareCommand
 			$word = str_replace($chars, '', $words[$i+$offset]);
 			$word = trim($word);
 			$word = preg_replace('/[\s]+/', ' ', $word);
-			var_dump($word);
 			if (preg_match('/[0-9]+/', $word) || strlen($word) < 3 || strlen($word) > 16){
 				$output->writeln("<error>word is not valid:[$word]</error>");
 				$output->writeln("<info>===================" . round($i / $limit * 100) . "% percent are processed=================</info>");
