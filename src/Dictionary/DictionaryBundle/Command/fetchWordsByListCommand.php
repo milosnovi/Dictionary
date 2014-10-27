@@ -33,7 +33,7 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		// 1300
+		// 4300
 		$limit = $input->getArgument('limit');
 		$offset = $input->getArgument('offset');
 
@@ -53,10 +53,10 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 		for ($i = 0; $i < $limit; $i++) {
 			$output->writeln("<info>number index " . $i . "</info>");
 			$output->writeln("<comment>[WORD]:" . $rows[$i + $offset] . "</comment>");
-
-			$success = $translationManager->translate($rows[$i]);
+			
+			$success = $translationManager->translate($rows[$i + $offset]);
 			if (!$success) {
-				$result = $translationManager->translateFromGoogle(strtolower($rows[$i]));
+				$result = $translationManager->translateFromGoogle(strtolower($rows[$i + $offset]));
 				if ($result['success']) {
 					$wordsFromGoogle++;
 					$output->writeln("<info>GOOGLE</info>");
