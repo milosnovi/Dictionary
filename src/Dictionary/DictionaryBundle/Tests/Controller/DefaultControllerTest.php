@@ -3,6 +3,7 @@
 namespace Dictionary\DictionaryBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 class DefaultControllerTest extends WebTestCase
 {
@@ -10,8 +11,21 @@ class DefaultControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/hello/Fabien');
+        $client->followRedirects();
+        $client->request('GET', '/');
 
-        $this->assertTrue($crawler->filter('html:contains("Hello Fabien")')->count() > 0);
+        $response =  $client->getResponse();
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $crawler = new Crawler($response->getContent());
+        $this->assertEquals(1, $crawler->filter('form')->count());
+    }
+
+    public function testIndexNoRedirect()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/');
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
     }
 }

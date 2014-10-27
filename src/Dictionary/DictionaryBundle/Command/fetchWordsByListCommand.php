@@ -53,7 +53,7 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 		for ($i = 0; $i < $limit; $i++) {
 			$output->writeln("<info>number index " . $i . "</info>");
 			$output->writeln("<comment>[WORD]:" . $rows[$i + $offset] . "</comment>");
-			
+
 			$success = $translationManager->translate($rows[$i + $offset]);
 			if (!$success) {
 				$result = $translationManager->translateFromGoogle(strtolower($rows[$i + $offset]));
