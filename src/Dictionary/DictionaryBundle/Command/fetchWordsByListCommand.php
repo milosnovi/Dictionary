@@ -33,6 +33,7 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		// 1300
 		$limit = $input->getArgument('limit');
 		$offset = $input->getArgument('offset');
 
@@ -43,6 +44,7 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 		$rows = explode("\n", $txt_file);
 
 		$wordsFromGoogle = 0;
+		$wordsFailsFromGoogle = 0;
 		$wordsFromDb = 0;
 
 		$limit = ($limit && 'all' != $limit) ? $limit : count($rows);
@@ -54,11 +56,12 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 
 			$success = $translationManager->translate($rows[$i]);
 			if (!$success) {
-				$wordsFromGoogle++;
 				$result = $translationManager->translateFromGoogle(strtolower($rows[$i]));
 				if ($result['success']) {
+					$wordsFromGoogle++;
 					$output->writeln("<info>GOOGLE</info>");
 				} else {
+					$wordsFailsFromGoogle++;
 					$output->writeln("GOOGLE do not know for this word");
 				}
 			} else {
@@ -68,9 +71,12 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 
 			if ($i % 30 == 0) {
 				$output->writeln("<info>===================" . round($i / $limit * 100) . "% percent are processed=================</info>");
+				$output->writeln("[words from GOOGLE]:" . $wordsFromGoogle);
+				$output->writeln("[words fails from Google]:" . $wordsFailsFromGoogle);
+				$output->writeln("[words from DATABASE]:" . $wordsFromDb);
+				$output->writeln("<info>===================>===================>===================>===============================</info>");
 			}
 		}
-		$output->writeln("[words from GOOGLE]:" . $wordsFromGoogle);
-		$output->writeln("[words from DATABASE]:" . $wordsFromDb);
+
 	}
 }
