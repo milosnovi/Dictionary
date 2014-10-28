@@ -24,13 +24,12 @@ class PilesController extends Controller
 {
 
     /**
-     * @param Request $request
      * @return array
      *
      * @Route("piles", name="dictionary_piles")
      * @Template()
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         /** @var  $user User */
         $user = $this->getUser();
@@ -47,6 +46,18 @@ class PilesController extends Controller
         /** @var  $eng2srbRepository Eng2srbRepository */
         $eng2srbRepository = $this->getDoctrine()->getRepository('DictionaryBundle:Eng2srb');
         $results = $eng2srbRepository->getEnglishTranslations($englishIds);
+
+        $resultToReturn = [
+            Piles::TYPE_KNOW        => [],
+            Piles::TYPE_NOT_SURE    => [],
+            Piles::TYPE_DO_NOT_KNOW => []
+        ];
+
+        if(empty($results)) {
+            return [
+                'resultToReturn' => $resultToReturn
+            ];
+        }
 
         /** @var $result Eng2srb*/
         foreach($results as $result) {
@@ -67,20 +78,16 @@ class PilesController extends Controller
             $historyResult[$englishTransations->getId()]['translations'][$index][] = $serbianTranslationName;
         }
 
-        $resultToReturn = array(
-            Piles::TYPE_KNOW => array(),
-            Piles::TYPE_NOT_SURE => array(),
-            Piles::TYPE_DO_NOT_KNOW => array()
-        );
         foreach($piles as $pile) {
             $resultToReturn[$pile->getType()][] = array(
                 'pile' => $pile,
                 'translation' => $historyResult[$pile->getWord()->getId()]
             );
         }
-        return array(
+
+        return [
             'resultToReturn' => $resultToReturn
-        );
+        ];
     }
 
 	/**

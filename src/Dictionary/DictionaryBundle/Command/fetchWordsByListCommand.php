@@ -33,7 +33,7 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		// 9000
+		// 11000
 		$limit = $input->getArgument('limit');
 		$offset = $input->getArgument('offset');
 

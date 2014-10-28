@@ -5,6 +5,7 @@ namespace Dictionary\DictionaryBundle\Model;
 
 use Dictionary\DictionaryBundle\Entity\History;
 use Dictionary\DictionaryBundle\Entity\Word;
+use Doctrine\ORM\EntityManager;
 
 class HistoryManager
 {

@@ -2,8 +2,7 @@
 
 namespace Dictionary\DictionaryBundle\Model;
 
-
-use Dictionary\DictionaryBundle\Entity\Word;
+use Doctrine\ORM\EntityManager;
 
 class PilesManager
 {

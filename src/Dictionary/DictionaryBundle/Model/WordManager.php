@@ -4,6 +4,7 @@ namespace Dictionary\DictionaryBundle\Model;
 
 
 use Dictionary\DictionaryBundle\Entity\Word;
+use Doctrine\ORM\EntityManager;
 
 class WordManager
 {
@@ -12,7 +13,7 @@ class WordManager
      */
     private $em;
 
-    public function __construct($em)
+    public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }

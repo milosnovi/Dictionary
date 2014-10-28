@@ -4,7 +4,6 @@ namespace Dictionary\DictionaryBundle\Model;
 
 
 use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
-use Dictionary\DictionaryBundle\Entity\Synonyms;
 use Dictionary\DictionaryBundle\Entity\WordRepository;
 use Doctrine\ORM\EntityManager;
 
@@ -75,7 +74,7 @@ class TranslateManager
 		return $results;
 	}
 
-	public function translateFromGoogle($word) {
+	public function translateFromGoogle($word, $forceUpdate = false) {
 		$dictionary = $this->googleTranslator->translate($word);
 
 		$origin = null;
@@ -90,6 +89,7 @@ class TranslateManager
 		}
 
 		$english = $this->wordManager->findEnglishWord($word);
+
 		foreach ($dictionary->dict as $dict) {
 			if ($dict->base_form != $origin) {
 				return array(
@@ -104,12 +104,18 @@ class TranslateManager
 				foreach ($dict->terms as $relevance => $term) {
 					$serbianTranslation = $t->transliterate($term);
 					$serbian = $this->wordManager->findSerbianWord($serbianTranslation);
-					$this->eng2srbManager->findTranslation($english, $serbian, Eng2srb::ENG_2_SRB, $relevance, $type);
+					if($forceUpdate) {
+						$this->eng2srbManager->removeTranslation($english, $serbian, Eng2srb::ENG_2_SRB);
+					}
+					$this->eng2srbManager->findAndCreateTranslation($english, $serbian, Eng2srb::ENG_2_SRB, $relevance, $type);
 
 					$englishTranslations = $dict->entry[$relevance];
 					foreach ($englishTranslations->reverse_translation as $revertTraRelevance => $englishTran) {
 						$englishReversTrans = $this->wordManager->findEnglishWord($englishTran);
-						$this->eng2srbManager->findTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG, $revertTraRelevance, $type);
+						if($forceUpdate) {
+							$this->eng2srbManager->removeTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG);
+						}
+						$this->eng2srbManager->findAndCreateTranslation($englishReversTrans, $serbian, Eng2srb::SRB_2_ENG, $revertTraRelevance, $type);
 					}
 				}
 			}

@@ -12,10 +12,13 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class DefaultController extends Controller
 {
+
 	/**
 	 * @param Request $request
 	 * @return array
@@ -36,7 +39,7 @@ class DefaultController extends Controller
 
 		$word = strtolower($request->get('word'));
 		$errorMessage = false;
-		$success = true;
+		$success = false;
 		if ($word) {
 			$translations = $translationManager->translate($word);
 			$success = 1 < count($translations);
@@ -44,6 +47,7 @@ class DefaultController extends Controller
 				$response = $translationManager->translateFromGoogle($word, $user);
 				$success = $response['success'];
 			}
+
 			if ($success) {
 				$this->get('dictionary.historyManager')->updateHistoryLog($user, $word);
 			} else {
@@ -55,14 +59,12 @@ class DefaultController extends Controller
 			}
 		}
 
-		/** @var $historyRepository HistoryRepository */
-		$historyRepository = $em->getRepository('DictionaryBundle:History');
 
 		$historyResult = array();
 
+		/** @var $historyRepository HistoryRepository */
+		$historyRepository = $em->getRepository('DictionaryBundle:History');
 		$histories = $historyRepository->getLatestSearched($user);
-//		\Doctrine\Common\Util\Debug::dump($histories,3);
-//		exit;
 		$englishIds = array();
 		foreach($histories as $index => $history) {
 			$englishIds[] = $history[0]->getWord()->getId();
@@ -79,7 +81,6 @@ class DefaultController extends Controller
 		/** @var  $eng2srbRepository Eng2srbRepository*/
 		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
 		$results = $eng2srbRepository->getEnglishTranslations($englishIds);
-
 		/** @var $result Eng2srb*/
 		foreach($results as $result) {
 			/** @var  $serbianTransations Word */
@@ -92,7 +93,7 @@ class DefaultController extends Controller
 
 			$index = Eng2srb::wordType2String($result->getWordType());
 			if ($englishTranslationName == $latestSerachWordName) {
-				$latestSearch[] = $serbianTranslationName;
+				$latestSearch[] = $serbianTransations->getId();
 			}
 
 			if(!isset($historyResult[$englishTranslationName]['translations'][$index])) {
@@ -100,89 +101,54 @@ class DefaultController extends Controller
 			}
 			$historyResult[$englishTranslationName]['translations'][$index][] = $serbianTranslationName;
 		}
-
 		$latestSearchSynonyms = array();
-		if($success) {
-			if (!empty($latestSearch)) {
-				/** @var $eng2srbRepository Eng2srbRepository */
-				$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
-				$translationSynonyms = $eng2srbRepository->createQueryBuilder('eng2srb')
-					->select('eng2srb, english, serbian')
-					->innerJoin('eng2srb.eng', 'english')
-					->innerJoin('eng2srb.srb', 'serbian')
-					->where('serbian.name IN (:serbianWords)')
-					->andWhere('eng2srb.direction = :direction')
-					->andWhere('english.type = :englishType')
-					->andWhere('serbian.type = :serbianType')
-					->setParameters(array(
-						'serbianWords' => $latestSearch,
-						'englishType' => Word::WORD_ENGLISH,
-						'serbianType' => Word::WORD_SERBIAN,
-						'direction' => Eng2srb::SRB_2_ENG
-					))
-					->orderBy('serbian.name, eng2srb.relevance', 'ASC')
-					->getQuery()
-					->getResult();
-
-				$latestSearchSynonyms = array();
-				/** @var $synonyms Eng2srb */
-				foreach ($translationSynonyms as $synonyms) {
-					$serbianWord = $synonyms->getSrb()->getName();
-					$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
-				}
-			}
-			$latestSearch = isset($historyResult[$latestSerachWordName]) ? $historyResult[$latestSerachWordName] : false;
-		} else {
+		if(!$success) {
 			$latestSearch = false;
 		}
-        return array(
+
+		if(!empty($latestSearch)) {
+			/** @var $eng2srbRepository Eng2srbRepository */
+			$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
+			$translationSynonyms = $eng2srbRepository->getSerbianTranslations($latestSearch);
+			$latestSearchSynonyms = array();
+			/** @var $synonyms Eng2srb */
+			foreach ($translationSynonyms as $synonyms) {
+				$serbianWord = $synonyms->getSrb()->getName();
+				$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
+			}
+			$latestSearch = isset($historyResult[$latestSerachWordName]) ? $historyResult[$latestSerachWordName] : false;
+		}
+        return [
 			'latestSearch'			=> $latestSearch,
 			'latestSearchSynonyms'	=> $latestSearchSynonyms,
 			'latestWord'			=> $word,
 			'histories' 			=> $historyResult,
 			'errorMessage'			=> $errorMessage
-		);
+		];
     }
 
 	/**
-	 * @param $request Request
-	 * @return \Symfony\Component\HttpFoundation\RedirectResponse
+	 * @param Request $request
+	 * @return array
 	 *
-	 * @Route("/translate", name="_translate")
+	 * @Route("/update/{word}/{type}/google", name="_update_word_from_google")
+	 * @Template()
 	 */
-	public function matchAction(Request $request) {
+	public function updateWordAction(Request $request, $word, $type) {
+		/** @var  $em EntityManager*/
+		$em = $this->getDoctrine()->getManager();
+
+		if ($this->get('security.context')->isGranted('ROLE_BRAND')) {
+			throw new AccessDeniedHttpException();
+		}
+
 		/** @var  $translationManager TranslateManager */
 		$translationManager = $this->get('dictionary.translateManager');
 
-		$word = strtolower($request->get('q'));
-
-		if (empty($word)) {
-			return $this->redirect($this->generateUrl('_home'));
-		}
-
-		/** @var $user User */
-		$user = $this->getUser();
-
-		$success = $translationManager->translate($word, $user);
-		if(!$success) {
-			$response = $translationManager->translateFromGoogle($word, $user);
-			$success = $response['success'];
-		}
-
-		if (!$success) {
-			if(isset($response['similar'])) {
-				$this->get('session')->getFlashBag()->add('notice', "See translation of <a href=" . $this->generateUrl('_home', array('word' => $response['similar'])). ">" .$response['similar']. "</a>");
-			} else {
-				$this->get('session')->getFlashBag()->add('notice', 'No results');
-			}
-		} else {
-			if ($user) {
-				$this->get('dictionary.historyManager')->updateHistoryLog($user, $word);
-			}
-		}
-
-		return $this->redirect($this->generateUrl('_home'));
+		$translations = $translationManager->translateFromGoogle($word, true);
+		return new JsonResponse([
+			'success' => $translations['success']
+		]);
 	}
-
 
 }

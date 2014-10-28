@@ -12,23 +12,7 @@
     {% endfor %}
 
     <div class="row">
-        <div class="col-md-5">
-            <form style="padding: 5px;" method="post" action="{{ path('_translate') }}" >
-                <div class="form-row">
-                    <input style="width: 240px;height: 58px;font-size: 33px;"name="q" id="search-id" type="search" />
-
-                    <button type="submit" class="sf-button">
-                        <span class="border-l">
-                            <span class="border-r">
-                                <span class="btn-bg">OK</span>
-                            </span>
-                        </span>
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="col-md-6">
+        <div class="col-md-6 col-xs-12">
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h4>MOST OFFEN</h4>
@@ -37,24 +21,28 @@
                     {% for key, hit in historyHits %}
                         {% set pileType = hit.piles_type %}
                         {% if loop.index % 2 %}
-                            {% set class = 'word_history_white' %}
+                            {% set class = 'word_history_white panel-column' %}
                         {% else %}
-                            {% set class = 'word_history_grey' %}
+                            {% set class = 'word_history_grey panel-column' %}
                         {% endif %}
                         <div id="history_item_{{ hit.history_id }}" class="{{ class }}">
-                            <div style="float: right">
-                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 1 }) }}" class="pile btn btn-sm btn-success {% if pileType == 1 %} disabled {% endif %}" style="line-height: 1;">KNOW</a>
-                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 2 }) }}" class="pile btn btn-sm btn-warning {% if pileType == 2 %} disabled {% endif %}" style="line-height: 1;">ALMOST</a>
-                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 4 }) }}" class="pile btn btn-sm btn-danger  {% if pileType == 4 %} disabled {% endif %}" style="line-height: 1;">DON'T KNOW</a>
-                                <a class="history_delete_item" data-id="{{ hit.history_id }}" href="{{ path('delete_history_item', {'id': hit.history_id}) }}"><span class='glyphicon glyphicon-cog'></span></a>
-                            </div>
-                            <span class="history_key">{{ hit.name }}</span><br/>
-                            {% for type, hitEntry in hit.translations %}
-                                <div class="wordByType">
-                                    <span class="wordType">{{ type }}:</span>
-                                    {{ hitEntry | join(', ')}}
+                            <div class="col-md-6 col-xs-12">
+                                <div>
+                                    <a class="history_key" href="{{ path('_home', {'word': hit.name}) }}">{{ hit.name }}</a>
                                 </div>
-                            {%  endfor %}
+                                {% for type, hitEntry in hit.translations %}
+                                    <div class="wordByType">
+                                        <span class="wordType">{{ type }}:</span>
+                                        {{ hitEntry | join(', ')}}
+                                    </div>
+                                {%  endfor %}
+                            </div>
+                            <div class="col-md-6 col-xs-12">
+                                <a class="history_delete_item panel-item-links" data-id="{{ hit.history_id }}" href="{{ path('delete_history_item', {'id': hit.history_id}) }}"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 4 }) }}" class="pile btn btn-sm btn-danger  panel-item-links {% if pileType == 4 %} disabled {% endif %}" style="line-height: 1;">DON'T KNOW</a>
+                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 2 }) }}" class="pile btn btn-sm btn-warning panel-item-links {% if pileType == 2 %} disabled {% endif %}" style="line-height: 1;">ALMOST</a>
+                                <a href="{{ path('move_2_piles', {'word': hit.word_id, 'pileId': 1 }) }}" class="pile btn btn-sm btn-success panel-item-links {% if pileType == 1 %} disabled {% endif %}" style="line-height: 1;">KNOW</a>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>

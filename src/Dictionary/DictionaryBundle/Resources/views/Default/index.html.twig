@@ -17,7 +17,7 @@
             <form style="padding: 5px;" method="get" action="{{ path('_home') }}" class="form-horizontal" role="form">
                 <div class="form-group">
                     <div class="col-sm-10">
-                        <input style=";height: 58px;font-size: 33px;" name="word" class="form-control" placeholder={% if latestWord %}{{ latestWord }}{% else %}"Translate"{% endif %} >
+                        <input style=";height: 58px;font-size: 33px;" name="word" class="form-control" placeholder={% if latestWord %}{{ latestWord }}{% else %}"Translate"{% endif %} {% if latestWord %}value='{{ latestWord }}'{% endif %}>
                     </div>
                 </div>
             </form>
@@ -75,7 +75,7 @@
                         <div id="history_item_{{ history.history_id }}" class="{{ class }}">
                             <div class="col-md-6 col-xs-12">
                                 <div>
-                                    <span class="history_key">{{ key }}</span>
+                                    <a class="history_key" href="{{ path('_home', {'word': key}) }}">{{ key }}</a>
                                 </div>
                                 {% for type, historyEntry in history.translations %}
                                     <div class="wordByType">
@@ -91,6 +91,8 @@
                                 <a href="{{ path('move_2_piles', {'word': history.word_id, 'pileId': 1 }) }}" class="pile btn btn-sm btn-success panel-item-links {% if pileType == 1 %} disabled {% endif %}" style="line-height: 1;">KNOW</a>
                             </div>
                         </div>
+                    {% else %}
+                        History is empty!
                     {% endfor %}
                 </div>
             </div>

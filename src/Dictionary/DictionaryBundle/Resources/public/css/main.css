@@ -113,7 +113,7 @@ a.registerLink:hover{
     padding: 15px 10px;
 }
 
-span.history_key {
+.history_key {
     font-weight: bold;
     text-transform: uppercase;
 }

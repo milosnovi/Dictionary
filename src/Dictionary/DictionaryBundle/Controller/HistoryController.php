@@ -3,6 +3,7 @@
 namespace Dictionary\DictionaryBundle\Controller;
 
 use Dictionary\DictionaryBundle\Entity\Eng2srb;
+use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Entity\History;
 use Dictionary\DictionaryBundle\Entity\HistoryRepository;
 use Dictionary\DictionaryBundle\Entity\Word;
@@ -73,6 +74,12 @@ class HistoryController extends Controller
         $historyRepository = $em->getRepository('DictionaryBundle:History');
 
         $historyByHits = $historyRepository->getSearchedByHits($user);
+        if (empty($historyByHits)) {
+            return array(
+                'historyHits' => []
+            );
+        }
+
         foreach($historyByHits as $hit) {
             $englishIds[] = $hit[0]->getWord()->getId();
             $resultHits[$hit[0]->getWord()->getId()] = array(
@@ -83,7 +90,7 @@ class HistoryController extends Controller
                 'name' => $hit[0]->getWord()->getName()
             );
         }
-        /** @var  $eng2srbRepository Eng2srbRepository*/
+        /** @var  $eng2srbRepository Eng2srbRepository */
         $eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
         $results = $eng2srbRepository->getEnglishTranslations($englishIds);
         /** @var $result Eng2srb*/
@@ -106,6 +113,5 @@ class HistoryController extends Controller
         return array(
             'historyHits' => $resultHits
         );
-
     }
 }

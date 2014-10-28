@@ -30,7 +30,31 @@ class Eng2srbRepository extends EntityRepository
 			))
 			->orderBy('english.id, eng2srb.wordType, eng2srb.relevance', 'ASC')
 			->getQuery()
-			->getResult();
+			->getResult()
+		;
+
+		return $results;
+	}
+
+	public function getSerbianTranslations($serbianIds) {
+		$results = $this->createQueryBuilder('eng2srb')
+			->select('eng2srb, english, serbian')
+			->innerJoin('eng2srb.eng', 'english')
+			->innerJoin('eng2srb.srb', 'serbian')
+			->where('serbian.id IN (:ids)')
+			->andwhere('eng2srb.direction  = :direction')
+			->andWhere('english.type = :englishType')
+			->andWhere('serbian.type = :serbianType')
+			->setParameters(array(
+				'ids' 			=> $serbianIds,
+				'englishType'	=> Word::WORD_ENGLISH,
+				'serbianType'	=> Word::WORD_SERBIAN,
+				'direction'		=> Eng2srb::SRB_2_ENG
+			))
+			->orderBy('serbian.id, eng2srb.wordType, eng2srb.relevance', 'ASC')
+			->getQuery()
+			->getResult()
+		;
 
 		return $results;
 	}

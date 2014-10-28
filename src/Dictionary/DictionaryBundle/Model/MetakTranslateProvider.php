@@ -3,10 +3,12 @@
 namespace Dictionary\DictionaryBundle\Model;
 
 
+use Doctrine\ORM\EntityManager;
+
 class MetakTranslateProvider
 {
     /**
-     * @param $em
+     * @param $em EntityManager
      */
     private $em;
 
@@ -133,35 +135,8 @@ class MetakTranslateProvider
             $this->translateSerbian2English($serbian, $englishTranslationResults);
         }
 
-        if($englishSynonyms) {
-            $this->updateSynonyms($englishSynonyms[0], $english);
-        }
-
         return true;
     }
-
-    public function updateSynonyms($englishSynonyms, $english) {
-        foreach($englishSynonyms as $word) {
-            /** @var  $synonym Word */
-            $synonym = new Word();
-            $synonym->setName($word);
-            $synonym->settype(Word::WORD_ENGLISH);
-            $synonym->setCreated(new \DateTime());
-            $synonym->setUpdated(new \DateTime());
-            $this->em->persist($synonym);
-
-            /** @var  $synonym Synonyms*/
-            $synonymEntity = new Synonyms();
-            $synonymEntity->setWord($english);
-            $synonymEntity->setSynonym($synonym);
-            $synonymEntity->setCreated(new \DateTime());
-            $synonymEntity->setUpdated(new \DateTime());
-            $this->em->persist($synonymEntity);
-
-            $this->em->flush();
-        }
-    }
-
 
     public function translateEnglish2Serbian($english, $serbianTranslationResults) {
         /** @var $wordRepository WordRepository */

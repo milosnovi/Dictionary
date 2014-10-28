@@ -5,6 +5,7 @@ namespace Dictionary\DictionaryBundle\Model;
 
 use Dictionary\DictionaryBundle\Entity\Eng2srb;
 use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
+use Doctrine\ORM\EntityManager;
 
 class Eng2SrbManager
 {
@@ -18,10 +19,24 @@ class Eng2SrbManager
         $this->em = $em;
     }
 
-    public function findTranslation($english, $serbian, $direction, $relevance, $type) {
+    public function findTranslation($english, $serbian, $direction) {
         /** @var $eng2srbRepository Eng2srbRepository */
         $eng2srbRepository = $this->em->getRepository('DictionaryBundle:Eng2srb');
         $eng2SrbItem = $eng2srbRepository->getTranslation($english, $serbian, $direction);
+        return $eng2SrbItem;
+    }
+
+    public function removeTranslation($english, $serbian, $direction) {
+        $eng2SrbItem = $this->findTranslation($english, $serbian, $direction);
+        if($eng2SrbItem) {
+            $this->em->remove($eng2SrbItem);
+            $this->em->flush();
+        }
+        return true;
+    }
+
+    public function findAndCreateTranslation($english, $serbian, $direction, $relevance, $type) {
+        $eng2SrbItem = $this->findTranslation($english, $serbian, $direction);
 
         if (empty($eng2SrbItem)) {
             /** @var  $eng2SrbItem Eng2srb */
