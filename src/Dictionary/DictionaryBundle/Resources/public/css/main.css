@@ -152,3 +152,13 @@ span.synonym {
 .navbar-inverse .navbar-nav>li>a:hover,.navbar-inverse .navbar-nav>li>a:focus {
     color: rgb(236, 235, 235);
 }
+
+.panel-column {
+    overflow: auto;
+    display: block;
+}
+
+.panel-item-links {
+    float: right;
+    margin: 5px 5px 0 0;
+}
