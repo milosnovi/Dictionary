@@ -21,7 +21,7 @@ class PilesRepository extends EntityRepository
             ->where('piles.user = :user')
             ->setParameter('user', $user)
             ->orderBy('piles.type, piles.updated', 'DESC')
-            ->setMaxResults(20)
+            ->setMaxResults(50)
             ->getQuery()
             ->getResult()
         ;

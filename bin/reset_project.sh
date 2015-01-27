@@ -10,7 +10,7 @@ sudo rm -Rf ./app/cache/*
 
 sudo ./composer.phar install
 
-./bin/setup_permissions.sh
+#./bin/setup_permissions.sh
 
 app/console doctrine:database:drop --force
 app/console doctrine:database:create
