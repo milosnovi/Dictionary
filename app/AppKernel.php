@@ -19,20 +19,24 @@ class AppKernel extends Kernel
 			new FOS\UserBundle\FOSUserBundle(),
 			new Braincrafted\Bundle\BootstrapBundle\BraincraftedBootstrapBundle(),
 
+            new FOS\RestBundle\FOSRestBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
 
-			new Sonata\CoreBundle\SonataCoreBundle(),
-			new Sonata\BlockBundle\SonataBlockBundle(),
+//			new Sonata\CoreBundle\SonataCoreBundle(),
+//			new Sonata\BlockBundle\SonataBlockBundle(),
 //			new Sonata\jQueryBundle\SonatajQueryBundle(),
-			new Knp\Bundle\MenuBundle\KnpMenuBundle(),
-			new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
+//			new Knp\Bundle\MenuBundle\KnpMenuBundle(),
+//			new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
 
 			// Then add SonataAdminBundle
-			new Sonata\AdminBundle\SonataAdminBundle(),
+//			new Sonata\AdminBundle\SonataAdminBundle(),
 
 			new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
 			new Dictionary\DictionaryBundle\DictionaryBundle(),
 			new Dictionary\AdminBundle\DictionaryAdminBundle(),
 			new Dictionary\UserBundle\UserBundle(),
+            new Dictionary\PrevediBundle\PrevediBundle()
 		);
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

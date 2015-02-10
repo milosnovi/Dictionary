@@ -1,0 +1,7 @@
+xxx:
+    type: rest
+    prefix: /v1
+#    resource: "DictionaryPrevediBundle:DefaultController"
+#    name_prefix:  api_1_ # naming collision
+    pattern: /hello
+    defaults: { _controller: PrevediBundle:Default:getPage }

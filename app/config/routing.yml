@@ -1,3 +1,4 @@
+
 dictionary_admin:
     resource: "@DictionaryAdminBundle/Controller/"
     type:     annotation
@@ -7,6 +8,11 @@ dictionary:
     resource: "@DictionaryBundle/Controller/"
     type:     annotation
     prefix:   /
+
+prevedi_bundle:
+    type:     rest
+    prefix:   /api
+    resource: "@PrevediBundle/Resources/config/routes.yml"
 
 # app/config/routing.yml
 fos_user_security:
@@ -28,12 +34,12 @@ fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profile
 
-admin:
-    resource: '@SonataAdminBundle/Resources/config/routing/sonata_admin.xml'
-    prefix: /admin
+#admin:
+#    resource: '@SonataAdminBundle/Resources/config/routing/sonata_admin.xml'
+#    prefix: /admin
 
-_sonata_admin:
-    resource: .
-    type: sonata_admin
-    prefix: /admin
+#_sonata_admin:
+#    resource: .
+#    type: sonata_admin
+#    prefix: /admin
 

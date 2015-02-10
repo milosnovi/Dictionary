@@ -106,13 +106,13 @@ fos_user:
     firewall_name: main
     user_class: Dictionary\DictionaryBundle\Entity\User
 
-sonata_block:
-    default_contexts: [cms]
-    blocks:
-        # Enable the SonataAdminBundle block
-        sonata.admin.block.admin_list:
-            contexts:   [admin]
-        # Your other blocks
-
-sonata_admin:
-    title: Dictionary Admin
+#sonata_block:
+#    default_contexts: [cms]
+#    blocks:
+#        # Enable the SonataAdminBundle block
+#        sonata.admin.block.admin_list:
+#            contexts:   [admin]
+#        # Your other blocks
+#
+#sonata_admin:
+#    title: Dictionary Admin

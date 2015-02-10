@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "~2.4",
+        "symfony/symfony": "~2.6",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",
         "twig/extensions": "~1.0",
@@ -39,8 +39,11 @@
         "leafo/lessphp": "v0.4.0",
         "doctrine/migrations": "1.0.*@dev",
         "doctrine/doctrine-migrations-bundle": "2.1.*@dev",
-        "sonata-project/admin-bundle": "dev-master",
-        "sonata-project/doctrine-orm-admin-bundle": "dev-master"
+        "friendsofsymfony/rest-bundle": "~1.5",
+        "jms/serializer-bundle": "@dev",
+        "nelmio/api-doc-bundle": "@dev",
+        "phpunit/phpunit": "@dev",
+        "liip/functional-test-bundle":"dev-master"
     },
     "scripts": {
         "post-install-cmd": [
