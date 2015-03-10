@@ -1,18 +1,18 @@
 ---
 vagrantfile-local:
     vm:
-        box: puphpet/ubuntu1404-x64
-        box_url: puphpet/ubuntu1404-x64
+        box: puphpet/ubuntu1204-x64
+        box_url: puphpet/ubuntu1204-x64
         hostname: ''
-        memory: '4096'
-        cpus: '2'
+        memory: '3074'
+        cpus: '1'
         chosen_provider: virtualbox
         network:
-            private_network: 192.168.56.110
+            private_network: 192.168.56.101
             forwarded_port:
-                JPn1zmEdDNLp:
-                    host: '6750'
-                    guest: '22'
+                o0kVsUJKXsdF:
+                    host: '7108'
+                    guest: '80'
         post_up_message: ''
         provider:
             virtualbox:
@@ -32,10 +32,15 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            Y6IFMZOXOO21:
-                source: ./
-                target: /var/www/dictionary.lo
-                sync_type: nfs
+            QRs0xnxtAhvf:
+                owner: www-data
+                group: www-data
+                source: /Users/milos/www/dictionary
+                target: /var/www/dictionary.lo/
+                sync_type: nfsf
+                mount_options:
+                  - 'dmode=777'
+                  - 'fmode=755'
                 rsync:
                     args:
                         - '--verbose'
@@ -63,11 +68,23 @@ server:
     install: '1'
     packages:
         - vim
+        - htop
+        - phpunit
+        - memcached
+users_groups:
+    install: '1'
+    groups:
+        - vagrant
+    users:
+        - 'vagrant:vagrant:www-data'
+cron:
+    install: '1'
+    jobs: {  }
 firewall:
     install: '1'
     rules: null
 apache:
-    install: 0
+    install: '0'
     settings:
         user: www-data
         group: www-data
@@ -78,7 +95,7 @@ apache:
     modules:
         - rewrite
     vhosts:
-        yil3yq5xemjj:
+        odrdkjsadxwr:
             servername: awesome.dev
             serveraliases:
                 - www.awesome.dev
@@ -86,12 +103,20 @@ apache:
             port: '80'
             setenv:
                 - 'APP_ENV dev'
-            override:
-                - All
-            options:
-                - Indexes
-                - FollowSymLinks
-                - MultiViews
+            directories:
+                i8ok0jjfoxcl:
+                    provider: directory
+                    path: /var/www/awesome
+                    options:
+                        - Indexes
+                        - FollowSymlinks
+                        - MultiViews
+                    allow_override:
+                        - All
+                    require:
+                        - all
+                        - granted
+                    custom_fragment: ''
             engine: php
             custom_fragment: ''
             ssl_cert: ''
@@ -105,19 +130,20 @@ nginx:
         default_vhost: 1
         proxy_buffer_size: 128k
         proxy_buffers: '4 256k'
+    upstreams: {  }
     vhosts:
-        7Mo7MYUvU7Xh:
+        vlyghx4se6if:
+            proxy: ''
             server_name: dictionary.lo
             www_root: /var/www/dictionary.lo/web
             listen_port: '80'
-            location: \.php$
+            location: .php$
             index_files:
-                - index.html
-                - index.htm
-                - index.php
-                - app.php
                 - app_dev.php
+            envvars:
+                - 'APP_ENV dev'
             engine: php
+            client_max_body_size: 1m
             ssl_cert: ''
             ssl_key: ''
 php:
@@ -128,8 +154,14 @@ php:
     modules:
         php:
             - cli
+            - curl
+            - fpm
             - intl
             - mcrypt
+            - memcached
+            - mysql
+            - sqlite
+            - xsl
         pear: {  }
         pecl:
             - pecl_http
@@ -137,7 +169,12 @@ php:
         display_errors: On
         error_reporting: '-1'
         session.save_path: /var/lib/php/session
-    timezone: America/Chicago
+        max_execution_time: '60'
+        memory_limit: 256M
+        short_open_tag: On
+        apc.enabled: '1'
+        apc.shm_size: 128M
+    timezone: Europe/Belgrade
     mod_php: 0
 hhvm:
     install: '0'
@@ -152,7 +189,7 @@ hhvm:
         error_reporting: '-1'
     timezone: null
 xdebug:
-    install: '0'
+    install: '1'
     settings:
         xdebug.default_enable: '1'
         xdebug.remote_autostart: '0'
@@ -160,15 +197,19 @@ xdebug:
         xdebug.remote_enable: '1'
         xdebug.remote_handler: dbgp
         xdebug.remote_port: '9000'
+        xdebug.max_nesting_level: '250'
 xhprof:
     install: '0'
+wpcli:
+    install: '0'
+    version: v0.17.1
 drush:
     install: '0'
     version: 6.3.0
 ruby:
     install: '1'
     versions:
-        g6R9PZhOz9Sm:
+        kw2qc4EJ0neE:
             version: ''
 nodejs:
     install: '0'
@@ -177,20 +218,21 @@ python:
     install: '1'
     packages: {  }
     versions:
-        u3hkNEm3DqN9:
+        BVegjopZ1o93:
             version: ''
 mysql:
     install: '1'
+    override_options: {  }
     root_password: '123'
-    adminer: 0
+    adminer: '1'
     databases:
-        fP2kDiUbdIaa:
+        oCtSsw6yNQqz:
             grant:
                 - ALL
             name: dictionary
             host: localhost
             user: milos
-            password: milos
+            password: milos123
             sql_file: ''
 postgresql:
     install: '0'
@@ -203,6 +245,7 @@ postgresql:
     adminer: 0
 mariadb:
     install: '0'
+    override_options: {  }
     root_password: '123'
     adminer: 0
     databases: {  }
@@ -249,6 +292,11 @@ rabbitmq:
 elastic_search:
     install: '0'
     settings:
+        version: 1.4.1
         java_install: true
-        autoupgrade: true
+solr:
+    install: '0'
+    settings:
+        version: 4.10.2
+        port: '8984'
 
