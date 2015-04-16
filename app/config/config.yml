@@ -106,6 +106,27 @@ fos_user:
     firewall_name: main
     user_class: Dictionary\DictionaryBundle\Entity\User
 
+sensio_framework_extra:
+    view:    { annotations: false }
+
+fos_rest:
+    body_listener: true
+    param_fetcher_listener: true
+    allowed_methods_listener: true
+    routing_loader:
+        default_format: json
+        include_format: false
+    format_listener:
+        rules:
+            - { path: '^/api', priorities: [ json, xml, html ], fallback_format: json, prefer_extension: false }
+            - { path: '^/', stop: true }
+    view:
+        view_response_listener: force
+        formats:
+            xml: true
+            json: true
+            html: true
+
 #sonata_block:
 #    default_contexts: [cms]
 #    blocks:

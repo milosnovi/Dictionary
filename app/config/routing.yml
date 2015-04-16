@@ -1,3 +1,7 @@
+dictionary_api:
+    type: rest  # Required for ``RestYamlLoader`` to process imported routes
+    prefix: /api
+    resource: "@DictionaryApiBundle/Resources/config/routing.yml"
 
 dictionary_admin:
     resource: "@DictionaryAdminBundle/Controller/"
@@ -8,11 +12,6 @@ dictionary:
     resource: "@DictionaryBundle/Controller/"
     type:     annotation
     prefix:   /
-
-prevedi_bundle:
-    type:     rest
-    prefix:   /api
-    resource: "@PrevediBundle/Resources/config/routes.yml"
 
 # app/config/routing.yml
 fos_user_security:

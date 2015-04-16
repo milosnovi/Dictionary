@@ -41,7 +41,6 @@
         "doctrine/doctrine-migrations-bundle": "2.1.*@dev",
         "friendsofsymfony/rest-bundle": "~1.5",
         "jms/serializer-bundle": "@dev",
-        "nelmio/api-doc-bundle": "@dev",
         "phpunit/phpunit": "@dev",
         "liip/functional-test-bundle":"dev-master"
     },

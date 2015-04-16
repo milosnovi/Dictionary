@@ -1,6 +1,6 @@
 <?php
 
-namespace Dictionary\PrevediBundle\Tests\Controller;
+namespace Dictionary\ApiBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

@@ -21,7 +21,7 @@ class AppKernel extends Kernel
 
             new FOS\RestBundle\FOSRestBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
-            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
+//            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
 
 //			new Sonata\CoreBundle\SonataCoreBundle(),
 //			new Sonata\BlockBundle\SonataBlockBundle(),
@@ -36,7 +36,7 @@ class AppKernel extends Kernel
 			new Dictionary\DictionaryBundle\DictionaryBundle(),
 			new Dictionary\AdminBundle\DictionaryAdminBundle(),
 			new Dictionary\UserBundle\UserBundle(),
-            new Dictionary\PrevediBundle\PrevediBundle()
+            new Dictionary\ApiBundle\DictionaryApiBundle(),
 		);
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
