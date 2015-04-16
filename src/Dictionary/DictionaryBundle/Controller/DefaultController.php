@@ -43,10 +43,10 @@ class DefaultController extends Controller
 		if ($word) {
 			$translations = $translationManager->translate($word);
 			$success = 1 < count($translations);
-			if(!$success) {
-				$response = $translationManager->translateFromGoogle($word, $user);
-				$success = $response['success'];
-			}
+//			if(!$success) {
+//				$response = $translationManager->translateFromGoogle($word, $user);
+//				$success = $response['success'];
+//			}
 
 			if ($success) {
 				$this->get('dictionary.historyManager')->updateHistoryLog($user, $word);
