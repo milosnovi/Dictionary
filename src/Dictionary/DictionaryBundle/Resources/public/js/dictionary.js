@@ -6,7 +6,7 @@ Dictionary.initPilesForms = function() {
 
     $.ajax({
         method: "POST",
-        url: "http://dictionary.lo/app_dev.php/api/v1/history/translation",
+        url: "api/v1/history/translation",
         data: {
             'history': JSON.parse(localStorage.getItem('history'))
         },
@@ -23,7 +23,7 @@ Dictionary.initPilesForms = function() {
             for(var word in data) {
                 var historyItem = '<div class="word_history_white panel-column">' +
                                     '<div class="col-md-8 col-xs-12">' +
-                                        '<div><a class="history_key" href="/app_dev.php/?word=book">' + data[word]['word'] +'</a></div>';
+                                        '<div><a class="history_key" href="#'+ data[word]['word'] + '">' + data[word]['word'] +'</a></div>';
 
                 var wordTranslation = data[word].translations;
                 for(var j in wordTranslation) {
@@ -64,7 +64,7 @@ Dictionary.initPilesForms = function() {
         localStorage.setItem('history', JSON.stringify(historyArr));
         $.ajax({
             method: "GET",
-            url: "http://dictionary.lo/app_dev.php/api/v1/translation/"+word,
+            url: "api/v1/translation/"+word,
             headers: {
                 "Accept":"application/json"
             },
@@ -86,7 +86,7 @@ Dictionary.initPilesForms = function() {
                         var synonymsHtml = '';
                         for(var k in synonyms) {
                             synonymsHtml += '<span class="synonym">' +
-                                                '<a href="/app_dev.php/home#'+ synonyms[k] + '">' + synonyms[k]+ '</a>' +
+                                                '<a href="home#'+ synonyms[k] + '">' + synonyms[k]+ '</a>' +
                                             '</span>';
                         }
                         response += '<td>' + synonymsHtml + '</td></tr>';
