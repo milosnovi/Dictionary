@@ -35,6 +35,7 @@ git reset --hard origin/$BRANCH
 sudo su
 tar -zxvf vendors.tar.gz
 service php5-fpm stop
+
 cp /tmp/js/* web/js/
 cp /tmp/css/* web/css/
 
@@ -44,8 +45,8 @@ app/console assets:install web
 app/console doctrine:migrations:migrate  --no-interaction
 chown -R www-data:www-data /var/www/dictionary
 
-#rm -Rf /tmp/js
-#rm -Rf /tmp/css
+rm -Rf /tmp/js
+rm -Rf /tmp/css
 
 service php5-fpm restart
 service nginx restart
