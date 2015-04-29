@@ -11,10 +11,12 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{{ path('most_offen') }}">Most Offen</a></li>
-                <li><a href="{{ path('dictionary_piles') }}">Piles</a></li>
-                <li><a href="#">{{user.username}}</a></li>
-                <li><a href="{{ path('fos_user_security_logout') }}"> Logout</a></li>
+                {% if is_granted('ROLE_USER') %}
+                    <li><a href="{{ path('most_offen') }}">Most Offen</a></li>
+                    <li><a href="{{ path('dictionary_piles') }}">Piles</a></li>
+                    <li><a href="#">{{user.username}}</a></li>
+                    <li><a href="{{ path('fos_user_security_logout') }}"> Logout</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>

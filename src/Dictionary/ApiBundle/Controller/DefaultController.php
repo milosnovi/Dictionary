@@ -2,12 +2,15 @@
 
 namespace Dictionary\ApiBundle\Controller;
 
+use Dictionary\DictionaryBundle\Entity\Eng2srb;
+use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Model\TranslateManager;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\NamePrefix;
 use FOS\RestBundle\Controller\Annotations\Prefix;
 use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\Post;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -27,94 +30,105 @@ class DefaultController extends FOSRestController
 	 */
 	public function translationAction($word)
 	{
-		/** @var  $em EntityManager*/
+		/** @var  $em EntityManager */
 		$em = $this->getDoctrine()->getManager();
 
 		/** @var  $translationManager TranslateManager */
 		$translationManager = $this->get('dictionary.translateManager');
 
 		$translations = $translationManager->translate($word);
-		return $translations;
+		$serbianTranslations = [];
+		foreach ($translations as $translation) {
+			$serbianTranslations[] = $translation['srb_id'];
+		}
+		/** @var $eng2srbRepository Eng2srbRepository */
+		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
+		$translationSynonyms = $eng2srbRepository->getSerbianTranslations($serbianTranslations);
 
-////		$success = 1 < count($translations);
-////		if(!$success) {
-////			$response = $translationManager->translateFromGoogle($word);
-////			$success = $response['success'];
-////		}
-//\Doctrine\Common\Util\Debug::dump($translations,2);
-////		exit;
-////		$historyResult = array();
-////
-////		/** @var $historyRepository HistoryRepository */
-////		$historyRepository = $em->getRepository('DictionaryBundle:History');
-////		$histories = $historyRepository->getLatestSearched($user);
-////		$englishIds = array();
-////		foreach($histories as $index => $history) {
-////			$englishIds[] = $history[0]->getWord()->getId();
-////			$historyResult[$history[0]->getWord()->getName()] = array(
-////				'history_id' => $history[0]->getId(),
-////				'word_id' => $history[0]->getWord()->getId(),
-////				'piles_type' => $history['pile_type']
-////			);
-////			if ($index == 0) {
-////				$latestSerachWordName = $history[0]->getWord()->getName();
-////			}
-////		}
-////
-////		/** @var  $eng2srbRepository Eng2srbRepository*/
-////		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
-////		$results = $eng2srbRepository->getEnglishTranslations($englishIds);
-////		/** @var $result Eng2srb*/
-////		foreach($results as $result) {
-////			/** @var  $serbianTransations Word */
-////			/** @var  $englishTransations Word */
-////			$serbianTransations = $result->getSrb();
-////			$englishTransations = $result->getEng();
-////
-////			$serbianTranslationName = $serbianTransations->getName();
-////			$englishTranslationName = $englishTransations->getName();
-////
-////			$index = Eng2srb::wordType2String($result->getWordType());
-////			if ($englishTranslationName == $latestSerachWordName) {
-////				$latestSearch[] = $serbianTransations->getId();
-////			}
-////
-////			if(!isset($historyResult[$englishTranslationName]['translations'][$index])) {
-////				$historyResult[$englishTranslationName]['translations'][$index] = array();
-////			}
-////			$historyResult[$englishTranslationName]['translations'][$index][] = $serbianTranslationName;
-////		}
-////		$latestSearchSynonyms = array();
-////		if(!$success) {
-////			$latestSearch = false;
-////		}
-//
-//		/** @var $eng2srbRepository Eng2srbRepository */
-//		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
-//		$translationSynonyms = $eng2srbRepository->getSerbianTranslations($latestSearch);
-//		$latestSearchSynonyms = array();
-//		/** @var $synonyms Eng2srb */
-//		foreach ($translationSynonyms as $synonyms) {
-//			$serbianWord = $synonyms->getSrb()->getName();
-//			$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
-//		}
-//		$latestSearch = isset($historyResult[$latestSerachWordName]) ? $historyResult[$latestSerachWordName] : false;
-//		\Doctrine\Common\Util\Debug::dump($translations,2);
-//		exit;
-//		return [
-//			'latestSearch'			=> $latestSearch,
-//			'latestSearchSynonyms'	=> $latestSearchSynonyms,
-//			'latestWord'			=> $word,
-//			'histories' 			=> $historyResult,
-//			'errorMessage'			=> $errorMessage
-//		];
+		foreach ($translationSynonyms as $synonyms) {
+			$serbianWord = $synonyms->getSrb()->getName();
+			$latestSearchSynonyms[$serbianWord]['translation'][] = $synonyms->getEng()->getName();
+		}
 
-//		$view = View::create()
-//			->setStatusCode(200)
-//			->setData($user)
-//			->setTemplate('DictionaryApiBundle:Default:translation.html.twig')
-//		;
-//
-//		return $this->get('fos_rest.view_handler')->handle($view);
+		$results = [];
+		foreach ($translations as $translation) {
+			$index = Eng2srb::wordType2String($translation['wordType']);
+			if(!isset($results[$index])) {
+				$results[$index] = [];
+			}
+			$wordName = $translation['translation'];
+			$synonyms = [];
+			if(isset($latestSearchSynonyms[$wordName])) {
+				$synonyms = $latestSearchSynonyms[$wordName]['translation'];
+			}
+			$results[$index][] = [
+				'translation' => $wordName,
+				'synonyms' => $synonyms
+			];
+		}
+
+		return [
+			'word' => $word,
+			'translation' => $results
+		];
 	}
+
+	/**
+	 *
+	 * @Post("/translation/{direction}")
+	 * @View("DictionaryApiBundle:Default:translation.html.twig", templateVar="data")
+	 *
+	 * @param string $direction
+	 * @return array
+	 */
+	public function getTranslationsAction($direction) {
+		return [];
+	}
+
+	/**
+	 *
+	 * @Post("/history/translation")
+	 * @View("DictionaryApiBundle:Default:translation.html.twig", templateVar="data")
+	 *
+	 * @param Request $request
+	 * @return array
+	 */
+	public function historyAction(Request $request) {
+		$historyWord = $request->request->get('history');
+		$historyWord = array_unique($historyWord);
+
+		$words = $this->getDoctrine()->getRepository('DictionaryBundle:Word')->findByName($historyWord);
+
+		$wordIds = [];
+		foreach($words as $word) {
+			$wordIds[] = $word->getId();
+		}
+		/** @var  $eng2srbRepository Eng2srbRepository*/
+		$eng2srbRepository = $this->getDoctrine()->getManager()->getRepository('DictionaryBundle:Eng2srb');
+		$results = $eng2srbRepository->getEnglishTranslations($wordIds);
+		/** @var $result Eng2srb*/
+		foreach($results as $result) {
+			/** @var  $serbianTransations Word */
+			/** @var  $englishTransations Word */
+			$serbianTransations = $result->getSrb();
+			$englishTransations = $result->getEng();
+
+			$serbianTranslationName = $serbianTransations->getName();
+			$englishTranslationName = $englishTransations->getName();
+
+			$index = Eng2srb::wordType2String($result->getWordType());
+
+			if(!isset($historyResult[$englishTranslationName]['translations'][$index])) {
+				$historyResult[$englishTranslationName]['translations'][$index] = array();
+			}
+			$historyResult[$englishTranslationName]['translations'][$index][] = $serbianTranslationName;
+		}
+
+		$dataToReturn = [];
+		foreach($historyWord as $index => $history) {
+			$dataToReturn[] = array_merge(['word' => $history], $historyResult[$history]);
+		}
+		return $dataToReturn;
+	}
+
 }

@@ -126,6 +126,7 @@ span.wordType {
 }
 span.synonym {
     font-size: 14px;
+    padding-right: 5px;
 }
 
 .synonym_placeholder {

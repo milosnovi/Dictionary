@@ -157,4 +157,15 @@ class DefaultController extends Controller
 		]);
 	}
 
+	/**
+	 * @param Request $request
+	 *
+	 * @Route("/home", name="_home_api")
+	 * @Template()
+	 */
+	public function indexApiAction()
+	{
+		return [];
+	}
+
 }
