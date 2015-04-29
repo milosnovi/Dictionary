@@ -11,9 +11,9 @@
             "type": "package",
             "package": {
                 "name": "jquery/jquery",
-                "version": "1.10.2",
+                "version": "1.11.1",
                 "dist": {
-                    "url": "http://code.jquery.com/jquery-1.10.2.js",
+                    "url": "http://code.jquery.com/jquery-1.11.1.js",
                     "type": "file"
                 }
             }
@@ -35,7 +35,7 @@
         "friendsofsymfony/user-bundle": "~2.0@dev",
         "braincrafted/bootstrap-bundle": "~2.0",
         "twbs/bootstrap": "3.0.0",
-        "jquery/jquery":  "1.10.*",
+        "jquery/jquery":  "1.11.1",
         "leafo/lessphp": "v0.4.0",
         "doctrine/migrations": "1.0.*@dev",
         "doctrine/doctrine-migrations-bundle": "2.1.*@dev",

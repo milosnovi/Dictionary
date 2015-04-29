@@ -50,7 +50,7 @@ assetic:
     assets:
         jquery_and_ui:
             inputs:
-                - %kernel.root_dir%/../vendor/jquery/jquery/jquery-1.10.2.js
+                - %kernel.root_dir%/../vendor/jquery/jquery/jquery-1.11.1.js
         bootstrap_css:
             inputs:
                 - %kernel.root_dir%/../vendor/twbs/bootstrap/less/bootstrap.less
