@@ -2,6 +2,28 @@ var Dictionary = Dictionary || {};
 
 Dictionary.initPilesForms = function() {
 
+    $(function(){
+
+        // Bind an event to window.onhashchange that, when the hash changes, gets the
+        // hash and adds the class "selected" to any matching nav link.
+        $(window).hashchange( function(){
+            var hash = location.hash;
+
+            // Set the page title based on the hash.
+            document.title = 'The hash is ' + ( hash.replace( /^#/, '' ) || 'blank' ) + '.';
+
+            // Iterate over all nav links, setting the "selected" class as-appropriate.
+            $('#nav a').each(function(){
+                var that = $(this);
+                that[ that.attr( 'href' ) === hash ? 'addClass' : 'removeClass' ]( 'selected' );
+            });
+        })
+
+        // Since the event is only triggered when the hash changes, we need to trigger
+        // the event now, to handle the hash the page may have loaded with.
+        $(window).hashchange();
+
+    });
     var history = JSON.parse(localStorage.getItem('history'));
 
     $.ajax({
@@ -21,7 +43,7 @@ Dictionary.initPilesForms = function() {
                     '<div class="panel-body">';
 
             for(var word in data) {
-                var historyItem = '<div class="word_history_white panel-column">' +
+                var historyItem = '<div class="word_history_white panel-column" data-value="' + data[word]['word'] + '">' +
                                     '<div class="col-md-8 col-xs-12">' +
                                         '<div><a class="history_key" href="#'+ data[word]['word'] + '">' + data[word]['word'] +'</a></div>';
 
@@ -70,15 +92,24 @@ Dictionary.initPilesForms = function() {
             },
             success: function (data) {
                 console.log(data.translation);
+                ga('send', 'pageview', '/' + word);
 
                 var response = '<div><h2>'+data.word +'</h2></div>' +
                     '<div class="table-responsive">' +
                                     '<table class="table">' +
                                         '<tbody>';
+                var historyItem = '<div class="word_history_white panel-column" data-value="' + data.word + '">' +
+                                        '<div class="col-md-8 col-xs-12">' +
+                                            '<div><a class="history_key" href="#'+ data.word + '">' + data.word +'</a></div>';
+
                 for (var i in data.translation) {
                     response += '<tr><td colspan="3"><b><span>' + i + '</span></b></td></tr>';
                     var trans = data.translation[i];
+
+                    historyItem +='<div class="wordByType"><span class="wordType">'+ i +': </span>';
+                    var englishTrans = [];
                     for(var j in trans) {
+                        englishTrans.push(trans[j]['translation']);
                         response += '<tr>' +
                                         '<td>&nbsp;</td>' +
                                         '<td><span>' + trans[j]['translation']+ '</span></td>';
@@ -91,8 +122,14 @@ Dictionary.initPilesForms = function() {
                         }
                         response += '<td>' + synonymsHtml + '</td></tr>';
                     }
+                    historyItem += englishTrans.join() + '</div>';
                 }
+                historyItem +='</div></div>';
+
                 $('#response').html(response);
+                $("#history").find("[data-value='" + data.word + "']").remove();
+                $('#history .panel-body').prepend(historyItem);
+
             },
             error: function (err) {
             }

@@ -97,15 +97,26 @@ class DefaultController extends FOSRestController
 		$historyWord = $request->request->get('history');
 		$historyWord = array_unique($historyWord);
 
-		$words = $this->getDoctrine()->getRepository('DictionaryBundle:Word')->findByName($historyWord);
-
-		$wordIds = [];
-		foreach($words as $word) {
-			$wordIds[] = $word->getId();
+		$user = $this->getUser();
+		if ($user) {
+			/** @var $historyRepository HistoryRepository */
+			$historyRepository = $this->getDoctrine()->getRepository('DictionaryBundle:History');
+			$histories = $historyRepository->getLatestSearched($user);
+			foreach($histories as $index => $history) {
+				$wordIds[] = $history[0]->getWord()->getId();
+			}
+		} else {
+			$words = $this->getDoctrine()->getRepository('DictionaryBundle:Word')->findByName($historyWord);
+			/** @var  $eng2srbRepository Eng2srbRepository*/
+			$wordIds = [];
+			foreach($words as $word) {
+				$wordIds[] = $word->getId();
+			}
 		}
-		/** @var  $eng2srbRepository Eng2srbRepository*/
+
 		$eng2srbRepository = $this->getDoctrine()->getManager()->getRepository('DictionaryBundle:Eng2srb');
 		$results = $eng2srbRepository->getEnglishTranslations($wordIds);
+
 		/** @var $result Eng2srb*/
 		foreach($results as $result) {
 			/** @var  $serbianTransations Word */
@@ -125,8 +136,14 @@ class DefaultController extends FOSRestController
 		}
 
 		$dataToReturn = [];
-		foreach($historyWord as $index => $history) {
-			$dataToReturn[] = array_merge(['word' => $history], $historyResult[$history]);
+		if ($user) {
+			foreach ($historyResult as $index => $history) {
+				$dataToReturn[] = array_merge(['word' => $index], $history);
+			}
+		} else {
+			foreach ($historyWord as $index => $history) {
+				$dataToReturn[] = array_merge(['word' => $history], $historyResult[$history]);
+			}
 		}
 		return $dataToReturn;
 	}

@@ -9,9 +9,8 @@
     <form class="form-signin paddingBottom50" role="form" action="{{ path("fos_user_security_check") }}" method="post">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
         <h2 class="form-signin-heading">Login</h2>
-MILOS
         {% if error %}
-            <p class="text-error">{{ error|trans }}</p>
+            <p class="text-error">{{ error.messageKey|trans(error.messageData, 'security') }} </p>
         {% endif %}
 
         <input class="form-control" type="text" id="username" placeholder="Email" name="_username" value="{{ last_username }}" required="required">
