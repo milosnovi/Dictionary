@@ -5,6 +5,7 @@ namespace Dictionary\DictionaryBundle\Controller;
 use Dictionary\DictionaryBundle\Entity\Eng2srb;
 use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Entity\HistoryRepository;
+use Dictionary\DictionaryBundle\Entity\Mismatch;
 use Dictionary\DictionaryBundle\Entity\User;
 use Dictionary\DictionaryBundle\Entity\Word;
 use Dictionary\DictionaryBundle\Model\TranslateManager;
@@ -55,6 +56,11 @@ class DefaultController extends Controller
 					$errorMessage = "See translation of <a href=" . $this->generateUrl('_home', array('word' => $response['similar'])). ">" .$response['similar']. "</a>";
 				} else {
 					$errorMessage = 'There is no result!';
+					$mismatch = new Mismatch();
+					$mismatch->setValue($word);
+					$em->persist($mismatch);
+					$em->flush();
+
 				}
 			}
 		}
@@ -64,7 +70,7 @@ class DefaultController extends Controller
 
 		/** @var $historyRepository HistoryRepository */
 		$historyRepository = $em->getRepository('DictionaryBundle:History');
-		$histories = $historyRepository->getLatestSearched($user);
+		$histories = $historyRepository->findByLatestSearched($user);
 		$englishIds = array();
 		foreach($histories as $index => $history) {
 			$englishIds[] = $history[0]->getWord()->getId();

@@ -5,9 +5,9 @@ namespace Dictionary\DictionaryBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * history
+ * History
  *
- * @ORM\Table()
+ * @ORM\Table(name="History", indexes={@ORM\Index(name="IDX_E80749D7E357438D", columns={"word_id"}), @ORM\Index(name="IDX_E80749D7A76ED395", columns={"user_id"})})
  * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\HistoryRepository")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -16,62 +16,65 @@ class History
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @var Word
+     * @var \DateTime
      *
-	 * @ORM\ManyToOne(targetEntity="Word")
-	 * @ORM\JoinColumn(name="word_id", referencedColumnName="id", onDelete="CASCADE")
-	 *
+     * @ORM\Column(name="last_search", type="datetime", nullable=false)
      */
-    private $word;
+    private $lastSearch;
 
     /**
-     * @var Word
+     * @var integer
      *
-	 * @ORM\ManyToOne(targetEntity="User")
-	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\Column(name="hits", type="integer", nullable=false)
      */
-    private $user;
-
-	/**
-	 * @var \DateTime
-	 *
-	 * @ORM\Column(name="last_search", type="datetime")
-	 */
-	private $lastSearch;
-
-	/**
-	 * @var integer
-	 *
-	 * @ORM\Column(name="hits", type="integer")
-	 */
-	private $hits;
+    private $hits;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime")
+     * @ORM\Column(name="created", type="datetime", nullable=false)
      */
     private $created;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="updated", type="datetime")
+     * @ORM\Column(name="updated", type="datetime", nullable=false)
      */
     private $updated;
+
+    /**
+     * @var \Users
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * })
+     */
+    private $user;
+
+    /**
+     * @var \Word
+     *
+     * @ORM\ManyToOne(targetEntity="Word")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="word_id", referencedColumnName="id")
+     * })
+     */
+    private $word;
 
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -138,7 +141,7 @@ class History
     /**
      * Get created
      *
-     * @return string 
+     * @return string
      */
     public function getCreated()
     {
@@ -163,7 +166,7 @@ class History
     /**
      * Get updated
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdated()
     {
@@ -188,7 +191,7 @@ class History
     /**
      * Get lastSearch
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastSearch()
     {
@@ -211,7 +214,7 @@ class History
     /**
      * Get hits
      *
-     * @return integer 
+     * @return integer
      */
     public function getHits()
     {

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Eng2srb
  *
- * @ORM\Table()
+ * @ORM\Table(name="Eng2srb", indexes={@ORM\Index(name="IDX_2093BDF4F00825FE", columns={"eng_id"}), @ORM\Index(name="IDX_2093BDF4B7494EC9", columns={"srb_id"})})
  * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\Eng2srbRepository")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -39,59 +39,65 @@ class Eng2srb
     private $id;
 
     /**
-     * @var English
-     *
-	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="engTranslate" )
-	 * @ORM\JoinColumn(name="eng_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $eng;
-
-    /**
-     * @var Serbian
-     *
-	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="srbTranslate")
-	 * @ORM\JoinColumn(name="srb_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $srb;
-
-    /**
-     * @var integer
-	 * @ORM\Column(name="relevance", type="integer")
-     */
-    private $relevance = '1';
-
-    /**
-     * @var integer
-	 * @ORM\Column(name="direction", type="integer")
-     */
-    private $direction;
-
-
-    /**
-     * @var integer
-	 * @ORM\Column(name="word_type", type="integer")
-     */
-    private $wordType;
-
-    /**
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime")
+     * @ORM\Column(name="created", type="datetime", nullable=false)
      */
     private $created;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="updated", type="datetime")
+     * @ORM\Column(name="updated", type="datetime", nullable=false)
      */
     private $updated;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="relevance", type="integer", nullable=false)
+     */
+    private $relevance = '1';
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="direction", type="integer", nullable=false)
+     */
+    private $direction;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="word_type", type="integer", nullable=false)
+     */
+    private $wordType;
+
+    /**
+     * @var \Word
+     *
+     * @ORM\ManyToOne(targetEntity="Word")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="srb_id", referencedColumnName="id")
+     * })
+     */
+    private $srb;
+
+    /**
+     * @var \Word
+     *
+     * @ORM\ManyToOne(targetEntity="Word")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="eng_id", referencedColumnName="id")
+     * })
+     */
+    private $eng;
 
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -114,7 +120,7 @@ class Eng2srb
     /**
      * Get engId
      *
-     * @return integer 
+     * @return integer
      */
     public function getEng()
     {
@@ -137,7 +143,7 @@ class Eng2srb
     /**
      * Get srbId
      *
-     * @return integer 
+     * @return integer
      */
     public function getSrb()
     {
@@ -160,7 +166,7 @@ class Eng2srb
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -183,7 +189,7 @@ class Eng2srb
     /**
      * Get updated
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdated()
     {
@@ -206,7 +212,7 @@ class Eng2srb
     /**
      * Get relevance
      *
-     * @return integer 
+     * @return integer
      */
     public function getRelevance()
     {
@@ -229,7 +235,7 @@ class Eng2srb
     /**
      * Get direction
      *
-     * @return integer 
+     * @return integer
      */
     public function getDirection()
     {
@@ -319,7 +325,7 @@ class Eng2srb
     /**
      * Get wordType
      *
-     * @return integer 
+     * @return integer
      */
     public function getWordType()
     {

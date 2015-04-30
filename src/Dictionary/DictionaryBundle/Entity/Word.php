@@ -2,16 +2,13 @@
 
 namespace Dictionary\DictionaryBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Index;
 
 /**
  * Word
  *
- * @ORM\Table(name="word",indexes={@index(name="search_index_word", columns={"name"})})
- * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\WordRepository")
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\Table(name="word", indexes={@ORM\Index(name="search_index_word", columns={"name"})})
+ * @ORM\Entity
  */
 class Word
 {
@@ -22,7 +19,7 @@ class Word
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -31,60 +28,60 @@ class Word
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     private $name;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="type", type="integer")
+     * @ORM\Column(name="type", type="integer", nullable=false)
      */
     private $type;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime")
+     * @ORM\Column(name="created", type="datetime", nullable=false)
      */
     private $created;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="updated", type="datetime")
+     * @ORM\Column(name="updated", type="datetime", nullable=false)
      */
     private $updated;
 
-	/**
-	 * @ORM\OneToMany(targetEntity="Piles", mappedBy="word")
-	 *
-	 * @var ArrayCollection $engTranslate
-	 */
-	private $piles;
+    /**
+     * @ORM\OneToMany(targetEntity="Piles", mappedBy="word")
+     *
+     * @var ArrayCollection $engTranslate
+     */
+    private $piles;
 
-	/**
-	 * @ORM\OneToMany(targetEntity="Eng2srb", mappedBy="eng")
-	 *
-	 * @var ArrayCollection $engTranslate
-	 */
-	private $engTranslate;
+    /**
+     * @ORM\OneToMany(targetEntity="Eng2srb", mappedBy="eng")
+     *
+     * @var ArrayCollection $engTranslate
+     */
+    private $engTranslate;
 
-	/**
-	 * @ORM\OneToMany(targetEntity="Eng2srb", mappedBy="srb")
-	 *
-	 * @var ArrayCollection $$engTranslate
-	 */
-	private $srbTranslate;
+    /**
+     * @ORM\OneToMany(targetEntity="Eng2srb", mappedBy="srb")
+     *
+     * @var ArrayCollection $$engTranslate
+     */
+    private $srbTranslate;
 
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->engTranslate = new ArrayCollection();
-		$this->srbTranslate = new ArrayCollection();
-	}
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->engTranslate = new ArrayCollection();
+        $this->srbTranslate = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -237,37 +234,37 @@ class Word
     }
 
     /**
-	 * Add $engTranslate
-	 *
-	 * @param Eng2srb $engTranslate
-	 * @return English
-	 */
-	public function addEngTranslate(Eng2srb $engTranslate)
-	{
-		$this->engTranslate[] = $engTranslate;
+     * Add $engTranslate
+     *
+     * @param Eng2srb $engTranslate
+     * @return English
+     */
+    public function addEngTranslate(Eng2srb $engTranslate)
+    {
+        $this->engTranslate[] = $engTranslate;
 
-		return $this;
-	}
+        return $this;
+    }
 
     /**
-	 * Remove $engTranslate
-	 *
-	 * @param Eng2srb $engTranslate
-	 */
-	public function removeEngTranslate(Eng2srb $engTranslate)
-	{
-		$this->engTranslate->removeElement($$engTranslate);
-	}
+     * Remove $engTranslate
+     *
+     * @param Eng2srb $engTranslate
+     */
+    public function removeEngTranslate(Eng2srb $engTranslate)
+    {
+        $this->engTranslate->removeElement($$engTranslate);
+    }
 
-	/**
-	 * Get $engTranslate
-	 *
-	 * @return \Doctrine\Common\Collections\Collection
-	 */
-	public function getEngTranslate()
-	{
-		return $this->engTranslate;
-	}
+    /**
+     * Get $engTranslate
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEngTranslate()
+    {
+        return $this->engTranslate;
+    }
 
     /**
      * Add srbTranslate
@@ -295,7 +292,7 @@ class Word
     /**
      * Get srbTranslate
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSrbTranslate()
     {
@@ -328,7 +325,7 @@ class Word
     /**
      * Get piles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPiles()
     {

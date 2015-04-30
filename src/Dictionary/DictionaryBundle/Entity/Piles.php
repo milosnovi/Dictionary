@@ -7,20 +7,15 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Piles
  *
- * @ORM\Table()
- * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\PilesRepository")
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\Table(name="Piles", indexes={@ORM\Index(name="IDX_28540D7FE357438D", columns={"word_id"}), @ORM\Index(name="IDX_28540D7FA76ED395", columns={"user_id"})})
+ * @ORM\Entity
  */
 class Piles
 {
-
-    const TYPE_KNOW         = 1;
-    const TYPE_NOT_SURE     = 2;
-    const TYPE_DO_NOT_KNOW  = 4;
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -29,43 +24,49 @@ class Piles
     /**
      * @var integer
      *
-     * @ORM\Column(name="type", type="integer")
+     * @ORM\Column(name="type", type="integer", nullable=false)
      */
     private $type;
 
     /**
-     * @var Word
-	 * @ORM\ManyToOne(targetEntity="Word", inversedBy="piles")
-	 * @ORM\JoinColumn(name="word_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $word;
-
-    /**
-     * @var User
-	 * @ORM\ManyToOne(targetEntity="User")
-	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $user;
-
-    /**
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime")
+     * @ORM\Column(name="created", type="datetime", nullable=false)
      */
     private $created;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="updated", type="datetime")
+     * @ORM\Column(name="updated", type="datetime", nullable=false)
      */
     private $updated;
+
+    /**
+     * @var \Users
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * })
+     */
+    private $user;
+
+    /**
+     * @var \Word
+     *
+     * @ORM\ManyToOne(targetEntity="Word")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="word_id", referencedColumnName="id")
+     * })
+     */
+    private $word;
 
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -88,7 +89,7 @@ class Piles
     /**
      * Get type
      *
-     * @return integer 
+     * @return integer
      */
     public function getType()
     {
@@ -188,4 +189,5 @@ class Piles
     {
         return $this->user;
     }
+
 }

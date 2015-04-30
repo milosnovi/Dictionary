@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 class HistoryRepository extends EntityRepository
 {
 
-	public function getLatestSearched($user) {
+	public function findByLatestSearched($user) {
 		$histories = $this->createQueryBuilder('h')
 			->select('h, word, piles.type as pile_type')
 			->innerJoin('h.word', 'word')
