@@ -8,10 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
  * Piles
  *
  * @ORM\Table(name="Piles", indexes={@ORM\Index(name="IDX_28540D7FE357438D", columns={"word_id"}), @ORM\Index(name="IDX_28540D7FA76ED395", columns={"user_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\PilesRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Piles
 {
+
+    const TYPE_KNOW         = 1;
+    const TYPE_NOT_SURE     = 2;
+    const TYPE_DO_NOT_KNOW  = 4;
     /**
      * @var integer
      *

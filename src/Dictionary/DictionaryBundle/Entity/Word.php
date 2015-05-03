@@ -8,7 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
  * Word
  *
  * @ORM\Table(name="word", indexes={@ORM\Index(name="search_index_word", columns={"name"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\WordRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Word
 {

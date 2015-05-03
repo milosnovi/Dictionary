@@ -4,6 +4,7 @@ namespace Dictionary\ApiBundle\Controller;
 
 use Dictionary\DictionaryBundle\Entity\Eng2srb;
 use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
+use Dictionary\DictionaryBundle\Entity\HistoryRepository;
 use Dictionary\DictionaryBundle\Model\TranslateManager;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -37,6 +38,11 @@ class DefaultController extends FOSRestController
 		$translationManager = $this->get('dictionary.translateManager');
 
 		$translations = $translationManager->translate($word);
+
+		if(empty($translations)) {
+			throw new \Exception('There is no such a word');
+		}
+
 		$serbianTranslations = [];
 		foreach ($translations as $translation) {
 			$serbianTranslations[] = $translation['srb_id'];
@@ -94,24 +100,30 @@ class DefaultController extends FOSRestController
 	 * @return array
 	 */
 	public function historyAction(Request $request) {
-		$historyWord = $request->request->get('history');
-		$historyWord = array_unique($historyWord);
-
 		$user = $this->getUser();
 		if ($user) {
 			/** @var $historyRepository HistoryRepository */
 			$historyRepository = $this->getDoctrine()->getRepository('DictionaryBundle:History');
-			$histories = $historyRepository->getLatestSearched($user);
+			$histories = $historyRepository->findByLatestSearched($user);
 			foreach($histories as $index => $history) {
 				$wordIds[] = $history[0]->getWord()->getId();
 			}
 		} else {
-			$words = $this->getDoctrine()->getRepository('DictionaryBundle:Word')->findByName($historyWord);
-			/** @var  $eng2srbRepository Eng2srbRepository*/
-			$wordIds = [];
-			foreach($words as $word) {
-				$wordIds[] = $word->getId();
+			$historyWord = $request->request->get('history');
+
+			if($historyWord) {
+				$historyWord = array_unique($historyWord);
+				$words = $this->getDoctrine()->getRepository('DictionaryBundle:Word')->findByName($historyWord);
+				/** @var  $eng2srbRepository Eng2srbRepository*/
+				$wordIds = [];
+				foreach($words as $word) {
+					$wordIds[] = $word->getId();
+				}
 			}
+		}
+
+		if(empty($wordIds)) {
+			return [];
 		}
 
 		$eng2srbRepository = $this->getDoctrine()->getManager()->getRepository('DictionaryBundle:Eng2srb');
