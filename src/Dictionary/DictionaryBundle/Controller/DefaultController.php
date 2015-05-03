@@ -24,7 +24,7 @@ class DefaultController extends Controller
 	 * @param Request $request
 	 * @return array
 	 *
-	 * @Route("/", name="_home")
+	 * @Route("/home", name="_home")
 	 * @Template()
 	 */
     public function indexAction(Request $request)
@@ -160,7 +160,7 @@ class DefaultController extends Controller
 	/**
 	 * @param Request $request
 	 *
-	 * @Route("/home", name="_home_api")
+	 * @Route("/", name="_home_api")
 	 * @Template()
 	 */
 	public function indexApiAction()

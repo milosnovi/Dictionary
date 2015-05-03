@@ -25,15 +25,14 @@ chown -R "$1":"$1" /var/www/staging.dictionary
 chmod -R 755 /var/www
 
 exit
-echo "checking out master"
+echo "checking out $BRANCH"
 git checkout $BRANCH
 git fetch
 git pull origin $BRANCH
 git reset --hard origin/$BRANCH
 
-
 sudo su
-tar -zxvf vendors.tar.gz
+#tar -zxvf vendors.tar.gz
 service php5-fpm stop
 
 cp /tmp/js/* web/js/
@@ -43,7 +42,7 @@ app/console cache:clear --env prod
 app/console assets:install web
 
 app/console doctrine:migrations:migrate  --no-interaction
-chown -R www-data:www-data /var/www/dictionary
+chown -R www-data:www-data /var/www/staging.dictionary
 
 rm -Rf /tmp/js
 rm -Rf /tmp/css
