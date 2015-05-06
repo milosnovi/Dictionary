@@ -32,7 +32,7 @@ git pull origin $BRANCH
 git reset --hard origin/$BRANCH
 
 sudo su
-#tar -zxvf vendors.tar.gz
+tar -zxvf vendors.tar.gz
 service php5-fpm stop
 
 cp /tmp/js/* web/js/

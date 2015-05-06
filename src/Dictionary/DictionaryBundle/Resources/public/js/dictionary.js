@@ -109,6 +109,9 @@ DictionaryLocalStorage.addItem = function(word) {
 
 Dictionary.initHasManager = function(callback) {
     var _this = this;
+    if(!localStorage.getItem('history')) {
+        DictionaryLocalStorage.addItem('welcome');
+    }
     $(function(){
         $(window).hashchange(function(){
             var hash = location.hash,
