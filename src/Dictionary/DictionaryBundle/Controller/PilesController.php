@@ -8,6 +8,7 @@ use Dictionary\DictionaryBundle\Entity\Piles;
 use Dictionary\DictionaryBundle\Entity\PilesRepository;
 use Dictionary\DictionaryBundle\Entity\User;
 use Dictionary\DictionaryBundle\Entity\Word;
+use Dictionary\DictionaryBundle\Entity\WordRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -92,13 +93,19 @@ class PilesController extends Controller
 
 	/**
 	 * @param Request $request
+	 * @param string $word
+	 * @param string $pileId
 	 * @return array
 	 *
 	 * @Route("word/{word}/pile/{pileId}", name="move_2_piles")
 	 * @Template()
 	 */
-    public function move2pilesAction(Request $request, Word $word, $pileId)
+    public function move2pilesAction(Request $request, $word, $pileId)
     {
+        /** @var  $wordRepository WordRepository */
+        $wordRepository = $this->getDoctrine()->getRepository('DictionaryBundle:Word');
+        $wordEntity = $wordRepository->findOneBy(['name' => $word, 'type' => Word::WORD_ENGLISH]);
+
         /** @var $user User*/
         $user = $this->getUser();
         if(!$user) {
@@ -107,12 +114,12 @@ class PilesController extends Controller
 
         /** @var  $pilesRepository PilesRepository */
         $pilesRepository = $this->getDoctrine()->getRepository('DictionaryBundle:Piles');
-        $pile = $pilesRepository->findUserPile($word, $user);
+        $pile = $pilesRepository->findUserPile($wordEntity, $user);
 
         if(empty($pile)) {
             $pile = new Piles();
             $pile->setUser($user);
-            $pile->setWord($word);
+            $pile->setWord($wordEntity);
         }
         $pile->setType($pileId);
 

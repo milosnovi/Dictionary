@@ -1,20 +1,31 @@
 var Dictionary = Dictionary || {};
+
 var DictionaryLocalStorage = DictionaryLocalStorage || {};
 
-Dictionary.initPilesForms = function() {
-    this.initHasManager();
-    this.initTranslationForm();
-    this.initHistory();
+
+Dictionary.initDict = function(isLoggedIn) {
+    var _this = this;
+    this.initHasManager(function(word) {
+        if(isLoggedIn) {
+            _this.updateHistory(word);
+        }
+    });
+    this.initTranslationForm(function(word) {
+        if(isLoggedIn) {
+            _this.updateHistory(word);
+        }
+    });
+    this.initHistory(isLoggedIn);
 };
 
 Dictionary.getTranslation = function(word) {
+    var _this = this;
     if(!word) {
         return;
     }
-
     $.ajax({
         method: "GET",
-        url: "api/v1/translation/"+word,
+        url: Routing.generate('translationapi_translation_get', { word: word }),
         headers: {
             "Accept":"application/json"
         },
@@ -46,14 +57,20 @@ Dictionary.getTranslation = function(word) {
                     var synonymsHtml = '';
                     for(var k in synonyms) {
                         synonymsHtml += '<span class="synonym">' +
-                        '<a href="home#'+ synonyms[k] + '">' + synonyms[k]+ '</a>' +
+                        '<a href="#'+ synonyms[k] + '">' + synonyms[k]+ '</a>' +
                         '</span>';
                     }
                     response += '<td>' + synonymsHtml + '</td></tr>';
                 }
                 historyItem += englishTrans.join() + '</div>';
             }
-            historyItem +='</div></div>';
+            historyItem +='</div>';
+            historyItem += '<div class="col-md-6 col-xs-12">'+
+                '<a class="history_delete_item panel-item-links" data-id="955" href="/history/955"><span class="glyphicon glyphicon-remove"></span></a>' +
+                '<a href="word/' +word+ '/pile/4" class="pile btn btn-sm btn-danger  panel-item-links " style="line-height: 1;">DONT KNOW</a>' +
+                '<a href="word/' +word+ '/pile/2" class="pile btn btn-sm btn-warning panel-item-links " style="line-height: 1;">ALMOST</a>' +
+                '<a href="word/' +word+ '/pile/1" class="pile btn btn-sm btn-success panel-item-links " style="line-height: 1;">KNOW</a>' +
+            '</div></div>';
 
             if($('#history').find('.history-item-no-records')) {
                 $('#history').find('.history-item-no-records').remove();
@@ -62,6 +79,7 @@ Dictionary.getTranslation = function(word) {
             $('#response').html(response);
             $("#history").find("[data-value='" + data.word + "']").remove();
             $('#history .panel-body').prepend(historyItem);
+            _this.initPilesForms("[data-value='" + data.word + "']");
 
         },
         error: function (err) {
@@ -84,12 +102,12 @@ DictionaryLocalStorage.addItem = function(word) {
         historyArr = [];
     }
     historyArr.unshift(word);
-    historyArr = historyArr.splice(0, 20);
+    historyArr = historyArr.splice(0, 25);
 
     localStorage.setItem('history', JSON.stringify(historyArr));
 };
 
-Dictionary.initHasManager = function() {
+Dictionary.initHasManager = function(callback) {
     var _this = this;
     $(function(){
         $(window).hashchange(function(){
@@ -98,33 +116,52 @@ Dictionary.initHasManager = function() {
 
             $('#word').val(word);
             _this.getTranslation(word);
+            callback(word);
         });
 
         $(window).hashchange();
     });
 };
 
-Dictionary.initTranslationForm = function() {
+Dictionary.updateHistory = function(word) {
+    $.ajax({
+        method: "GET",
+        url: Routing.generate('update_historyapi_update_history', {'word': word}),
+        headers: {
+            "Accept":"application/json"
+        },
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+        }
+    });
+};
+
+Dictionary.initTranslationForm = function(callback) {
+    var _this = this;
     $('#translation_form').submit(function( event ) {
         event.preventDefault();
         var word = $('#word').val();
 
         location.hash = word;
-        this.getTranslation(word);
-
+        _this.getTranslation(word);
+        callback(word);
     });
 };
 
 
-Dictionary.initHistory = function() {
-    var history = JSON.parse(localStorage.getItem('history'));
+Dictionary.initHistory = function(isLoggedIn) {
+    console.log(isLoggedIn);
+    var _this = this,
+        history = JSON.parse(localStorage.getItem('history')),
+        data = isLoggedIn ? {} : {'history': JSON.parse(localStorage.getItem('history'))},
+        url = isLoggedIn ? Routing.generate('user_historyapi_history') : Routing.generate('anonymous_historyapi_translations_post');
 
     $.ajax({
         method: "POST",
-        url: "api/v1/history/translation",
-        data: {
-            'history': JSON.parse(localStorage.getItem('history'))
-        },
+        url: url,
+        data: data,
         headers: {
             "Accept":"application/json"
         },
@@ -160,20 +197,29 @@ Dictionary.initHistory = function() {
                     historyItem +='<div class="wordByType">' +
                     '<span class="wordType">'+ j +': </span>' + wordTranslation[j].join() + '</div>';
                 }
-                historyItem +='</div></div>';
+                historyItem +='</div>';
+                historyItem += '<div class="col-md-6 col-xs-12">'+
+                '<a class="history_delete_item panel-item-links" data-id="955" href="/history/955"><span class="glyphicon glyphicon-remove"></span></a>' +
+                '<a href="word/' +data[word]['word']+ '/pile/4" class="pile btn btn-sm btn-danger  panel-item-links " style="line-height: 1;">DONT KNOW</a>' +
+                '<a href="word/' +data[word]['word']+ '/pile/2" class="pile btn btn-sm btn-warning panel-item-links " style="line-height: 1;">ALMOST</a>' +
+                '<a href="word/' +data[word]['word']+ '/pile/1" class="pile btn btn-sm btn-success panel-item-links " style="line-height: 1;">KNOW</a>' +
+                '</div></div>'
                 responseHTML += historyItem;
             }
 
             responseHTML ='<div class="panel panel-info">' + responseHTML + '</div>';
 
             $('#history').html(responseHTML);
+            _this.initPilesForms();
         },
         error: function (err) {
         }
     });
 };
 
-   /* $('a.pile').click(function(ev) {
+Dictionary.initPilesForms = function(selector) {
+    var selector = undefined === selector ? '#history' : '#history ' + selector;
+    $(selector + ' a.pile').on('click', function (ev) {
         ev.preventDefault();
         var element = $(this),
             parent = element.parent();
@@ -181,9 +227,8 @@ Dictionary.initHistory = function() {
         $.ajax({
             type: "GET",
             url: element.attr('href'),
-            success: function(data)
-            {
-                if(data.success) {
+            success: function (data) {
+                if (data.success) {
                     parent.find('a.pile').each(function () {
                         $(this).removeClass('disabled');
                     });
@@ -193,7 +238,7 @@ Dictionary.initHistory = function() {
         });
     });
 
-    $('a.history_delete_item').click(function(ev) {
+    $(selector + ' a.history_delete_item').on('click', function (ev) {
         ev.preventDefault();
 
         var element = $(this),
@@ -203,17 +248,18 @@ Dictionary.initHistory = function() {
         $.ajax({
             type: "DELETE",
             url: element.attr('href'),
-            success: function(data)
-            {
+            success: function (data) {
                 if (data.success) {
                     hisotyItemEl = $('#history_item_' + historyId);
-                    hisotyItemEl.hide('slow', function(){ hisotyItemEl.remove(); });
+                    hisotyItemEl.hide('slow', function () {
+                        hisotyItemEl.remove();
+                    });
                 }
             }
         });
     });
 
-    $('a.pile_delete_item').click(function(ev) {
+    $(selector + ' a.pile_delete_item').on('click', function (ev) {
         ev.preventDefault();
 
         var element = $(this),
@@ -223,12 +269,14 @@ Dictionary.initHistory = function() {
         $.ajax({
             type: "DELETE",
             url: element.attr('href'),
-            success: function(data)
-            {
+            success: function (data) {
                 if (data.success) {
                     pileEl = $('#pile_item_' + pileId);
-                    pileEl.hide('slow', function(){ pileEl.remove(); });
+                    pileEl.hide('slow', function () {
+                        pileEl.remove();
+                    });
                 }
             }
         });
-    });*/
+    });
+}

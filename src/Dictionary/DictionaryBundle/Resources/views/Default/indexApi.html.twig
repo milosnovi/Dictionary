@@ -33,7 +33,8 @@
 {% block additionaljs %}
     <script type="text/javascript">
         $(document).ready(function() {
-            Dictionary.initPilesForms();
+            var isUserLoggedIn = {% if is_granted('ROLE_USER') %}true{% else %}false{% endif %};
+            Dictionary.initDict(isUserLoggedIn);
         });
     </script>
 {% endblock %}

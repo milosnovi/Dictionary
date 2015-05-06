@@ -42,7 +42,8 @@
         "friendsofsymfony/rest-bundle": "~1.5",
         "jms/serializer-bundle": "@dev",
         "phpunit/phpunit": "@dev",
-        "liip/functional-test-bundle":"dev-master"
+        "liip/functional-test-bundle":"dev-master",
+        "friendsofsymfony/jsrouting-bundle": "~1.5"
     },
     "scripts": {
         "post-install-cmd": [
