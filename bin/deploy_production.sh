@@ -20,6 +20,7 @@ scp -r ./web/css/ "$USER@188.226.235.234":/tmp/css
 ssh -A "$USER@188.226.235.234" << ENDSSH
 cd /var/www/dictionary
 sudo su
+rm -rf app/cache/*
 chown -R "$1":"$1" /var/www/dictionary
 chmod -R 755 /var/www
 
@@ -32,7 +33,7 @@ git reset --hard origin/master
 
 
 sudo su
-tar -zxvf vendor.tar.gz
+tar -zxvf vendors.tar.gz
 service php5-fpm stop
 cp /tmp/js/* web/js/
 cp /tmp/css/* web/css/
