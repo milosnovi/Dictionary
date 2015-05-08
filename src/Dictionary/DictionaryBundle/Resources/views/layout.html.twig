@@ -51,6 +51,22 @@
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
+    <script>
+        var Routes = {
+          'login': "{{ path('fos_user_security_login') }}"
+        };
+
+        var Translations = {
+            'noun': '{% trans %}NOUN{% endtrans %}',
+            'verb': '{% trans %}VERB{% endtrans %}',
+            'adverb': '{% trans %}ADVERB{% endtrans %}',
+            'adjective': '{% trans %}ADJECTIVE{% endtrans %}',
+            'history': '{% trans %}HISTORY{% endtrans %}',
+            'dontknow': '{% trans %}DONTKNOW{% endtrans %}',
+            'almost': '{% trans %}ALMOST{% endtrans %}',
+            'know': '{% trans %}KNOW{% endtrans %}',
+        };
+    </script>
     {% block additionaljs %}
     {% endblock %}
 </body>

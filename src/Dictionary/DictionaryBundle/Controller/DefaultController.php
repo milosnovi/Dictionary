@@ -158,8 +158,6 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param Request $request
-	 *
 	 * @Route("/", name="_home_api")
 	 * @Template()
 	 */

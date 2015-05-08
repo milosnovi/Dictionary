@@ -32,9 +32,12 @@
 {% endblock %}
 {% block additionaljs %}
     <script type="text/javascript">
+        var user = {
+            'isUserLoggedIn': {% if is_granted('ROLE_USER') %}true{% else %}false{% endif %}
+        };
+
         $(document).ready(function() {
-            var isUserLoggedIn = {% if is_granted('ROLE_USER') %}true{% else %}false{% endif %};
-            Dictionary.initDict(isUserLoggedIn);
+            Dictionary.initDict();
         });
     </script>
 {% endblock %}

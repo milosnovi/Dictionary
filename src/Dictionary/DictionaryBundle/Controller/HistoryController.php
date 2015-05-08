@@ -109,7 +109,6 @@ class HistoryController extends Controller
             }
             $resultHits[$englishTransations->getId()]['translations'][$index][] = $serbianTranslationName;
         }
-
         return array(
             'historyHits' => $resultHits
         );

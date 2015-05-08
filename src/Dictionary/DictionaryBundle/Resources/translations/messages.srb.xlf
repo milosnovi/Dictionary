@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="Dictionary">
+                <source>Dictionary</source>
+                <target>Recnik</target>
+            </trans-unit>
+            <trans-unit id="PILES">
+                <source>PILES</source>
+                <target>Kartice</target>
+            </trans-unit>
+            <trans-unit id="MOST_OFFEN">
+                <source>MOST_OFFEN</source>
+                <target>Najtrazenije</target>
+            </trans-unit>
+            <trans-unit id="NOUN">
+                <source>NOUN</source>
+                <target>imenica</target>
+            </trans-unit>
+            <trans-unit id="VERB">
+                <source>VERB</source>
+                <target>glagol</target>
+            </trans-unit>
+            <trans-unit id="ADJECTIVE">
+                <source>ADJECTIVE</source>
+                <target>pridev</target>
+            </trans-unit>
+            <trans-unit id="ADVERB">
+                <source>ADVERB</source>
+                <target>prilog</target>
+            </trans-unit>
+            <trans-unit id="HISTORY">
+                <source>HISTORY</source>
+                <target>Istorija pretrage</target>
+            </trans-unit>
+            <trans-unit id="DONTKNOW">
+                <source>DONTKNOW</source>
+                <target>Ne znam</target>
+            </trans-unit>
+            <trans-unit id="ALMOST">
+                <source>ALMOST</source>
+                <target>Za malo</target>
+            </trans-unit>
+            <trans-unit id="KNOW">
+                <source>KNOW</source>
+                <target>Znam</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

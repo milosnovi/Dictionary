@@ -16,13 +16,13 @@
                 <div class="col-md-4">
                         {% if key == 1 %}
                             <div class="panel panel-success">
-                            <div class="panel-heading">KNOW</div>
+                            <div class="panel-heading">{% trans %}KNOW{% endtrans %}</div>
                         {% elseif key == 2 %}
                             <div class="panel panel-warning">
-                            <div class="panel-heading">NOT SURE</div>
+                            <div class="panel-heading">{% trans %}ALMOST{% endtrans %}</div>
                         {% elseif key == 4  %}
                             <div class="panel panel-danger">
-                            <div class="panel-heading">DONT KNOW</div>
+                            <div class="panel-heading">{% trans %}DONTKNOW{% endtrans %}</div>
                         {% endif %}
                         <div class="panel-body">
                             {% for pile  in pileType %}
@@ -40,7 +40,7 @@
                                     <br/>
                                     {% for type, translation in pile.translation.translations %}
                                         <div class="wordByType">
-                                            <span class="wordType">{{ type }}:</span>
+                                            <span class="wordType">{{ type|upper|trans}}:</span>
                                             {{ translation | join(', ')}}
                                         </div>
                                     {%  endfor %}

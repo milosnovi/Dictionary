@@ -102,8 +102,8 @@
 
 {% endblock %}
 {% block additionaljs %}
-
     <script type="text/javascript">
+        parent();
         $(document).ready(function() {
             Dictionary.initPilesForms();
         });

@@ -3,19 +3,19 @@ var Dictionary = Dictionary || {};
 var DictionaryLocalStorage = DictionaryLocalStorage || {};
 
 
-Dictionary.initDict = function(isLoggedIn) {
+Dictionary.initDict = function() {
     var _this = this;
     this.initHasManager(function(word) {
-        if(isLoggedIn) {
+        if(user.isLoggedIn) {
             _this.updateHistory(word);
         }
     });
     this.initTranslationForm(function(word) {
-        if(isLoggedIn) {
+        if(user.isLoggedIn) {
             _this.updateHistory(word);
         }
     });
-    this.initHistory(isLoggedIn);
+    this.initHistory();
 };
 
 Dictionary.getTranslation = function(word) {
@@ -34,19 +34,18 @@ Dictionary.getTranslation = function(word) {
 
             ga('send', 'pageview', '/' + word);
 
-            var response = '<div><h2>'+data.word +'</h2></div>' +
-                '<div class="table-responsive">' +
+            var response = '<div class="table-responsive">' +
                 '<table class="table">' +
                 '<tbody>';
             var historyItem = '<div class="word_history_white panel-column" data-value="' + data.word + '">' +
-                '<div class="col-md-8 col-xs-12">' +
+                '<div class="col-md-7 col-xs-12">' +
                 '<div><a class="history_key" href="#'+ data.word + '">' + data.word +'</a></div>';
 
             for (var i in data.translation) {
-                response += '<tr><td colspan="3"><b><span>' + i + '</span></b></td></tr>';
+                response += '<tr><td colspan="3"><b><span>[' + Translations[i] + ']</span></b></td></tr>';
                 var trans = data.translation[i];
 
-                historyItem +='<div class="wordByType"><span class="wordType">'+ i +': </span>';
+                historyItem +='<div class="wordByType"><span class="wordType">' + Translations[i] + '</span>';
                 var englishTrans = [];
                 for(var j in trans) {
                     englishTrans.push(trans[j]['translation']);
@@ -62,14 +61,14 @@ Dictionary.getTranslation = function(word) {
                     }
                     response += '<td>' + synonymsHtml + '</td></tr>';
                 }
-                historyItem += englishTrans.join() + '</div>';
+                historyItem += ' ' + englishTrans.join() + '</div>';
             }
             historyItem +='</div>';
-            historyItem += '<div class="col-md-6 col-xs-12">'+
+            historyItem += '<div class="col-md-5 col-xs-12">'+
                 '<a class="history_delete_item panel-item-links" data-id="955" href="/history/955"><span class="glyphicon glyphicon-remove"></span></a>' +
-                '<a href="word/' +word+ '/pile/4" class="pile btn btn-sm btn-danger  panel-item-links " style="line-height: 1;">DONT KNOW</a>' +
-                '<a href="word/' +word+ '/pile/2" class="pile btn btn-sm btn-warning panel-item-links " style="line-height: 1;">ALMOST</a>' +
-                '<a href="word/' +word+ '/pile/1" class="pile btn btn-sm btn-success panel-item-links " style="line-height: 1;">KNOW</a>' +
+                '<a href="word/' +word+ '/pile/4" class="pile btn btn-sm btn-danger  panel-item-links " style="line-height: 1;">'+ Translations["dontknow"] +'</a>' +
+                '<a href="word/' +word+ '/pile/2" class="pile btn btn-sm btn-warning panel-item-links " style="line-height: 1;">'+ Translations["almost"] +'</a>' +
+                '<a href="word/' +word+ '/pile/1" class="pile btn btn-sm btn-success panel-item-links " style="line-height: 1;">'+ Translations["know"] +'</a>' +
             '</div></div>';
 
             if($('#history').find('.history-item-no-records')) {
@@ -154,12 +153,11 @@ Dictionary.initTranslationForm = function(callback) {
 };
 
 
-Dictionary.initHistory = function(isLoggedIn) {
-    console.log(isLoggedIn);
+Dictionary.initHistory = function() {
     var _this = this,
         history = JSON.parse(localStorage.getItem('history')),
-        data = isLoggedIn ? {} : {'history': JSON.parse(localStorage.getItem('history'))},
-        url = isLoggedIn ? Routing.generate('user_historyapi_history') : Routing.generate('anonymous_historyapi_translations_post');
+        data = user.isLoggedIn ? {} : {'history': JSON.parse(localStorage.getItem('history'))},
+        url = user.isLoggedIn ? Routing.generate('user_historyapi_history') : Routing.generate('anonymous_historyapi_translations_post');
 
     $.ajax({
         method: "POST",
@@ -171,7 +169,7 @@ Dictionary.initHistory = function(isLoggedIn) {
         success: function (data) {
             console.log(data);
             var responseHTML = '<div class="panel-heading">' +
-                '<h4>HISTORY</h4>' +
+                '<h4>' + Translations['history'] +'</h4>' +
                 '</div>' +
                 '<div class="panel-body">';
 
@@ -192,20 +190,20 @@ Dictionary.initHistory = function(isLoggedIn) {
 
             for(var word in data) {
                 var historyItem = '<div class="word_history_white panel-column" data-value="' + data[word]['word'] + '">' +
-                    '<div class="col-md-8 col-xs-12">' +
+                    '<div class="col-md-7 col-xs-12">' +
                     '<div><a class="history_key" href="#'+ data[word]['word'] + '">' + data[word]['word'] +'</a></div>';
 
                 var wordTranslation = data[word].translations;
                 for(var j in wordTranslation) {
                     historyItem +='<div class="wordByType">' +
-                    '<span class="wordType">'+ j +': </span>' + wordTranslation[j].join() + '</div>';
+                    '<span class="wordType">' + Translations[j] + ': </span>' + wordTranslation[j].join() + '</div>';
                 }
                 historyItem +='</div>';
-                historyItem += '<div class="col-md-6 col-xs-12">'+
+                historyItem += '<div class="col-md-5 col-xs-12">'+
                 '<a class="history_delete_item panel-item-links" data-id="955" href="/history/955"><span class="glyphicon glyphicon-remove"></span></a>' +
-                '<a href="word/' +data[word]['word']+ '/pile/4" class="pile btn btn-sm btn-danger  panel-item-links " style="line-height: 1;">DONT KNOW</a>' +
-                '<a href="word/' +data[word]['word']+ '/pile/2" class="pile btn btn-sm btn-warning panel-item-links " style="line-height: 1;">ALMOST</a>' +
-                '<a href="word/' +data[word]['word']+ '/pile/1" class="pile btn btn-sm btn-success panel-item-links " style="line-height: 1;">KNOW</a>' +
+                '<a href="word/' +data[word]['word']+ '/pile/4" class="pile btn btn-sm btn-danger  panel-item-links " style="line-height: 1;">'+ Translations["dontknow"] +'</a>' +
+                '<a href="word/' +data[word]['word']+ '/pile/2" class="pile btn btn-sm btn-warning panel-item-links " style="line-height: 1;">'+ Translations["almost"] +'</a>' +
+                '<a href="word/' +data[word]['word']+ '/pile/1" class="pile btn btn-sm btn-success panel-item-links " style="line-height: 1;">'+ Translations["know"] +'</a>' +
                 '</div></div>'
                 responseHTML += historyItem;
             }
@@ -223,7 +221,13 @@ Dictionary.initHistory = function(isLoggedIn) {
 Dictionary.initPilesForms = function(selector) {
     var selector = undefined === selector ? '#history' : '#history ' + selector;
     $(selector + ' a.pile').on('click', function (ev) {
+
         ev.preventDefault();
+
+        if(!user.isLoggedIn){
+            window.location.href = Routes.login;
+        }
+
         var element = $(this),
             parent = element.parent();
 
@@ -243,6 +247,10 @@ Dictionary.initPilesForms = function(selector) {
 
     $(selector + ' a.history_delete_item').on('click', function (ev) {
         ev.preventDefault();
+
+        if(!user.isLoggedIn){
+            window.location.href = '/login';
+        }
 
         var element = $(this),
             historyId = element.attr('data-id'),
