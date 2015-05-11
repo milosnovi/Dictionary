@@ -147,7 +147,7 @@ Dictionary.initTranslationForm = function(callback) {
         var word = $('#word').val();
 
         location.hash = word;
-        _this.getTranslation(word);
+        //_this.getTranslation(word);
         callback(word);
     });
 };
