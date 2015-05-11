@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="Mismatch")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  */
 class Mismatch
 {
@@ -28,6 +29,12 @@ class Mismatch
      */
     private $value = '';
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created", type="datetime", nullable=false)
+     */
+    private $created;
 
 
     /**
@@ -61,5 +68,29 @@ class Mismatch
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * Set created
+     *
+     * @return Mismatch
+     *
+     * @ORM\PrePersist
+     */
+    public function setCreated()
+    {
+        $this->created = new \DateTime();
+
+        return $this;
+    }
+
+    /**
+     * Get created
+     *
+     * @return \DateTime
+     */
+    public function getCreated()
+    {
+        return $this->created;
     }
 }

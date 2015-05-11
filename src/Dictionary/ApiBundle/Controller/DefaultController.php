@@ -5,6 +5,7 @@ namespace Dictionary\ApiBundle\Controller;
 use Dictionary\DictionaryBundle\Entity\Eng2srb;
 use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
 use Dictionary\DictionaryBundle\Entity\HistoryRepository;
+use Dictionary\DictionaryBundle\Entity\Mismatch;
 use Dictionary\DictionaryBundle\Entity\Word;
 use Dictionary\DictionaryBundle\Model\TranslateManager;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -63,6 +64,11 @@ class DefaultController extends FOSRestController
 		$translations = $translationManager->translate($word);
 
 		if(empty($translations)) {
+			$mismatch = new Mismatch();
+			$mismatch->setValue($word);
+			$em->persist($mismatch);
+			$em->flush();
+
 			throw new \Exception('There is no such a word');
 		}
 
