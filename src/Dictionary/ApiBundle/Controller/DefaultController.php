@@ -120,7 +120,6 @@ class DefaultController extends FOSRestController
 		return [];
 	}
 
-
 	/**
 	 *
 	 * @Post("/translation", name="api_translations_post", options={"expose"=true})
