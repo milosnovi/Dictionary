@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Mismatch
  *
- * @ORM\Table(name="Mismatch")
+ * @ORM\Table(name="mismatch")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */

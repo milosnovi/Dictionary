@@ -16,7 +16,6 @@ app/console doctrine:database:drop --force
 app/console doctrine:database:create
 
 app/console doctrine:migration:migrate -n
-#app/console doctrine:fixtures:load --fixtures=app/main/dev/Fixtures
-#app/console doctrine:phpcr:fixtures:load --fixtures=app/main/dev/PHPCRFixtures
+app/console doctrine:fixtures:load --fixtures=app/DataFixtures/ORM
 
 app/console assets:install --symlink web

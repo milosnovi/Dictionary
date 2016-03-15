@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Piles
  *
- * @ORM\Table(name="Piles", indexes={@ORM\Index(name="IDX_28540D7FE357438D", columns={"word_id"}), @ORM\Index(name="IDX_28540D7FA76ED395", columns={"user_id"})})
- * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\PilesRepository")
+ * @ORM\Table(name="piles", indexes={@ORM\Index(name="IDX_28540D7FE357438D", columns={"word_id"}), @ORM\Index(name="IDX_28540D7FA76ED395", columns={"user_id"})})
+ * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Repositories\PilesRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class Piles

@@ -2,13 +2,14 @@
 
 namespace Dictionary\DictionaryBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Word
  *
- * @ORM\Table(name="word", indexes={@ORM\Index(name="search_index_word", columns={"name"})})
- * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Entity\WordRepository")
+ * @ORM\Table(name="words", indexes={@ORM\Index(name="search_index_word", columns={"name"})})
+ * @ORM\Entity(repositoryClass="Dictionary\DictionaryBundle\Repositories\WordRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class Word
@@ -80,6 +81,8 @@ class Word
      */
     public function __construct()
     {
+        $this->created = new \DateTime();
+
         $this->engTranslate = new ArrayCollection();
         $this->srbTranslate = new ArrayCollection();
     }
