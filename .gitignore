@@ -11,3 +11,5 @@
 .vagrant/
 .idea/workspace.xml
 .idea/
+web/bower_components/
+node_modules/

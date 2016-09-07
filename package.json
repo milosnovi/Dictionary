@@ -1,0 +1,25 @@
+{
+  "name": "dictionary",
+  "version": "1.0.0",
+  "description": "Symfony Standard Edition",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/mnovicevic/dictionary.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/mnovicevic/dictionary#readme",
+  "devDependencies": {
+    "bower": "^1.7.7"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+
+    "prestart": "npm install"
+  }
+}
