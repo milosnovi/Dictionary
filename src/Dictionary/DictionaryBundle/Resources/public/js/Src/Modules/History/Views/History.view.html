@@ -1,0 +1,20 @@
+<div id="history" class="col-md-5 col-xs-12" ng-controller="HistoryController">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h4>Istorija pretrage</h4>
+        </div>
+
+    <div class="panel-body">
+        <div ng-repeat="word in history" class="word_history_white panel-column">
+            <div class="col-md-7 col-xs-12">
+                <div><a class="history_key">{{word.word}}</a></div>
+                <div ng-repeat="(translationType, values) in word.translations" class="wordByType">
+                    <span class="wordType">{{translationType}}: </span>
+                        <span ng-repeat="i in values"> {{i}}{{$last ? '' : ', '}}</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

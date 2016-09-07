@@ -28,7 +28,7 @@
                         <div id="history_item_{{ hit.history_id }}" class="{{ class }}">
                             <div class="col-md-6 col-xs-12">
                                 <div>
-                                    <a class="history_key" href="{{ path('_home_api', {'word': hit.name}) }}">{{ hit.name }}</a>
+                                    <a class="history_key" href="{{ path('_home', {'word': hit.name}) }}">{{ hit.name }}</a>
                                 </div>
                                 {% for type, hitEntry in hit.translations %}
                                     <div class="wordByType">

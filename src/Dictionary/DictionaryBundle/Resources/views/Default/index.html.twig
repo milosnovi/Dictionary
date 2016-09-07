@@ -12,101 +12,32 @@
     {% endfor %}
 
     <div class="row">
-        <div class="col-md-5 col-xs-12">
+        <div class="col-md-6 col-xs-12">
 
-            <form style="padding: 5px;" method="get" action="{{ path('_home') }}" class="form-horizontal" role="form">
+            <form id="translation_form" style="padding: 5px;" method="get" action="{{ path('_home') }}" class="form-horizontal" role="form">
                 <div class="form-group">
                     <div class="col-sm-10">
-                        <input style=";height: 58px;font-size: 33px;" name="word" class="form-control" placeholder={% if latestWord %}{{ latestWord }}{% else %}"Translate"{% endif %} {% if latestWord %}value='{{ latestWord }}'{% endif %}>
+                        <input id="word" style=";height: 58px;font-size: 33px;" name="word" class="form-control" placeholder="Type a word...">
                     </div>
                 </div>
             </form>
-
-            <div id="latestResult">
-                {% if latestSearch %}
-                    <div class="table-responsive">
-                        <table class="table">
-                            <tbody>
-                            {% for key, translations in latestSearch.translations %}
-                                <tr>
-                                    <td colspan="3"><b><span>{{ key }}</span></b></td>
-                                </tr>
-                                {% for word in translations %}
-                                    <tr>
-                                        <td>&nbsp;</td>
-                                        <td><span>{{ word }}</span></td>
-                                        {% if latestSearchSynonyms is not empty and latestSearchSynonyms[word] is not empty %}
-                                            {%  set synonyms =  latestSearchSynonyms[word]['translation'] %}
-                                            {% if synonyms is not empty %}
-                                                <td>
-                                                    {% for synonym in synonyms %}
-                                                        <span class="synonym">
-                                                            <a href="{{ path('_home', {'word': synonym}) }}">{{ synonym }}</a>
-                                                        </span>
-                                                    {% endfor %}
-                                                </td>
-                                            {% endif %}
-                                        {% endif %}
-                                    </tr>
-                                {%  endfor %}
-                            {%  endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    {{ errorMessage|raw }}
-                {% endif %}
-            </div>
+            <div id="response" style="padding: 0 0 0 10px;"></div>
         </div>
 
-        <div class="col-md-6 col-xs-12">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <h4>HISTORY</h4>
-                </div>
-                <div class="panel-body">
-                    {% for key, history in histories %}
-                        {% set pileType = history.piles_type %}
-                        {% if loop.index % 2 %}
-                            {% set class = 'word_history_white panel-column' %}
-                        {% else %}
-                            {% set class = 'word_history_grey panel-column' %}
-                        {% endif %}
-                        <div id="history_item_{{ history.history_id }}" class="{{ class }}">
-                            <div class="col-md-6 col-xs-12">
-                                <div>
-                                    <a class="history_key" href="{{ path('_home', {'word': key}) }}">{{ key }}</a>
-                                </div>
-                                {% for type, historyEntry in history.translations %}
-                                    <div class="wordByType">
-                                        <span class="wordType">{{ type }}:</span>
-                                        {{ historyEntry | join(', ')}}
-                                    </div>
-                                {%  endfor %}
-                            </div>
-                            <div class="col-md-6 col-xs-12">
-                                <a class="history_delete_item panel-item-links" data-id="{{ history.history_id }}" href="{{ path('delete_history_item', {'id': history.history_id}) }}"><span class='glyphicon glyphicon-remove'></span></a>
-                                <a href="{{ path('move_2_piles', {'word': history.word_id, 'pileId': 4 }) }}" class="pile btn btn-sm btn-danger  panel-item-links {% if pileType == 4 %} disabled {% endif %}" style="line-height: 1;">DON'T KNOW</a>
-                                <a href="{{ path('move_2_piles', {'word': history.word_id, 'pileId': 2 }) }}" class="pile btn btn-sm btn-warning panel-item-links {% if pileType == 2 %} disabled {% endif %}" style="line-height: 1;">ALMOST</a>
-                                <a href="{{ path('move_2_piles', {'word': history.word_id, 'pileId': 1 }) }}" class="pile btn btn-sm btn-success panel-item-links {% if pileType == 1 %} disabled {% endif %}" style="line-height: 1;">KNOW</a>
-                            </div>
-                        </div>
-                    {% else %}
-                        History is empty!
-                    {% endfor %}
-                </div>
-            </div>
+        <div id="history" class="col-md-5 col-xs-12">
         </div>
-
     </div>
+
 
 {% endblock %}
 {% block additionaljs %}
     <script type="text/javascript">
-        parent();
+        var user = {
+            'isUserLoggedIn': {% if is_granted('ROLE_USER') %}true{% else %}false{% endif %}
+        };
+
         $(document).ready(function() {
-            Dictionary.initPilesForms();
+            Dictionary.initDict();
         });
     </script>
 {% endblock %}
-

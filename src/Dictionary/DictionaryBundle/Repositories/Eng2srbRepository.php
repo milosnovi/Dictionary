@@ -1,8 +1,10 @@
 <?php
 
-namespace Dictionary\DictionaryBundle\Entity;
+namespace Dictionary\DictionaryBundle\Repositories;
 
 use Doctrine\ORM\EntityRepository;
+use Dictionary\DictionaryBundle\Entity\Word;
+use Dictionary\DictionaryBundle\Entity\Eng2srb;
 
 /**
  * EnglishRepository
@@ -14,6 +16,7 @@ class Eng2srbRepository extends EntityRepository
 {
 
 	public function getEnglishTranslations($englishIds) {
+//	    print_r($englishIds);
 		$results = $this->createQueryBuilder('eng2srb')
 			->select('eng2srb, english, serbian')
 			->innerJoin('eng2srb.eng', 'english')
@@ -22,12 +25,12 @@ class Eng2srbRepository extends EntityRepository
 			->andwhere('eng2srb.direction  = :direction')
 			->andWhere('english.type = :englishType')
 			->andWhere('serbian.type = :serbianType')
-			->setParameters(array(
+			->setParameters([
 				'ids' 			=> $englishIds,
 				'englishType'	=> Word::WORD_ENGLISH,
 				'serbianType'	=> Word::WORD_SERBIAN,
 				'direction'		=> Eng2srb::ENG_2_SRB
-			))
+			])
 			->orderBy('english.id, eng2srb.wordType, eng2srb.relevance', 'ASC')
 			->getQuery()
 			->getResult()

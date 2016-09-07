@@ -1,3 +1,7 @@
 Default_Controller_Api:
     type: rest
     resource: "Dictionary\ApiBundle\Controller\DefaultController"
+
+History_Controller_Api:
+    type: rest
+    resource: "Dictionary\ApiBundle\Controller\HistoryController"

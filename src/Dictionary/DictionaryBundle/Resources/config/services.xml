@@ -39,6 +39,13 @@
 
         <service id="translator.google" class="%translator.google.provider.class%">
         </service>
+
+        <service id="kernel.listener.domain_aware" class="Dictionary\DictionaryBundle\EventListener\DomainAwareListener">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag name="kernel.event_listener" event="kernel.response"  method="onKernelResponse"/>
+            <tag name="kernel.event_listener" event="kernel.request"  method="onKernelRequest"/>
+        </service>
+
     </services>
 
 </container>

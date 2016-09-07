@@ -1,6 +1,7 @@
 <?php
 
 namespace Dictionary\DictionaryBundle\Command;
+use Dictionary\DictionaryBundle\Model\TranslateManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,6 +38,7 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 		$limit = $input->getArgument('limit');
 		$offset = $input->getArgument('offset');
 
+        /** @var  $translationManager TranslateManager */
 		$translationManager = $this->getContainer()->get('dictionary.translateManager');
 
 		$kernelRootDir = $this->getContainer()->getParameter('kernel.root_dir');
@@ -57,6 +59,7 @@ class fetchWordsByListCommand extends ContainerAwareCommand
 			$success = $translationManager->translate($rows[$i + $offset]);
 			if (!$success) {
 				$result = $translationManager->translateFromGoogle(strtolower($rows[$i + $offset]));
+                print_r($result);exit;
 				if ($result['success']) {
 					$wordsFromGoogle++;
 					$output->writeln("<info>GOOGLE</info>");

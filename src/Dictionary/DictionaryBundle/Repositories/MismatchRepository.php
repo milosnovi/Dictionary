@@ -1,6 +1,6 @@
 <?php
 
-namespace Dictionary\DictionaryBundle\Entity;
+namespace Dictionary\DictionaryBundle\Repositories;
 
 use Doctrine\ORM\EntityRepository;
 

@@ -23,6 +23,13 @@ class History
     private $id;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="anonymous_id", type="string", nullable=true, length=64)
+     */
+    private $anonymousId;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="last_search", type="datetime", nullable=false)
@@ -219,5 +226,29 @@ class History
     public function getHits()
     {
         return $this->hits;
+    }
+
+    /**
+     * Set anonymousId
+     *
+     * @param integer $anonymousId
+     *
+     * @return History
+     */
+    public function setAnonymousId($anonymousId)
+    {
+        $this->anonymousId = $anonymousId;
+
+        return $this;
+    }
+
+    /**
+     * Get anonymousId
+     *
+     * @return integer
+     */
+    public function getAnonymousId()
+    {
+        return $this->anonymousId;
     }
 }

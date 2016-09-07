@@ -80,8 +80,6 @@ class TranslateManager
 		if (isset($dictionary->sentences[0])) {
 			$origin = $dictionary->sentences[0]->orig;
 		}
-		\Doctrine\Common\Util\Debug::dump($dictionary,2);
-		exit;
 		if (!isset($dictionary->dict)) {
 			return array(
 				'success' => false

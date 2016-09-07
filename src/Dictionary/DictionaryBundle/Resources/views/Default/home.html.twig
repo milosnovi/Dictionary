@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" ng-app="Dictionary">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="keywords" content="englesko-srpski recnik, recnik, prevod, prevodjenje, Serbian dictionary, englesko, srpski, engleski, reci, prevodilac, sinonimi ">
+
+    <meta name="description"  content="Najbolji engleski rečnik sa sinonimima. Personalni recnik. Istorija pretrage">
+
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="bundles/dictionary/css/main.css">
+
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+
+
+    <script src="bundles/dictionary/js/Src/app.js"></script>
+    <script src="bundles/dictionary/js/Src/Common/historyService.js"></script>
+    <script src="bundles/dictionary/js/Src/Modules/TranslationForm/Controllers/TranslationFormController.js"></script>
+    <script src="bundles/dictionary/js/Src/Modules/TranslationForm/Directives/TranslationDirective.js"></script>
+
+    <script src="bundles/dictionary/js/Src/Modules/History/Controllers/HistoryController.js"></script>
+    <script src="bundles/dictionary/js/Src/Modules/History/Directives/HistoryDirective.js"></script>
+
+    <title>Welcome</title>
+    <link rel="icon" type="image/x-icon" />
+
+</head>
+
+    <body >
+    <div class="container-fluid" ng-view></div>
+    </body>
+</html>

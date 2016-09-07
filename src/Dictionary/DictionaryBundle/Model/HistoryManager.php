@@ -29,13 +29,14 @@ class HistoryManager
 
         $historyRepository = $this->em->getRepository('DictionaryBundle:History');
         /** @var  $historyLog History */
-        $historyLog = $historyRepository->findOneBy(
-            array(
+        $historyLog = $historyRepository->findOneBy([
                 'word' => $wordEntity,
-                'user' => $user
-            )
+                'anonymousId' => $user
+            ]
         );
-
+//        \Doctrine\Common\Util\Debug::dump($wordEntity->getId(),2);
+//        \Doctrine\Common\Util\Debug::dump($user, 2);
+//        \Doctrine\Common\Util\Debug::dump($historyLog,2);exit;
         if ($historyLog) {
             $hits = (int)$historyLog->getHits() + 1;
             $historyLog->setHits($hits);
@@ -43,9 +44,10 @@ class HistoryManager
             /** @var $history History */
             $historyLog = new History();
             $historyLog->setWord($wordEntity);
-            $historyLog->setUser($user);
+            $historyLog->setAnonymousId($user);
             $historyLog->setHits(1);
         }
+//
         $this->em->persist($historyLog);
         $this->em->flush();
     }

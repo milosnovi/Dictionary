@@ -1,6 +1,6 @@
 <?php
 
-namespace Dictionary\DictionaryBundle\Entity;
+namespace Dictionary\DictionaryBundle\Repositories;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -18,7 +18,7 @@ class HistoryRepository extends EntityRepository
 			->select('h, word, piles.type as pile_type')
 			->innerJoin('h.word', 'word')
 			->leftJoin('DictionaryBundle:Piles', 'piles', 'WITH', 'piles.word = h.word AND piles.user = h.user')
-			->where('h.user = :user')
+			->where('h.anonymousId = :user')
 			->setParameter('user', $user)
 			->orderBy('h.lastSearch', 'DESC')
 			->setMaxResults(20)
