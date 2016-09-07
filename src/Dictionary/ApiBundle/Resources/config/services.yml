@@ -1,4 +1,45 @@
+parameters:
+    translator.google.provider.class:  Dictionary\ApiBundle\Model\GoogleTranslateProvider
+
 services:
 #    dictionary_api.example:
 #        class: Dictionary\ApiBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+    dictionary.translateManager:
+        class: Dictionary\ApiBundle\Model\TranslateManager
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@doctrine.orm.entity_manager"
+            - "@dictionary.wordManager"
+            - "@dictionary.eng2srbManager"
+            - "@dictionary.historyManager"
+            - "@translator.google"
+    translator.google:
+        class: "%translator.google.provider.class%"
+    dictionary.historyManager:
+        class: Dictionary\ApiBundle\Model\HistoryManager
+        arguments:
+            - "@doctrine.orm.entity_manager"
+    dictionary.wordManager:
+        class: Dictionary\ApiBundle\Model\WordManager
+        arguments:
+            - "@doctrine.orm.entity_manager"
+    dictionary.eng2srbManager:
+        class: Dictionary\ApiBundle\Model\Eng2SrbManager
+        arguments:
+            - "@doctrine.orm.entity_manager"
+    dictionary.pilesManager:
+        class: Dictionary\ApiBundle\Model\PilesbManager
+        arguments:
+            - "@doctrine.orm.entity_manager"
+    dictionary.translator.metak:
+        class: Dictionary\ApiBundle\Model\MetakTranslateProvider
+        arguments:
+            - "@doctrine.orm.entity_manager"
+    kernel.listener.domain_aware:
+        class: Dictionary\ApiBundle\EventListener\DomainAwareListener
+        arguments:
+            - "@doctrine.orm.entity_manager"
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

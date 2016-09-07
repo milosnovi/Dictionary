@@ -8,7 +8,7 @@
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Dictionary\DictionaryBundle\Entity\User;
+use Dictionary\ApiBundle\Entity\User;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 
 class LoadUserData implements FixtureInterface

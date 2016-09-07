@@ -2,13 +2,13 @@
 
 namespace Dictionary\ApiBundle\Controller;
 
-use Dictionary\DictionaryBundle\Entity\Eng2srb;
-use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
-use Dictionary\DictionaryBundle\Entity\HistoryRepository;
-use Dictionary\DictionaryBundle\Entity\Mismatch;
-use Dictionary\DictionaryBundle\Entity\Word;
-use Dictionary\DictionaryBundle\Model\HistoryManager;
-use Dictionary\DictionaryBundle\Model\TranslateManager;
+use Dictionary\ApiBundle\Entity\Eng2srb;
+use Dictionary\ApiBundle\Entity\Mismatch;
+use Dictionary\ApiBundle\Repositories\Eng2srbRepository;
+use Dictionary\ApiBundle\Repositories\HistoryRepository;
+use Dictionary\ApiBundle\Entity\Word;
+use Dictionary\ApiBundle\Model\HistoryManager;
+use Dictionary\ApiBundle\Model\TranslateManager;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\NamePrefix;
@@ -72,7 +72,7 @@ class HistoryController extends FOSRestController
 //		}
 
 		/** @var $historyRepository HistoryRepository */
-		$historyRepository = $this->getDoctrine()->getRepository('DictionaryBundle:History');
+		$historyRepository = $this->getDoctrine()->getRepository('DictionaryApiBundle:History');
 		$histories = $historyRepository->findByLatestSearched($anoymousCookie);
 		foreach($histories as $index => $history) {
 			$wordIds[] = $history[0]->getWord()->getId();
@@ -83,7 +83,7 @@ class HistoryController extends FOSRestController
 		}
 
         /** @var $eng2srbRepository Eng2srbRepository */
-		$eng2srbRepository = $this->getDoctrine()->getManager()->getRepository('DictionaryBundle:Eng2srb');
+		$eng2srbRepository = $this->getDoctrine()->getManager()->getRepository('DictionaryApiBundle:Eng2srb');
 		$results = $eng2srbRepository->getEnglishTranslations($wordIds);
 //\Doctrine\Common\Util\Debug::dump($results, 2);exit;
 		/** @var $result Eng2srb*/

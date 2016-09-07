@@ -8,8 +8,8 @@
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Dictionary\DictionaryBundle\Entity\Word;
-use Dictionary\DictionaryBundle\Entity\Eng2srb;
+use Dictionary\ApiBundle\Entity\Word;
+use Dictionary\ApiBundle\Entity\Eng2srb;
 
 class LoadWordData implements FixtureInterface
 {

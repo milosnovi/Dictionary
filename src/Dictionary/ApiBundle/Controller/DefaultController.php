@@ -2,12 +2,12 @@
 
 namespace Dictionary\ApiBundle\Controller;
 
-use Dictionary\DictionaryBundle\Entity\Eng2srb;
-use Dictionary\DictionaryBundle\Entity\Eng2srbRepository;
-use Dictionary\DictionaryBundle\Entity\HistoryRepository;
-use Dictionary\DictionaryBundle\Entity\Mismatch;
-use Dictionary\DictionaryBundle\Entity\Word;
-use Dictionary\DictionaryBundle\Model\TranslateManager;
+use Dictionary\ApiBundle\Entity\Eng2srb;
+use Dictionary\ApiBundle\Entity\Eng2srbRepository;
+use Dictionary\ApiBundle\Entity\HistoryRepository;
+use Dictionary\ApiBundle\Entity\Mismatch;
+use Dictionary\ApiBundle\Entity\Word;
+use Dictionary\ApiBundle\Model\TranslateManager;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\NamePrefix;
@@ -58,7 +58,7 @@ class DefaultController extends FOSRestController
 			$serbianTranslations[] = $translation['srb_id'];
 		}
 		/** @var $eng2srbRepository Eng2srbRepository */
-		$eng2srbRepository = $em->getRepository('DictionaryBundle:Eng2srb');
+		$eng2srbRepository = $em->getRepository('DictionaryApiBundle:Eng2srb');
 		$translationSynonyms = $eng2srbRepository->getSerbianTranslations($serbianTranslations);
 
 		foreach ($translationSynonyms as $synonyms) {

@@ -59,7 +59,7 @@ swiftmailer:
 fos_user:
     db_driver: orm
     firewall_name: main
-    user_class: Dictionary\DictionaryBundle\Entity\User
+    user_class: Dictionary\ApiBundle\Entity\User
 
 sensio_framework_extra:
     view:    { annotations: false }
@@ -83,14 +83,3 @@ fos_rest:
             xml: true
             json: true
             html: true
-
-#sonata_block:
-#    default_contexts: [cms]
-#    blocks:
-#        # Enable the SonataAdminBundle block
-#        sonata.admin.block.admin_list:
-#            contexts:   [admin]
-#        # Your other blocks
-#
-#sonata_admin:
-#    title: Dictionary Admin

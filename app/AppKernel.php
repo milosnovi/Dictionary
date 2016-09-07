@@ -23,18 +23,8 @@ class AppKernel extends Kernel
 
 //            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
 
-//			new Sonata\CoreBundle\SonataCoreBundle(),
-//			new Sonata\BlockBundle\SonataBlockBundle(),
-//			new Sonata\jQueryBundle\SonatajQueryBundle(),
-//			new Knp\Bundle\MenuBundle\KnpMenuBundle(),
-//			new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
-
-			// Then add SonataAdminBundle
-//			new Sonata\AdminBundle\SonataAdminBundle(),
-
 			new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
 			new Dictionary\DictionaryBundle\DictionaryBundle(),
-			new Dictionary\AdminBundle\DictionaryAdminBundle(),
 			new Dictionary\UserBundle\UserBundle(),
             new Dictionary\ApiBundle\DictionaryApiBundle(),
 		);
